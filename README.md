@@ -2,6 +2,8 @@
 
 VRCLens mods/customizations with non-destructive prefabs
 
+[**Download the latest version**](https://github.com/gummidot/VRCLens_Custom/releases/tag/v1.0.0)
+
 ## Requirements
 
 - [VRCFury](https://vrcfury.com/download)
