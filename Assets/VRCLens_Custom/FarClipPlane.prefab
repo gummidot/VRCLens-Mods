@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &653501506377534138
+--- !u!1 &175993897142570065
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5573839356560386582}
-  - component: {fileID: 462725696950858236}
-  - component: {fileID: 4934981393337556717}
+  - component: {fileID: 7541619150360493659}
+  - component: {fileID: 8102043549976282293}
+  - component: {fileID: 444091137314995185}
   m_Layer: 0
-  m_Name: SmoothRotate
+  m_Name: FarClipPlane
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5573839356560386582
+--- !u!4 &7541619150360493659
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653501506377534138}
+  m_GameObject: {fileID: 175993897142570065}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -33,13 +33,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &462725696950858236
+--- !u!114 &8102043549976282293
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653501506377534138}
+  m_GameObject: {fileID: 175993897142570065}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
@@ -52,23 +52,23 @@ MonoBehaviour:
   config:
     features: []
   content:
-    rid: 4619247973990924304
+    rid: 4619248038640615464
   references:
     version: 2
     RefIds:
-    - rid: 4619247973990924304
+    - rid: 4619248038640615464
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/SmoothRotate
+        name: VRCLens/Custom/FarClipPlane
         state:
           actions:
-          - rid: 4619247973990924309
+          - rid: 4619248038640615467
         saved: 1
         slider: 1
         sliderInactiveAtZero: 0
         securityEnabled: 0
-        defaultOn: 0
+        defaultOn: 1
         includeInRest: 0
         exclusiveOffState: 0
         enableExclusiveTag: 0
@@ -103,11 +103,11 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0
         useGlobalParam: 1
-        globalParam: VRCL_Custom/SmoothRotate
+        globalParam: VRCL_Custom/FarClipPlane
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
-    - rid: 4619247973990924309
+    - rid: 4619248038640615467
       type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
       data:
         version: 0
@@ -119,15 +119,15 @@ MonoBehaviour:
           version: 1
           fileID: 0
           guid: 
-          id: de5b50b551283064dbd881f83bcfafa9|Assets/VRCLens_Custom/SmoothRotate/RotateA_RotTarget_LowerWeight.anim
-          objRef: {fileID: 7400000, guid: de5b50b551283064dbd881f83bcfafa9, type: 2}
---- !u!114 &4934981393337556717
+          id: 26d54b4b84443424c9d8f09cc0a3c884|Assets/VRCLens_Custom/FarClipPlane/FarClipPlane.anim
+          objRef: {fileID: 7400000, guid: 26d54b4b84443424c9d8f09cc0a3c884, type: 2}
+--- !u!114 &444091137314995185
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653501506377534138}
+  m_GameObject: {fileID: 175993897142570065}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
@@ -140,11 +140,11 @@ MonoBehaviour:
   config:
     features: []
   content:
-    rid: 4619248038640615536
+    rid: 4619248038640615551
   references:
     version: 2
     RefIds:
-    - rid: 4619248038640615536
+    - rid: 4619248038640615551
       type: {class: FullController, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 4
@@ -155,8 +155,8 @@ MonoBehaviour:
             version: 1
             fileID: 0
             guid: 
-            id: aa18c8bb9f1180f46bf380cf8e130c38|Assets/VRCLens_Custom/SmoothRotate/Params_SmoothRotate.asset
-            objRef: {fileID: 11400000, guid: aa18c8bb9f1180f46bf380cf8e130c38, type: 2}
+            id: 8cfe6d021262c9d4e94e97c5f0d8b23e|Assets/VRCLens_Custom/FarClipPlane/LocalParams_FarClipPlane.asset
+            objRef: {fileID: 11400000, guid: 8cfe6d021262c9d4e94e97c5f0d8b23e, type: 2}
         smoothedPrms: []
         globalParams:
         - '*'

@@ -14,6 +14,8 @@ Adds a slider that smooths out your camera rotation (including drone hand-rotate
 
 Applies when using the camera in white/yellow Stabilize mode, or when using the Drone Hand-Rotate mode.
 
+This is a local-only toggle.
+
 Last tested: VRCLens 1.9.2
 
 <video src="https://github.com/user-attachments/assets/05d5c2fd-28e6-4f38-8b98-11be5db84a1b"></video>
@@ -34,7 +36,7 @@ Thanks to [Minkis](https://www.youtube.com/watch?v=XMcTfFoNUHA) for explaining h
 
 ## DroneSpeed
 
-Modifies the Drone Speed slider. There are two versions:
+Modifies the Drone Speed slider. There are two versions (**only add one** to your avatar):
 
 - **Slower** allows the drone to move much slower
 - **Slower and Faster** allows the drone to move much slower and much faster
@@ -56,3 +58,17 @@ Last tested: VRCLens 1.9.2
    ![!DroneSpeed Installation](Doc/DroneSpeed_Install.png)
 
 4. Upload your avatar. Use the built-in Drone Speed slider as usual. To remove the mod, just delete the prefab.
+
+## FarClipPlane
+
+Increases the camera's far clipping plane. Sometimes far objects go missing in VRCLens because of its short far clip plane of `32000`.
+
+This adds a slider that increases the far clipping plane up to `128000`.
+
+This is a local-only toggle.
+
+Test worlds: [Tulip Riverie․․․](https://vrchat.com/home/world/wrld_fcad2657-05c6-4226-ac5d-9cd1688beb74/info), [Cycle of Life](https://vrchat.com/home/world/wrld_cd085851-4baf-4fb8-9a2a-e0e20f686502/info)
+
+<video src="https://github.com/user-attachments/assets/bb43007a-006c-4075-aa23-1c9b4624e407"></video>
+
+Last tested: VRCLens 1.9.2
