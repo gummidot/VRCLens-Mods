@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.2.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.3.0)
 
 ## Requirements
 
@@ -77,3 +77,19 @@ The slider will be in your menu under `VRCLens/Custom/FarClipPlane`.
 <video src="https://github.com/user-attachments/assets/bb43007a-006c-4075-aa23-1c9b4624e407"></video>
 
 Test worlds: [Tulip Riverie․․․](https://vrchat.com/home/world/wrld_fcad2657-05c6-4226-ac5d-9cd1688beb74/info), [Cycle of Life](https://vrchat.com/home/world/wrld_cd085851-4baf-4fb8-9a2a-e0e20f686502/info)
+
+## MaxBlurSize
+
+**Adjusts the maximum blur size for performance**
+
+Adds a local-only slider that lets you adjust the maximum blur size when using DoF, which you can use to improve performance (lower blur size = better performance) or change how the blurring looks.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+The slider will be in your menu under `VRCLens/Custom/MaxBlurSize`.
+
+At 0%, the slider has no effect so it uses whatever blur size you installed VRCLens with. After 0%, the slider increases blur size from `Very Small` up until `Very Large` (see VRCLens installer for the different options).
+
+<video src="https://github.com/user-attachments/assets/d929ee5a-3fec-4bab-8f0e-3e6255932236"></video>
