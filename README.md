@@ -23,6 +23,13 @@ All mods are local-only or take no extra parameter memory.
 > [!WARNING]
 > Mods have only been tested with the versions of VRCLens listed below. They could be broken in very old versions, but should work in most recent versions.
 
+## Mods
+
+- [SmoothRotate](#smoothrotate) - Adds a slider that smooths out camera movement
+- [DroneSpeed](#dronespeed) - Modifies the Drone Speed slider to go slower or faster than default
+- [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
+- [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
+
 ## SmoothRotate
 
 **Adds a slider that smooths out camera movement**
@@ -93,3 +100,15 @@ The slider will be in your menu under `VRCLens/Custom/MaxBlurSize`.
 At 0%, the slider has no effect so it uses whatever blur size you installed VRCLens with. After 0%, the slider increases blur size from `Very Small` up until `Very Large` (see VRCLens installer for the different options).
 
 <video src="https://github.com/user-attachments/assets/d929ee5a-3fec-4bab-8f0e-3e6255932236"></video>
+
+## Other Mods
+
+Related VRCLens mods that aren't included in the package.
+
+### VRCLens as a VRCFury Prefab
+
+VRCLens directly modifies your avatar’s FX controller, menu, and parameters, making it hard to share or have different versions of your avatar with/without VRCLens.
+
+If you convert VRCLens to a VRCFury prefab, VRCLens can be set up once, then drag-n-drop'd to different avatar versions, and then be easily deleted.
+
+This is a manual process - see guide at https://gummidot.notion.site/VRCLens-as-a-VRCFury-Prefab-15623187a377802fbc17d0357e56f8bc
