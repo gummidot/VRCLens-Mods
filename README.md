@@ -112,3 +112,20 @@ VRCLens directly modifies your avatar’s FX controller, menu, and parameters, m
 If you convert VRCLens to a VRCFury prefab, VRCLens can be set up once, then drag-n-drop'd to different avatar versions, and then be easily deleted.
 
 This is a manual process - see guide at https://gummidot.notion.site/VRCLens-as-a-VRCFury-Prefab-15623187a377802fbc17d0357e56f8bc
+
+### Material Optimization
+
+VRCLens adds 6 material slots to your avatar, but 5 of them are for optional features that you can safely remove if you don't use them. Most people could probably remove the first 3 of these. To remove a material, find the mesh in VRCLens, click the 3 dots, and **Remove Component**.
+
+1. `WorldC > CamPickup > CamBase > CamObject > CameraModel > VRCLensDefault`
+   - The default camera model, can be removed since it's just cosmetic. Can also be deleted from the installer.
+2. `WorldC > PivotPickup > PBase > PObject > AnchorModel`
+   - The pivot indicator (green distance marker), can be removed if you don't use the pivot feature.
+3. `WorldC > FocusPickup > FocusObject > FocusP`
+   - The blue pointer on your off-hand finger that lets you move focus in VR, can be removed if you don't use it.
+4. `CamScreen > AuxCopy`
+   - Used for avatar auto-focus, can be removed if you don't use avatar AF at all.
+5. `WorldC > CamPickupAlways > PreviewMesh`
+   - The camera preview on your hand or HUD monitor, can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
+
+![VRCLens materials that can be removed](Doc/VRCLens_material_opti.png)
