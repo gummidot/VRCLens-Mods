@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.3.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.4.0)
 
 ## Requirements
 
@@ -29,6 +29,7 @@ All mods are local-only or take no extra parameter memory.
 - [DroneSpeed](#dronespeed) - Modifies the Drone Speed slider to go slower or faster than default
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
+- [MoveDroneVertical](#movedronevertical) - Adds a puppet menu to move the drone vertically
 - [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 
 ## SmoothRotate
@@ -102,21 +103,35 @@ At 0%, the slider has no effect so it uses whatever blur size you installed VRCL
 
 <video src="https://github.com/user-attachments/assets/d929ee5a-3fec-4bab-8f0e-3e6255932236"></video>
 
+## MoveDroneVertical
+
+**Adds a puppet menu to move the drone vertically**
+
+The usual way to move the drone vertically is to use gestures to switch between forward/back and up/down movement. With a separate puppet menu, you can move the drone vertically more easily, and also move both forward/back and up/down at the same time.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+The puppet menu will be in your menu under `VRCLens/Custom/Move Drone Vertical`.
+
+<video src="https://github.com/user-attachments/assets/172956c2-84d5-4f11-9ad8-f93599b73564"></video>
+
 ## VRCLensOptimizer
 
 **Removes optional components from VRCLens (materials, poly count)**
 
 Remove up to 5 optional components on VRCLens for performance optimization:
 
-- Default camera model (1 material, 466 tris)
+- **Default camera model** (1 material, 466 tris)
    - Can be removed since it's just cosmetic.
-- Pivot indicator (1 material, 194 tris)
+- **Pivot indicator** (1 material, 194 tris)
    - Can be removed if you don't use the pivot feature.
-- Focus pointer for VR only (1 material, 12 tris)
+- **Focus pointer for VR only** (1 material, 12 tris)
    - The blue pointer on your off-hand finger that lets you move focus in VR.
-- Avatar auto-focus (1 material, 12 tris)
+- **Avatar auto-focus** (1 material, 12 tris)
    - Can be removed if you don't use avatar AF.
-- Hand preview / HUD for VR only (1 material, 4 tris)
+- **Hand preview / HUD for VR only** (1 material, 4 tris)
    - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
 
 ### Usage
