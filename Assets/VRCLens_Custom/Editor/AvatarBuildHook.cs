@@ -12,9 +12,11 @@ using VRC.SDKBase.Editor.BuildPipeline;
 [InitializeOnLoad]
 public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
 
-    // This has to be before -1024 when VRCSDK deletes our components,
-    // but the order doesn't really matter. Ideally just run before VRCFury (-10000), Modular Avatar (-25),
-    // d4rkAvatarOptimizer (-15 or -1025), so any future animator changes can be run before animator optimizations.
+    // This has to be before -1024 when VRCSDK deletes our components.
+    // VRCFury runs at -10000, Modular Avatar at -25, d4rkAvatarOptimizer at -15 or -1025.
+    // Really just need to run after VRCFury in case the VRCLens controller is added as
+    // a VRCFury component. Not sure if we can run after Modular, but it's probably rare
+    // that VRCFury would be added as a MA prefab.
     public int callbackOrder => -1025;
 
     public bool OnPreprocessAvatar(GameObject avatarGameObject) {
