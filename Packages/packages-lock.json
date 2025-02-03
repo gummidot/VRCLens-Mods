@@ -1,5 +1,11 @@
 {
   "dependencies": {
+    "com.dreadscripts.controllereditor": {
+      "version": "file:com.dreadscripts.controllereditor",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.burst": {
       "version": "1.8.12",
       "depth": 1,
@@ -196,6 +202,24 @@
       "dependencies": {
         "com.unity.nuget.newtonsoft-json": "3.0.2"
       }
+    },
+    "d4rkpl4y3r.d4rkavataroptimizer": {
+      "version": "file:d4rkpl4y3r.d4rkavataroptimizer",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "io.github.vr-voyage.quick-toggle.vrcfury": {
+      "version": "file:io.github.vr-voyage.quick-toggle.vrcfury",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "vrchat.blackstartx.gesture-manager": {
+      "version": "file:vrchat.blackstartx.gesture-manager",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
