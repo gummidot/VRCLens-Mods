@@ -29,6 +29,7 @@ All mods are local-only or take no extra parameter memory.
 - [DroneSpeed](#dronespeed) - Modifies the Drone Speed slider to go slower or faster than default
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
+- [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 
 ## SmoothRotate
 
@@ -101,6 +102,29 @@ At 0%, the slider has no effect so it uses whatever blur size you installed VRCL
 
 <video src="https://github.com/user-attachments/assets/d929ee5a-3fec-4bab-8f0e-3e6255932236"></video>
 
+## VRCLensOptimizer
+
+**Removes optional components from VRCLens (materials, poly count)**
+
+Remove up to 5 optional components on VRCLens for performance optimization:
+
+- Default camera model (1 material, 466 tris)
+   - Can be removed since it's just cosmetic.
+- Pivot indicator (1 material, 194 tris)
+   - Can be removed if you don't use the pivot feature.
+- Focus pointer for VR only (1 material, 12 tris)
+   - The blue pointer on your off-hand finger that lets you move focus in VR.
+- Avatar auto-focus (1 material, 12 tris)
+   - Can be removed if you don't use avatar AF.
+- Hand preview / HUD for VR only (1 material, 4 tris)
+   - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
+
+### Usage
+
+Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
+
+![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
+
 ## Other Mods
 
 Related VRCLens mods that aren't included in the package.
@@ -112,20 +136,3 @@ VRCLens directly modifies your avatar’s FX controller, menu, and parameters, m
 If you convert VRCLens to a VRCFury prefab, VRCLens can be set up once, then drag-n-drop'd to different avatar versions, and then be easily deleted.
 
 This is a manual process - see guide at https://gummidot.notion.site/VRCLens-as-a-VRCFury-Prefab-15623187a377802fbc17d0357e56f8bc
-
-### Material Optimization
-
-VRCLens adds 6 material slots to your avatar, but 5 of them are for optional features that you can safely remove if you don't use them. Most people could probably remove the first 3 of these. To remove a material, find the mesh in VRCLens, click the 3 dots, and **Remove Component**.
-
-1. `WorldC > CamPickup > CamBase > CamObject > CameraModel > VRCLensDefault`
-   - The default camera model, can be removed since it's just cosmetic. Can also be deleted from the installer.
-2. `WorldC > PivotPickup > PBase > PObject > AnchorModel`
-   - The pivot indicator (green distance marker), can be removed if you don't use the pivot feature.
-3. `WorldC > FocusPickup > FocusObject > FocusP`
-   - The blue pointer on your off-hand finger that lets you move focus in VR, can be removed if you don't use it.
-4. `CamScreen > AuxCopy`
-   - Used for avatar auto-focus, can be removed if you don't use avatar AF at all.
-5. `WorldC > CamPickupAlways > PreviewMesh`
-   - The camera preview on your hand or HUD monitor, can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
-
-![VRCLens materials that can be removed](Doc/VRCLens_material_opti.png)
