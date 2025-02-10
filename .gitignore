@@ -73,3 +73,6 @@ crashlytics-build.properties
 
 # VRCLens
 /Assets/Hirabiki*
+
+# Other temp files
+/Assets/VRCLens_Custom/MoveDroneVertical/Temp*

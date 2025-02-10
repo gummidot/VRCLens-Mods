@@ -10,13 +10,14 @@ public class VRCLensDroneVModifier
 {
     public static string DroneMoveLayer = "vCNP_Drone 212-214 i234";
     public static string DroneMoveLayerMoveHState = "MoveH";
+    public static string DroneMoveLayerMoveVState = "MoveV";
     public static string DroneVParameter = "VRCLDroneV";
+    public static string AnimMovFastUp = "MovFastUp";
+    public static string AnimMovFastDown = "MovFastDown";
+    public static string AnimMovNeutral = "MovNeutral";
 
     public static string DroneVBaseDir = "Assets/VRCLens_Custom/MoveDroneVertical";
     public static string DroneVTempDir = $"{DroneVBaseDir}/Temp";
-    public static string AnimMovFastUpPath = $"{DroneVBaseDir}/Anim/MovFastUp.anim";
-    public static string AnimMovFastDownPath = $"{DroneVBaseDir}/Anim/MovFastDown.anim";
-    public static string AnimMovNeutralPath = $"{DroneVBaseDir}/Anim/MovNeutral.anim";
 
     // Modifies the VRCLens FX controller to include a VRCLDroneV parameter and vertical movement BlendTrees
     // in the Drone Move layer. Returns the cloned and modified controller. Returns null if the controller
@@ -82,9 +83,54 @@ public class VRCLensDroneVModifier
             return null;
         }
 
+        // Find the MovNeutral, MovFastUp, and MovFastDown animations in the MoveV blendtree.
+        // These will be reused later in the MoveH blendtree, rather than swapping in new animations,
+        // as the original animations may have been modified, e.g., in a VRCFury processed controller
+        // where animation paths AND names have been rewritten.
+        Motion movNeutral = null;
+        Motion movFastUp = null;
+        Motion movFastDown = null;
+
+        foreach (ChildAnimatorState childState in droneMoveLayer.stateMachine.states)
+        {
+            AnimatorState state = childState.state;
+            if (state.name == DroneMoveLayerMoveVState)
+            {
+                Debug.Log($"[VRCLensDroneVModifier] Found state '{DroneMoveLayerMoveVState}' in layer '{DroneMoveLayer}'");
+                if (state.motion is BlendTree blendTree)
+                {
+                    Debug.Log($"[VRCLensDroneVModifier] Found BlendTree '{blendTree.name}' in state '{DroneMoveLayerMoveVState}'");
+                    foreach (var child in blendTree.children)
+                    {
+                        // Use position to identify the animation, as the name will have been rewritten by VRCFury
+                        if (child.position == new Vector2(0, 0))
+                        {
+                            movNeutral = child.motion;
+                            Debug.Log($"[VRCLensDroneVModifier] Found animation for MovNeutral: {child.motion.name}");
+                        }
+                        else if (child.position == new Vector2(0, 1))
+                        {
+                            movFastUp = child.motion;
+                            Debug.Log($"[VRCLensDroneVModifier] Found animation for MovFastUp: {child.motion.name}");
+                        }
+                        else if (child.position == new Vector2(0, -1))
+                        {
+                            movFastDown = child.motion;
+                            Debug.Log($"[VRCLensDroneVModifier] Found animation for MovFastDown: {child.motion.name}");
+                        }
+                    }
+                }
+            }
+        }
+
+        if (movFastUp == null || movNeutral == null || movFastDown == null)
+        {
+            Debug.LogError("[VRCLensDroneVModifier] One or more animations (MovNeutral, MovFastUp, MovFastDown) could not be found.");
+            return null;
+        }
+
         // Find and modify the MoveH blend tree
-        AnimatorStateMachine stateMachine = droneMoveLayer.stateMachine;
-        foreach (ChildAnimatorState childState in stateMachine.states)
+        foreach (ChildAnimatorState childState in droneMoveLayer.stateMachine.states)
         {
             AnimatorState state = childState.state;
             if (state.name == DroneMoveLayerMoveHState)
@@ -93,7 +139,7 @@ public class VRCLensDroneVModifier
                 if (state.motion is BlendTree blendTree)
                 {
                     Debug.Log($"[VRCLensDroneVModifier] Found BlendTree '{blendTree.name}' in layer '{DroneMoveLayer}'");
-                    if (ModifyBlendTreeMoveH(blendTree))
+                    if (ModifyBlendTreeMoveH(blendTree, movNeutral, movFastUp, movFastDown))
                     {
                         // Save the changes to the AssetDatabase
                         AssetDatabase.SaveAssets();
@@ -134,18 +180,8 @@ public class VRCLensDroneVModifier
         return null;
     }
 
-    private static bool ModifyBlendTreeMoveH(BlendTree blendTree)
+    private static bool ModifyBlendTreeMoveH(BlendTree blendTree, Motion movNeutral, Motion movFastUp, Motion movFastDown)
     {
-        Motion movFastUp = AssetDatabase.LoadAssetAtPath<Motion>(AnimMovFastUpPath);
-        Motion movNeutral = AssetDatabase.LoadAssetAtPath<Motion>(AnimMovNeutralPath);
-        Motion movFastDown = AssetDatabase.LoadAssetAtPath<Motion>(AnimMovFastDownPath);
-
-        if (movFastUp == null || movNeutral == null || movFastDown == null)
-        {
-            Debug.LogError("[VRCLensDroneVModifier] One or more motion assets could not be found.");
-            return false;
-        }
-
         // Create vertical movement BlendTrees for each direction with manual thresholds
         var directionPositions = new Dictionary<string, Vector2>
         {
