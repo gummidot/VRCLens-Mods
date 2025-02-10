@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.4.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.5.0)
 
 ## Requirements
 
@@ -31,6 +31,7 @@ All mods are local-only or take no extra parameter memory.
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
 - [MoveDroneVertical](#movedronevertical) - Adds a puppet menu to move the drone vertically
 - [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
+- [FixAvatarDrop](#fixavatardrop) - Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above
 
 ## SmoothRotate
 
@@ -134,11 +135,25 @@ Remove up to 5 optional components on VRCLens for performance optimization:
 - **Hand preview / HUD for VR only** (1 material, 4 tris)
    - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
 
+Last tested: VRCLens 1.9.2
+
 ### Usage
 
 Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
 
 ![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
+
+## FixAvatarDrop
+
+**Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above**
+
+Avatar Drop is bugged in VRCLens 1.9.1 and above (as of VRCLens 1.9.2). This prefab fixes it automatically.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Use the **Advanced > Extra > Avatar-Drop** toggle as usual. It should now work.
 
 ## Other Mods
 

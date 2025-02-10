@@ -1,6 +1,7 @@
 
 #if UNITY_EDITOR
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEditor;
 using VRC.SDKBase.Editor.BuildPipeline;
@@ -19,14 +20,12 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
     // that VRCFury would be added as a MA prefab.
     public int callbackOrder => -1025;
 
+    public static string TempDir = "Assets/VRCLens_Custom/Temp";
+
     public bool OnPreprocessAvatar(GameObject avatarGameObject) {
+        Debug.Log($"[VRCLensCustom] Running OnPreprocessAvatar for: {avatarGameObject.name}");
         // Optimzers
         var optimizers = avatarGameObject.GetComponentsInChildren<VRCLensOptimizer>();
-        if (optimizers == null || optimizers.Length == 0)
-        {
-            return true;
-        }
-
         try
         {
             foreach (var optimizer in optimizers)
@@ -42,24 +41,41 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
 
         // Modifiers
         var modifiers = avatarGameObject.GetComponentsInChildren<VRCLensModifier>();
-        if (modifiers == null || modifiers.Length == 0)
+        if (modifiers.Length > 0)
         {
-            return true;
-        }
-
-        try
-        {
-            foreach (var modifier in modifiers)
+            // Clear and recreate temp dir
+            if (AssetDatabase.IsValidFolder(TempDir))
             {
-                Debug.Log($"[VRCLensCustom] Running modifier from '{modifier.gameObject.name}' on avatar: {avatarGameObject.name}");
-                modifier.Modify();
+                Debug.Log($"[VRCLensCustom] Deleting temp directory: {TempDir}");
+                AssetDatabase.DeleteAsset(TempDir);
+            }
+            string parentDir = GetDirectoryName(TempDir);
+            string newFolderName = Path.GetFileName(TempDir);
+            AssetDatabase.CreateFolder(parentDir, newFolderName);
+            Debug.Log($"[VRCLensCustom] Created temp directory: {TempDir}");
+
+            try
+            {
+                foreach (var modifier in modifiers)
+                {
+                    Debug.Log($"[VRCLensCustom] Running modifier from '{modifier.gameObject.name}' on avatar: {avatarGameObject.name}");
+                    modifier.Modify(TempDir);
+                }
+            }
+            catch (Exception e) {
+                Debug.LogError(e);
+                return false;
             }
         }
-        catch (Exception e) {
-            Debug.LogError(e);
-            return false;
-        }
+
         return true;
+    }
+
+    // AssetDatabase suggests it doesn't support backslashes but doesn't explicitly say so.
+    // Backslashes do seem to work as of Unity 2022, but just to be safe, convert all
+    // backslashes to forward slashes.
+    public static string GetDirectoryName(string path) {
+        return Path.GetDirectoryName(path)?.Replace("\\", "/");
     }
 }
 #endif

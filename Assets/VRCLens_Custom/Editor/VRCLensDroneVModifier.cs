@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -16,13 +15,10 @@ public class VRCLensDroneVModifier
     public static string AnimMovFastDown = "MovFastDown";
     public static string AnimMovNeutral = "MovNeutral";
 
-    public static string DroneVBaseDir = "Assets/VRCLens_Custom/MoveDroneVertical";
-    public static string DroneVTempDir = $"{DroneVBaseDir}/Temp";
-
     // Modifies the VRCLens FX controller to include a VRCLDroneV parameter and vertical movement BlendTrees
     // in the Drone Move layer. Returns the cloned and modified controller. Returns null if the controller
     // was already modified manually, or if the controller could not be found or modified.
-    public static AnimatorController CopyAndModifyController(AnimatorController controller)
+    public static AnimatorController CopyAndModifyController(AnimatorController controller, string tempDir)
     {
         string controllerPath = AssetDatabase.GetAssetPath(controller);
 
@@ -41,21 +37,10 @@ public class VRCLensDroneVModifier
             return null;
         }
 
-        // Clear and recreate temp dir
-        if (AssetDatabase.IsValidFolder(DroneVTempDir))
-        {
-            Debug.Log($"[VRCLensDroneVModifier] Deleting temp directory: {DroneVTempDir}");
-            AssetDatabase.DeleteAsset(DroneVTempDir);
-        }
-        string parentDir = GetDirectoryName(DroneVTempDir);
-        string newFolderName = Path.GetFileName(DroneVTempDir);
-        AssetDatabase.CreateFolder(parentDir, newFolderName);
-        Debug.Log($"[VRCLensDroneVModifier] Created temp directory: {DroneVTempDir}");
-
         // Duplicate the controller so we don't modify the original.
         // Use GUID of the original controller for a unique filename within the temp dir.
         string controllerGUID = AssetDatabase.AssetPathToGUID(controllerPath);
-        string modifiedControllerPath = $"{DroneVTempDir}/{controller.name}_{controllerGUID}_Modified.controller";
+        string modifiedControllerPath = GenerateModifiedControllerPath(tempDir, controller.name, controllerGUID);
 
         if (!AssetDatabase.CopyAsset(controllerPath, modifiedControllerPath))
         {
@@ -163,7 +148,7 @@ public class VRCLensDroneVModifier
         return FindLayer(controller, DroneMoveLayer) != null;
     }
 
-    private static AnimatorControllerLayer FindLayer(AnimatorController controller, string layerName)
+    public static AnimatorControllerLayer FindLayer(AnimatorController controller, string layerName)
     {
         foreach (AnimatorControllerLayer layer in controller.layers)
         {
@@ -216,11 +201,15 @@ public class VRCLensDroneVModifier
         return true;
     }
 
-    // AssetDatabase suggests it doesn't support backslashes but doesn't explicitly say so.
-    // Backslashes do seem to work as of Unity 2022, but just to be safe, convert all
-    // backslashes to forward slashes.
-    public static string GetDirectoryName(string path) {
-        return Path.GetDirectoryName(path)?.Replace("\\", "/");
+    public static string GenerateModifiedControllerPath(string baseDir, string controllerName, string controllerGUID)
+    {
+        // Shorten the controller name to 32 characters if necessary
+        if (controllerName.Length > 32)
+        {
+            controllerName = controllerName.Substring(0, 32);
+        }
+
+        return $"{baseDir}/{controllerName}_{controllerGUID}_Modified.controller";
     }
 }
 #endif

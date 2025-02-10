@@ -9,6 +9,7 @@ public class VRCLensModifierEditor : Editor
     private VRCLensModifier modifier;
 
     private SerializedProperty addDroneVProp;
+    private SerializedProperty fixAvatarDropProp;
 
     private void OnEnable()
     {
@@ -16,6 +17,7 @@ public class VRCLensModifierEditor : Editor
         
         // Link the SerializedProperties to the fields in the target object
         addDroneVProp = serializedObject.FindProperty(nameof(modifier.addDroneV));
+        fixAvatarDropProp = serializedObject.FindProperty(nameof(modifier.fixAvatarDrop));
     }
 
     public override void OnInspectorGUI()
@@ -41,6 +43,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for DroneV
         EditorGUILayout.BeginHorizontal();
         addDroneVProp.boolValue = EditorGUILayout.ToggleLeft("Drone vertical movement", addDroneVProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for FixAvatarDrop
+        EditorGUILayout.BeginHorizontal();
+        fixAvatarDropProp.boolValue = EditorGUILayout.ToggleLeft("Fix Avatar Drop (bugged in VRCLens 1.9.1 and later)", fixAvatarDropProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         // Apply changes to the serialized object

@@ -12,8 +12,9 @@ using VRC.SDKBase.Editor.BuildPipeline;
 public class VRCLensModifier : MonoBehaviour, IEditorOnly
 {
     public bool addDroneV;
+    public bool fixAvatarDrop;
 
-    public void Modify()
+    public void Modify(string tempDir)
     {
         Debug.Log($"[VRCLensModifier] Running Modify() for: {gameObject.name}");
 
@@ -21,11 +22,6 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
         if (avatarDescriptor == null)
         {
             Debug.LogWarning($"[VRCLensModifier] Avatar not found. This script must be placed on an avatar with VRCLens.");
-            return;
-        }
-
-        if (!addDroneV)
-        {
             return;
         }
 
@@ -38,18 +34,34 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
         String path = AssetDatabase.GetAssetPath(controller);
         Debug.Log($"[VRCLensModifier] Found VRCLens FX controller '{controller.name}' at path: {path}");
 
-        AnimatorController modifiedController = VRCLensDroneVModifier.CopyAndModifyController(controller);
-        if (modifiedController == null)
+        AnimatorController newController = controller;
+
+        if (addDroneV)
         {
-            Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens FX controller for DroneV: {controller.name}");
+            newController = VRCLensDroneVModifier.CopyAndModifyController(newController, tempDir);
+            if (newController == null)
+            {
+                Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens FX controller for DroneV: {controller.name}");
+                return;
+            }
+        }
+
+        if (fixAvatarDrop)
+        {
+            newController = VRCLensFixAvatarDropModifier.CopyAndModifyController(newController, tempDir);
+            if (newController == null)
+            {
+                Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens FX controller for AvatarDrop: {controller.name}");
+                return;
+            }
+        }
+
+        if (!ReplaceControllerInAvatar(avatarDescriptor, controller, newController))
+        {
+            Debug.LogWarning($"[VRCLensModifier] Could not replace VRCLens FX controller with: {newController.name}");
             return;
         }
-        if (!ReplaceControllerInAvatar(avatarDescriptor, controller, modifiedController))
-        {
-            Debug.LogWarning($"[VRCLensModifier] Could not replace VRCLens FX controller with: {modifiedController.name}");
-            return;
-        }
-        Debug.Log($"[VRCLensModifier] Successfully replaced VRCLens FX controller with: {modifiedController.name}");
+        Debug.Log($"[VRCLensModifier] Successfully replaced VRCLens FX controller with: {newController.name}");
     }
 
     public AnimatorController FindVRCLensController(VRCAvatarDescriptor avatarDescriptor)
@@ -94,4 +106,5 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
         return false;
     }
 }
+
 #endif
