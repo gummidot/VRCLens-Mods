@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using VRC.SDK3.Avatars.Components;
 
 public class VRCLens
 {
@@ -65,7 +63,7 @@ public class VRCLens
     {
         return transform.Find(Paths.FocusP);
     }
-    
+
     public Transform GetPivotAnchorModel()
     {
         return transform.Find(Paths.PivotAnchorModel);

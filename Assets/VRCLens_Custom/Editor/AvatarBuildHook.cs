@@ -11,7 +11,8 @@ using VRC.SDKBase.Editor.BuildPipeline;
 // Mostly adapted from https://github.com/d4rkc0d3r/d4rkAvatarOptimizer/blob/f1a85c9026cf62f0ab37bf6c385891a8a34680e2/Editor/AvatarBuildHook.cs
 
 [InitializeOnLoad]
-public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
+public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback
+{
 
     // This has to be before -1024 when VRCSDK deletes our components.
     // VRCFury runs at -10000, Modular Avatar at -25, d4rkAvatarOptimizer at -15 or -1025.
@@ -22,7 +23,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
 
     public static string TempDir = "Assets/VRCLens_Custom/Temp";
 
-    public bool OnPreprocessAvatar(GameObject avatarGameObject) {
+    public bool OnPreprocessAvatar(GameObject avatarGameObject)
+    {
         Debug.Log($"[VRCLensCustom] Running OnPreprocessAvatar for: {avatarGameObject.name}");
         // Optimzers
         var optimizers = avatarGameObject.GetComponentsInChildren<VRCLensOptimizer>();
@@ -34,7 +36,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
                 optimizer.Optimize();
             }
         }
-        catch (Exception e) {
+        catch (Exception e)
+        {
             Debug.LogError(e);
             return false;
         }
@@ -62,7 +65,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
                     modifier.Modify(TempDir);
                 }
             }
-            catch (Exception e) {
+            catch (Exception e)
+            {
                 Debug.LogError(e);
                 return false;
             }
@@ -74,7 +78,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback {
     // AssetDatabase suggests it doesn't support backslashes but doesn't explicitly say so.
     // Backslashes do seem to work as of Unity 2022, but just to be safe, convert all
     // backslashes to forward slashes.
-    public static string GetDirectoryName(string path) {
+    public static string GetDirectoryName(string path)
+    {
         return Path.GetDirectoryName(path)?.Replace("\\", "/");
     }
 }

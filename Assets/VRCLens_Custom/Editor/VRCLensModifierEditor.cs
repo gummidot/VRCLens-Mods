@@ -14,7 +14,7 @@ public class VRCLensModifierEditor : Editor
     private void OnEnable()
     {
         modifier = (VRCLensModifier)target;
-        
+
         // Link the SerializedProperties to the fields in the target object
         addDroneVProp = serializedObject.FindProperty(nameof(modifier.addDroneV));
         fixAvatarDropProp = serializedObject.FindProperty(nameof(modifier.fixAvatarDrop));

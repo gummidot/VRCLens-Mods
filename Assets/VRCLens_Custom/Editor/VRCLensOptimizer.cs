@@ -1,11 +1,8 @@
 #if UNITY_EDITOR
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase;
-using VRC.SDKBase.Editor.BuildPipeline;
 
 [AddComponentMenu("Scripts/VRCLens Optimizer (VRCLens Custom)")]
 public class VRCLensOptimizer : MonoBehaviour, IEditorOnly

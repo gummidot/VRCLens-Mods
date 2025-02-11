@@ -16,7 +16,7 @@ public class VRCLensOptimizerEditor : Editor
     private void OnEnable()
     {
         optimizer = (VRCLensOptimizer)target;
-        
+
         // Link the SerializedProperties to the fields in the target object
         removeMeshCameraModelProp = serializedObject.FindProperty(nameof(optimizer.removeMeshCameraModel));
         removeMeshPivotAnchorModelProp = serializedObject.FindProperty(nameof(optimizer.removeMeshPivotAnchorModel));

@@ -1,12 +1,10 @@
 #if UNITY_EDITOR
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
 using VRC.SDK3.Avatars.Components;
 using VRC.SDKBase;
-using VRC.SDKBase.Editor.BuildPipeline;
 
 [AddComponentMenu("Scripts/VRCLens Modifier (VRCLens Custom)")]
 public class VRCLensModifier : MonoBehaviour, IEditorOnly
