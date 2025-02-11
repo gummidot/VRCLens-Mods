@@ -10,6 +10,7 @@ public class VRCLensFixAvatarDropModifier
 {
     public static string DropLayer = "vCNT_Drop 250-252 [1B] i1,t23";
     public static string AvatarFixState = "AvatarFix";
+    public static string PickupState = "Pickup [r]";
 
     // Modifies the VRCLens FX controller to fix the AvatarDrop animation bug in VRCLens 1.9.1,
     // still present as of VRCLens 1.9.2.
@@ -53,7 +54,7 @@ public class VRCLensFixAvatarDropModifier
             return null;
         }
 
-        // Find the AvatarFix animation clip (FixEnable)
+        // Find the FixEnable animation clip (on AvatarFix and AvatarFixed)
         Motion avatarFix = null;
 
         foreach (ChildAnimatorState childState in dropLayer.stateMachine.states)
@@ -72,6 +73,28 @@ public class VRCLensFixAvatarDropModifier
         if (avatarFix == null)
         {
             Debug.LogError($"[VRCLensFixAvatarDropModifier] Could not find motion '{AvatarFixState}'.");
+            return null;
+        }
+
+        // Find the DropFixDisable animation clip (on Pickup and OnHand)
+        Motion pickup = null;
+
+        foreach (ChildAnimatorState childState in dropLayer.stateMachine.states)
+        {
+            AnimatorState state = childState.state;
+            if (state.motion != null)
+            {
+                if (state.name == PickupState)
+                {
+                    pickup = state.motion;
+                    Debug.Log($"[VRCLensFixAvatarDropModifier] Found motion '{PickupState}': {state.motion.name}");
+                }
+            }
+        }
+
+        if (pickup == null)
+        {
+            Debug.LogError($"[VRCLensFixAvatarDropModifier] Could not find motion '{PickupState}'.");
             return null;
         }
 
@@ -102,20 +125,35 @@ public class VRCLensFixAvatarDropModifier
         }
 
         // Edit the AvatarFix motion to disable the Parent Constraint on the WorldC object.
-        // Other clips are fine. DropFixDisable already sets the Parent Constraint weight to 1.
+        // DropFixDisable uses Parent Constraint weight to re-enable the constraint, but animating
+        // weights of VRC Constraints does not appear to work. Use Active or Enabled instead.
         AnimationClip modifiedAvatarFixClip = new AnimationClip();
         EditorUtility.CopySerialized(avatarFixClip, modifiedAvatarFixClip);
 
         // Frames 0 and 3 to match the rest of the animation clip
         AnimationCurve curve = AnimationCurve.Constant(0, 0.05f, 0);
-        AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(ParentConstraint), "m_Weight"), curve);
+        AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(ParentConstraint), "m_Active"), curve);
 
         // VRCFury auto-converts ParentConstraint to VRCParentConstraint, so we need to handle that too.
 #if VRCSDK_HAS_VRCCONSTRAINTS
-        AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(VRCParentConstraint), "m_Weight"), curve);
+        AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(VRCParentConstraint), "IsActive"), curve);
 #endif
 
-        // Save the modified clip to the AssetDatabase
+        // Edit the Pickup motion to enable the Parent Constraint on the WorldC object.
+        // DropFixDisable uses Parent Constraint weight to re-enable the constraint, which doesn't work
+        // so we need to animate Active instead.
+        AnimationClip modifiedPickupClip = new AnimationClip();
+        EditorUtility.CopySerialized(pickup as AnimationClip, modifiedPickupClip);
+
+        // Frames 0 and 3 to match the rest of the animation clip
+        AnimationCurve pickupCurve = AnimationCurve.Constant(0, 0.05f, 1);
+        AnimationUtility.SetEditorCurve(modifiedPickupClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(ParentConstraint), "m_Active"), pickupCurve);
+
+#if VRCSDK_HAS_VRCCONSTRAINTS
+        AnimationUtility.SetEditorCurve(modifiedPickupClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(VRCParentConstraint), "IsActive"), pickupCurve);
+#endif
+
+        // Save the modified clips to the AssetDatabase
         // Separate file instead of AddObjectToAsset for easier debugging, really
         string modifiedAvatarFixClipPath = $"{tempDir}/FixEnable_FixedForVRCLens1.9.1.anim";
         AssetDatabase.CreateAsset(modifiedAvatarFixClip, modifiedAvatarFixClipPath);
@@ -130,6 +168,23 @@ public class VRCLensFixAvatarDropModifier
             {
                 state.motion = modifiedAvatarFixClip;
                 Debug.Log($"[VRCLensFixAvatarDropModifier] Replaced original AvatarFix motion with modified one in state: {state.name}");
+            }
+        }
+
+        // Save the modified Pickup clip to the AssetDatabase
+        string modifiedPickupClipPath = $"{tempDir}/DropFixDisable_FixedForVRCLens1.9.1.anim";
+        AssetDatabase.CreateAsset(modifiedPickupClip, modifiedPickupClipPath);
+        Debug.Log($"[VRCLensFixAvatarDropModifier] Created modified Pickup clip at path: {modifiedPickupClipPath}");
+
+        // Replace the original Pickup motion with the modified one.
+        // There's also the OnHand state that uses the same motion, so check all states.
+        foreach (ChildAnimatorState childState in dropLayer.stateMachine.states)
+        {
+            AnimatorState state = childState.state;
+            if (state.motion == pickup)
+            {
+                state.motion = modifiedPickupClip;
+                Debug.Log($"[VRCLensFixAvatarDropModifier] Replaced original Pickup motion with modified one in state: {state.name}");
             }
         }
 
