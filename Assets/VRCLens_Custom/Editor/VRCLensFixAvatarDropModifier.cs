@@ -3,12 +3,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEditor.Animations;
 using UnityEngine.Animations;
-
+#if VRCSDK_HAS_VRCCONSTRAINTS
+using VRC.SDK3.Dynamics.Constraint.Components;
+#endif
 public class VRCLensFixAvatarDropModifier
 {
     public static string DropLayer = "vCNT_Drop 250-252 [1B] i1,t23";
     public static string AvatarFixState = "AvatarFix";
-    public static string WorldCPath = "WorldC";
 
     // Modifies the VRCLens FX controller to fix the AvatarDrop animation bug in VRCLens 1.9.1,
     // still present as of VRCLens 1.9.2.
@@ -85,10 +86,10 @@ public class VRCLensFixAvatarDropModifier
             EditorCurveBinding[] bindings = AnimationUtility.GetCurveBindings(avatarFixClip);
             foreach (var binding in bindings)
             {
-                if (binding.path.Contains(WorldCPath))
+                if (binding.path.Contains(VRCLens.Paths.WorldC))
                 {
-                    worldCPath = binding.path.Substring(0, binding.path.IndexOf(WorldCPath) + WorldCPath.Length);
-                    Debug.Log($"[VRCLensFixAvatarDropModifier] Found path to {WorldCPath}: {worldCPath}");
+                    worldCPath = binding.path.Substring(0, binding.path.IndexOf(VRCLens.Paths.WorldC) + VRCLens.Paths.WorldC.Length);
+                    Debug.Log($"[VRCLensFixAvatarDropModifier] Found path to {VRCLens.Paths.WorldC}: {worldCPath}");
                     break;
                 }
             }
@@ -96,7 +97,7 @@ public class VRCLensFixAvatarDropModifier
 
         if (worldCPath == null)
         {
-            Debug.LogError($"[VRCLensFixAvatarDropModifier] Path to {WorldCPath} could not be found in the AvatarFix motion.");
+            Debug.LogError($"[VRCLensFixAvatarDropModifier] Path to {VRCLens.Paths.WorldC} could not be found in the AvatarFix motion.");
             return null;
         }
 
@@ -109,7 +110,13 @@ public class VRCLensFixAvatarDropModifier
         AnimationCurve curve = AnimationCurve.Constant(0, 0.05f, 0);
         AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(ParentConstraint), "m_Weight"), curve);
 
+        // VRCFury auto-converts ParentConstraint to VRCParentConstraint, so we need to handle that too.
+#if VRCSDK_HAS_VRCCONSTRAINTS
+        AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(VRCParentConstraint), "m_Weight"), curve);
+#endif
+
         // Save the modified clip to the AssetDatabase
+        // Separate file instead of AddObjectToAsset for easier debugging, really
         string modifiedAvatarFixClipPath = $"{tempDir}/FixEnable_FixedForVRCLens1.9.1.anim";
         AssetDatabase.CreateAsset(modifiedAvatarFixClip, modifiedAvatarFixClipPath);
         Debug.Log($"[VRCLensFixAvatarDropModifier] Created modified AvatarFix clip at path: {modifiedAvatarFixClipPath}");

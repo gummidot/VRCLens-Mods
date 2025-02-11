@@ -19,6 +19,7 @@ public class VRCLens
         public const string PreviewMesh = "WorldC/CamPickupAlways/PreviewBase/PreviewMesh";
         public const string FocusP = "WorldC/FocusPickup/FocusObject/FocusP";
         public const string PivotAnchorModel = "WorldC/PivotPickup/PBase/PObject/PDroneBase/AnchorModel";
+        public const string WorldC = "WorldC";
     }
 
     public static Transform FindVRCLens(Transform parent)

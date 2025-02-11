@@ -7,14 +7,19 @@
         "VRC.SDKBase",
         "VRC.SDKBase.Editor"
     ],
-    "includePlatforms": [
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.vrchat.base",
+            "expression": "3.7.0",
+            "define": "VRCSDK_HAS_VRCCONSTRAINTS"
+        }
+    ],
     "noEngineReferences": false
 }
