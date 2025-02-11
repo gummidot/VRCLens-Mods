@@ -108,7 +108,7 @@ public class VRCLensFixAvatarDropModifier
         EditorUtility.CopySerialized(avatarFixClip, modifiedAvatarFixClip);
 
         // Frames 0 and 3 to match the rest of the animation clip
-        AnimationCurve curve = AnimationCurve.Constant(0, 0.03f, 0);
+        AnimationCurve curve = AnimationCurve.Constant(0, 0.05f, 0);
         AnimationUtility.SetEditorCurve(modifiedAvatarFixClip, EditorCurveBinding.FloatCurve(worldCPath, typeof(ParentConstraint), "m_Weight"), curve);
 
         // Save the modified clip to the AssetDatabase
