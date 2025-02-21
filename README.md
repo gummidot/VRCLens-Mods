@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.5.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.6.0)
 
 ## Requirements
 
@@ -27,11 +27,14 @@ All mods are local-only or take no extra parameter memory.
 
 - [SmoothRotate](#smoothrotate) - Adds a slider that smooths out camera movement
 - [DroneSpeed](#dronespeed) - Modifies the Drone Speed slider to go slower or faster than default
+- [MoveDroneVertical](#movedronevertical) - Adds a puppet menu to move the drone vertically
+- [SmoothZoom](#smoothzoom) - Adds slight smoothing to the Zoom slider
+- [ManualFocus (9m)](#manualfocus-9m) - Limits the Manual Focus slider to 9m
+- [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
-- [MoveDroneVertical](#movedronevertical) - Adds a puppet menu to move the drone vertically
-- [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 - [FixAvatarDrop](#fixavatardrop) - Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above
+- [AvatarOffset](#avataroffset) - Offsets the camera from your avatar while keeping hand control
 
 ## SmoothRotate
 
@@ -71,6 +74,71 @@ Use the built-in Drone Speed slider as usual.
 
 <video src="https://github.com/user-attachments/assets/672eee73-1523-4737-9267-767bda7d8efb"></video>
 
+## MoveDroneVertical
+
+**Adds a puppet menu to move the drone vertically**
+
+The usual way to move the drone vertically is to use gestures to switch between forward/back and up/down movement. With a separate puppet menu, you can move the drone vertically more easily, and also move both forward/back and up/down at the same time.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+The puppet menu will be in your menu under `VRCLens/Custom/Move Drone Vertical`.
+
+<video src="https://github.com/user-attachments/assets/172956c2-84d5-4f11-9ad8-f93599b73564"></video>
+
+## SmoothZoom
+
+**Adds slight smoothing to the Zoom slider**
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Use the built-in Zoom slider as usual.
+
+<video src="https://github.com/user-attachments/assets/b9be523d-e54e-4b8c-bd44-dd43ec843ce1"></video>
+
+## ManualFocus (9m)
+
+**Limits the Manual Focus slider to 9m**
+
+Limits the Manual Focus slider to a maximum of 9m, or 50% in the original slider. Also adds a very small amount of smoothing. Use this for finer control over focus at short distances.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Use the built-in Manual Focus slider as usual.
+
+<video src="https://github.com/user-attachments/assets/9f8496e8-8a36-44f0-b450-0b3474b765f4"></video>
+
+## VRCLensOptimizer
+
+**Removes optional components from VRCLens (materials, poly count)**
+
+Remove up to 5 optional components on VRCLens for performance optimization:
+
+- **Default camera model** (1 material, 466 tris)
+   - Can be removed since it's just cosmetic.
+- **Pivot indicator** (1 material, 194 tris)
+   - Can be removed if you don't use the pivot feature.
+- **Focus pointer for VR only** (1 material, 12 tris)
+   - The blue pointer on your off-hand finger that lets you move focus in VR.
+- **Avatar auto-focus** (1 material, 12 tris)
+   - Can be removed if you don't use avatar AF.
+- **Hand preview / HUD for VR only** (1 material, 4 tris)
+   - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
+
+![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
+
 ## FarClipPlane
 
 **Increases the camera's far clipping plane**
@@ -104,45 +172,6 @@ At 0%, the slider has no effect so it uses whatever blur size you installed VRCL
 
 <video src="https://github.com/user-attachments/assets/d929ee5a-3fec-4bab-8f0e-3e6255932236"></video>
 
-## MoveDroneVertical
-
-**Adds a puppet menu to move the drone vertically**
-
-The usual way to move the drone vertically is to use gestures to switch between forward/back and up/down movement. With a separate puppet menu, you can move the drone vertically more easily, and also move both forward/back and up/down at the same time.
-
-Last tested: VRCLens 1.9.2
-
-### Usage
-
-The puppet menu will be in your menu under `VRCLens/Custom/Move Drone Vertical`.
-
-<video src="https://github.com/user-attachments/assets/172956c2-84d5-4f11-9ad8-f93599b73564"></video>
-
-## VRCLensOptimizer
-
-**Removes optional components from VRCLens (materials, poly count)**
-
-Remove up to 5 optional components on VRCLens for performance optimization:
-
-- **Default camera model** (1 material, 466 tris)
-   - Can be removed since it's just cosmetic.
-- **Pivot indicator** (1 material, 194 tris)
-   - Can be removed if you don't use the pivot feature.
-- **Focus pointer for VR only** (1 material, 12 tris)
-   - The blue pointer on your off-hand finger that lets you move focus in VR.
-- **Avatar auto-focus** (1 material, 12 tris)
-   - Can be removed if you don't use avatar AF.
-- **Hand preview / HUD for VR only** (1 material, 4 tris)
-   - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
-
-Last tested: VRCLens 1.9.2
-
-### Usage
-
-Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
-
-![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
-
 ## FixAvatarDrop
 
 **Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above**
@@ -154,6 +183,24 @@ Last tested: VRCLens 1.9.2
 ### Usage
 
 Use the **Advanced > Extra > Avatar-Drop** toggle as usual. It should now work.
+
+## AvatarOffset
+
+**Offsets the camera from your avatar while keeping hand control**
+
+Offsets the camera from your avatar like Avatar Drop, except you can still move the camera with your hand. As if you had a mirrored clone that was further, taller, or shorter than you actually are.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+There will be 3 toggles in your menu under `VRCLens/Custom/AvatarOffset`:
+
+- **AvatarOffset** enables the avatar offset. Once toggled, use the Drone to move the camera away from you.
+- **Rotate With Avatar** locks the camera's rotation with your avatar rotation. By default, the camera stays in place when you rotate.
+- **Drop (Reset to Hand)** resets the camera back to your hand. It is the same as the Drone Drop button, just here for convenience.
+
+<video src="https://github.com/user-attachments/assets/8cfbe8ca-1adb-4b94-802d-95cf99186c06"></video>
 
 ## Other Mods
 

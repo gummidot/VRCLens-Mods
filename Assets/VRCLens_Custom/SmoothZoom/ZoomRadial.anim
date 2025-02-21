@@ -1,0 +1,2537 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!74 &7400000
+AnimationClip:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ZoomRadial
+  serializedVersion: 6
+  m_Legacy: 0
+  m_Compressed: 0
+  m_UseHighQualityCurve: 1
+  m_RotationCurves: []
+  m_CompressedRotationCurves: []
+  m_EulerCurves: []
+  m_PositionCurves: []
+  m_ScaleCurves: []
+  m_FloatCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._FocalLength
+    path: VRCLens/CamScreen/ScreenOverride
+    classID: 23
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.28867513
+        inSlope: -0.20292239
+        outSlope: -0.20292239
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 0.20412414
+        inSlope: -0.17670453
+        outSlope: -0.17670453
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 0.14142136
+        inSlope: -0.14166941
+        outSlope: -0.14166941
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.25
+        value: 0.0860663
+        inSlope: -0.13506463
+        outSlope: -0.13506463
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 0.028867513
+        inSlope: -0.1372771
+        outSlope: -0.1372771
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Sources.Array.data[1].weight
+    path: VRCLens/WorldC/RotateA/LensRotateC
+    classID: 1818360609
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.28867513
+        inSlope: -0.20292239
+        outSlope: -0.20292239
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 0.20412414
+        inSlope: -0.17670453
+        outSlope: -0.17670453
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 0.14142136
+        inSlope: -0.14166941
+        outSlope: -0.14166941
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.25
+        value: 0.0860663
+        inSlope: -0.13506463
+        outSlope: -0.13506463
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 0.028867513
+        inSlope: -0.1372771
+        outSlope: -0.1372771
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Sources.Array.data[1].weight
+    path: VRCLens/WorldC/RotateA/LensAimC
+    classID: 1818360609
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Left/CamLeft_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Right/CamRight_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Left/CamLeft_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Right/CamRight_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_ColorAvatar
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_FocusAvatar
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_DepthAvatar
+    classID: 20
+    script: {fileID: 0}
+  m_PPtrCurves: []
+  m_SampleRate: 60
+  m_WrapMode: 0
+  m_Bounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  m_ClipBindingConstant:
+    genericBindings:
+    - serializedVersion: 2
+      path: 2379984446
+      attribute: 2306969265
+      script: {fileID: 0}
+      typeID: 23
+      customType: 22
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 703375194
+      attribute: 28
+      script: {fileID: 0}
+      typeID: 1818360609
+      customType: 32
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 2241408543
+      attribute: 28
+      script: {fileID: 0}
+      typeID: 1818360609
+      customType: 32
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 2350787618
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 804664455
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 3594343931
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 3003342855
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 1254621563
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 2448755131
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 283867298
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 1947683967
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    - serializedVersion: 2
+      path: 124244841
+      attribute: 2499785852
+      script: {fileID: 0}
+      typeID: 20
+      customType: 37
+      isPPtrCurve: 0
+    pptrCurveMapping: []
+  m_AnimationClipSettings:
+    serializedVersion: 2
+    m_AdditiveReferencePoseClip: {fileID: 0}
+    m_AdditiveReferencePoseTime: 0
+    m_StartTime: 0
+    m_StopTime: 1.6666666
+    m_OrientationOffsetY: 0
+    m_Level: 0
+    m_CycleOffset: 0
+    m_HasAdditiveReferencePose: 0
+    m_LoopTime: 0
+    m_LoopBlend: 0
+    m_LoopBlendOrientation: 0
+    m_LoopBlendPositionY: 0
+    m_LoopBlendPositionXZ: 0
+    m_KeepOriginalOrientation: 0
+    m_KeepOriginalPositionY: 1
+    m_KeepOriginalPositionXZ: 0
+    m_HeightFromFeet: 0
+    m_Mirror: 0
+  m_EditorCurves:
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: material._FocalLength
+    path: VRCLens/CamScreen/ScreenOverride
+    classID: 23
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.28867513
+        inSlope: -0.20292239
+        outSlope: -0.20292239
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 0.20412414
+        inSlope: -0.17670453
+        outSlope: -0.17670453
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 0.14142136
+        inSlope: -0.14166941
+        outSlope: -0.14166941
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.25
+        value: 0.0860663
+        inSlope: -0.13506463
+        outSlope: -0.13506463
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 0.028867513
+        inSlope: -0.1372771
+        outSlope: -0.1372771
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Sources.Array.data[1].weight
+    path: VRCLens/WorldC/RotateA/LensRotateC
+    classID: 1818360609
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 0.28867513
+        inSlope: -0.20292239
+        outSlope: -0.20292239
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 0.20412414
+        inSlope: -0.17670453
+        outSlope: -0.17670453
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 0.14142136
+        inSlope: -0.14166941
+        outSlope: -0.14166941
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.25
+        value: 0.0860663
+        inSlope: -0.13506463
+        outSlope: -0.13506463
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 0.028867513
+        inSlope: -0.1372771
+        outSlope: -0.1372771
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_Sources.Array.data[1].weight
+    path: VRCLens/WorldC/RotateA/LensAimC
+    classID: 1818360609
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Left/CamLeft_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Right/CamRight_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Left/CamLeft_Depth
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Stereo/Right/CamRight_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_ColorAvatar
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_Color
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_FocusAvatar
+    classID: 20
+    script: {fileID: 0}
+  - curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 12
+        inSlope: 0
+        outSlope: 25
+        tangentMode: 69
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.2
+        value: 17
+        inSlope: 28.653847
+        outSlope: 28.653847
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.41666666
+        value: 24
+        inSlope: 41.53846
+        outSlope: 41.53846
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.6333333
+        value: 35
+        inSlope: 62.88462
+        outSlope: 62.88462
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 0.8333333
+        value: 50
+        inSlope: 97.5
+        outSlope: 97.5
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1
+        value: 70
+        inSlope: 149.99994
+        outSlope: 149.99994
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.0833334
+        value: 85
+        inSlope: 213.49908
+        outSlope: 213.49908
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.515545
+      - serializedVersion: 3
+        time: 1.25
+        value: 135
+        inSlope: 401.01285
+        outSlope: 401.01285
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.377241
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.3666667
+        value: 200
+        inSlope: 797.3871
+        outSlope: 797.3871
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33503088
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.5
+        value: 400
+        inSlope: 2438.4375
+        outSlope: 2438.4375
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.53459024
+        outWeight: 0.33333334
+      - serializedVersion: 3
+        time: 1.6666666
+        value: 1200
+        inSlope: 6496.396
+        outSlope: 6496.396
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.1381953
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    attribute: m_FocalLength
+    path: VRCLens/WorldC/CamPickup/CamBase/CamObject/LensC/LensParent/LensChild/Camera_DepthAvatar
+    classID: 20
+    script: {fileID: 0}
+  m_EulerEditorCurves: []
+  m_HasGenericRootTransform: 0
+  m_HasMotionFloatCurves: 0
+  m_Events: []
