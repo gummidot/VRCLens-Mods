@@ -6,6 +6,7 @@ using UnityEngine.Animations;
 #if VRCSDK_HAS_VRCCONSTRAINTS
 using VRC.SDK3.Dynamics.Constraint.Components;
 #endif
+
 public class VRCLensFixAvatarDropModifier
 {
     public static string DropLayer = "vCNT_Drop 250-252 [1B] i1,t23";

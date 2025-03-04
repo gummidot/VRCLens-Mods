@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.6.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.7.0)
 
 ## Requirements
 
@@ -31,6 +31,7 @@ All mods are local-only or take no extra parameter memory.
 - [SmoothZoom](#smoothzoom) - Adds slight smoothing to the Zoom slider
 - [ManualFocus (9m)](#manualfocus-9m) - Limits the Manual Focus slider to 9m
 - [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
+- [CustomResolution](#customresolution) - Overrides the camera resolution and anti-aliasing
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
 - [FixAvatarDrop](#fixavatardrop) - Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above
@@ -138,6 +139,20 @@ Last tested: VRCLens 1.9.2
 Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
 
 ![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
+
+## CustomResolution
+
+**Overrides the camera resolution and anti-aliasing**
+
+Usually, the sensor resolution and anti-aliasing can only be set when installing VRCLens. This lets you change the resolution and anti-aliasing without having to reinstall VRCLens.
+
+It also attempts to fix an issue with the aspect ratio in 3D mode *maybe*.
+
+### Usage
+
+Enter your custom resolution and/or anti-aliasing in **Override Resolution** and **Override Anti-Aliasing**.
+
+![CustomResolution](Doc/CustomResolution.png)
 
 ## FarClipPlane
 

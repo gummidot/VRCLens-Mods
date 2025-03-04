@@ -12,6 +12,10 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public bool addDroneV;
     public bool fixAvatarDrop;
 
+    public bool useCustomResolution;
+    public Vector2Int sensorRes;
+    public int msaa;
+
     public void Modify(string tempDir)
     {
         Debug.Log($"[VRCLensModifier] Running Modify() for: {gameObject.name}");
@@ -20,6 +24,13 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
         if (avatarDescriptor == null)
         {
             Debug.LogWarning($"[VRCLensModifier] Avatar not found. This script must be placed on an avatar with VRCLens.");
+            return;
+        }
+
+        VRCLens vrclens = GetVRCLens();
+        if (vrclens == null)
+        {
+            Debug.LogWarning($"[VRCLensModifier] VRCLens not found. This script must be placed on an avatar with VRCLens.");
             return;
         }
 
@@ -60,6 +71,37 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
             return;
         }
         Debug.Log($"[VRCLensModifier] Successfully replaced VRCLens FX controller with: {newController.name}");
+
+        if (useCustomResolution)
+        {
+            if (!VRCLensResolutionModifier.CopyAndModifyMaterials(vrclens, sensorRes, msaa, tempDir))
+            {
+                Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens materials for custom resolution.");
+                return;
+            }
+        }
+    }
+
+    public VRCLens GetVRCLens()
+    {
+        // First, check the parent object, as this is supposed to be a child of the VRCLens object
+        Transform parent = transform.parent;
+        if (VRCLens.IsVRCLens(parent))
+        {
+            return new VRCLens(parent);
+        }
+        // Otherwise, fall back to scanning the entire avatar
+        VRCAvatarDescriptor avatarDescriptor = FindAvatarDescriptor();
+        if (avatarDescriptor == null)
+        {
+            return null;
+        }
+        Transform vrclensTransform = VRCLens.FindVRCLens(avatarDescriptor.transform);
+        if (vrclensTransform != null)
+        {
+            return new VRCLens(vrclensTransform);
+        }
+        return null;
     }
 
     public AnimatorController FindVRCLensController(VRCAvatarDescriptor avatarDescriptor)
