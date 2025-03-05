@@ -146,11 +146,15 @@ Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your av
 
 Usually, the sensor resolution and anti-aliasing can only be set when installing VRCLens. This lets you change the resolution and anti-aliasing without having to reinstall VRCLens.
 
-It also attempts to fix an issue with the aspect ratio in 3D mode *maybe*.
+It also adds experimental support for full SBS 3D. VRCLens currently uses half SBS for its side-by-side 3D mode, so recording in 3D at 1920x1080 would produce a 1920x1080 video at half the horizontal resolution (960x1080 per eye). Full SBS would allow you to record at 3840x1080 and produce a 1920x1080 video at full resolution (1920x1080 per eye).
+
+Last tested: VRCLens 1.9.2
 
 ### Usage
 
 Enter your custom resolution and/or anti-aliasing in **Override Resolution** and **Override Anti-Aliasing**.
+
+Optionally click **Use Full SBS 3D (experimental)** if you want to enable that. If so, make sure you change the resolution so the width is doubled.
 
 ![CustomResolution](Doc/CustomResolution.png)
 

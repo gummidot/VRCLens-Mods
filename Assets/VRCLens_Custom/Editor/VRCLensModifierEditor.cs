@@ -15,6 +15,7 @@ public class VRCLensModifierEditor : Editor
 
     private SerializedProperty useCustomResolutionProp;
     private SerializedProperty sensorResProp;
+    private SerializedProperty useFullSBS3dProp;
     private SerializedProperty msaaProp;
 
     private void OnEnable()
@@ -27,6 +28,7 @@ public class VRCLensModifierEditor : Editor
 
         useCustomResolutionProp = serializedObject.FindProperty(nameof(modifier.useCustomResolution));
         sensorResProp = serializedObject.FindProperty(nameof(modifier.sensorRes));
+        useFullSBS3dProp = serializedObject.FindProperty(nameof(modifier.useFullSBS3d));
         msaaProp = serializedObject.FindProperty(nameof(modifier.msaa));
     }
 
@@ -94,9 +96,11 @@ public class VRCLensModifierEditor : Editor
 
             sensorResProp.vector2IntValue = EditorGUILayout.Vector2IntField("Override Resolution", sensorResProp.vector2IntValue);
 
-            if (sensorResProp.vector2IntValue.x != 0 && sensorResProp.vector2IntValue.y != 0)
+            float aspectRatio;
+            bool customResolutionSet = sensorResProp.vector2IntValue.x != 0 && sensorResProp.vector2IntValue.y != 0;
+            if (customResolutionSet)
             {
-                float aspectRatio = (float)sensorResProp.vector2IntValue.x / sensorResProp.vector2IntValue.y;
+                aspectRatio = (float)sensorResProp.vector2IntValue.x / sensorResProp.vector2IntValue.y;
                 EditorGUILayout.LabelField($"Aspect Ratio: {aspectRatio:F2}");
             }
 
@@ -105,6 +109,23 @@ public class VRCLensModifierEditor : Editor
             int selectedIndex = Array.IndexOf(msaaValues, msaaProp.intValue);
             selectedIndex = EditorGUILayout.Popup("Override Anti-Aliasing", selectedIndex, msaaOptions);
             msaaProp.intValue = msaaValues[selectedIndex];
+
+            EditorGUILayout.Space();
+
+            useFullSBS3dProp.boolValue = EditorGUILayout.ToggleLeft("Use Full SBS 3D (experimental)", useFullSBS3dProp.boolValue);
+            if (useFullSBS3dProp.boolValue)
+            {
+                if (!customResolutionSet)
+                {
+                    EditorGUILayout.HelpBox("To use Full SBS 3D, you must set a custom resolution. Usually, the width should just be doubled, so if you used 1920x1080 before, use 3840x1080 for a 1920x1080 video in full SBS 3D.", MessageType.Warning);
+                }
+                else
+                {
+                    // Show the full SBS 3D aspect ratio, which would be half the aspect ratio
+                    float fullSBS3DAspectRatio = (float)(sensorResProp.vector2IntValue.x / 2) / sensorResProp.vector2IntValue.y;
+                    EditorGUILayout.LabelField($"Full SBS 3D Aspect Ratio: {fullSBS3DAspectRatio:F2}");
+                }
+            }
         }
 
         // Apply changes to the serialized object

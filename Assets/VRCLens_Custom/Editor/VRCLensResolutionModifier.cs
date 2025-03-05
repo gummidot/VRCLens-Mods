@@ -5,7 +5,7 @@ using UnityEngine;
 public class VRCLensResolutionModifier
 {
     // Modifies the sensor resolution and anti-aliasing of VRCLens.
-    public static bool CopyAndModifyMaterials(VRCLens vrclens, Vector2Int resolution, int msaa, string tempDir)
+    public static bool CopyAndModifyMaterials(VRCLens vrclens, Vector2Int resolution, bool useFullSBS3d, int msaa, string tempDir)
     {
         RenderTexture depthTex;
         Vector2Int renderTexSize, depthTexSize;
@@ -102,14 +102,29 @@ public class VRCLensResolutionModifier
             // cameraColorAvatar.sensorSize = sensorSize;
             // cameraDepthAvatar.sensorSize = sensorSize;
 
-            // For 3D. VRCLens installer uses 36x(36/aspectRatio) (same as 2D aspect ratio), but this results
-            // in a squished image. Leaving it at 16:9 also results in a squished image.
-            // We will use half the aspect ratio instead.
-            Vector2 sensorSize3D = new Vector2(36f, 36f / (camAspectRatio / 2));
-            stereoLeftColor.sensorSize = sensorSize3D;
-            stereoLeftDepth.sensorSize = sensorSize3D;
-            stereoRightColor.sensorSize = sensorSize3D;
-            stereoRightDepth.sensorSize = sensorSize3D;
+            // For SBS 3D. VRCLens uses half SBS by default, so a 3840x2160 SBS 3D video will be
+            // viewed as 3840x2160 in half the horizontal resolution. The sensor size is 36 x (36/aspectRatio),
+            // same as 2D aspect ratio.
+            // For full SBS 3D, we need to half the aspect ratio, so a 7680x2160 SBS 3D video will be
+            // viewed as 3840x2160 in the full horizontal resolution.
+            if (useFullSBS3d)
+            {
+                Vector2 sensorSize3D = new Vector2(36f, 36f / (camAspectRatio / 2));
+                Debug.Log($"[VRCLensResolutionModifier] Using Full SBS 3D with sensor size: {sensorSize3D}");
+                stereoLeftColor.sensorSize = sensorSize3D;
+                stereoLeftDepth.sensorSize = sensorSize3D;
+                stereoRightColor.sensorSize = sensorSize3D;
+                stereoRightDepth.sensorSize = sensorSize3D;
+            }
+            else
+            {
+                Vector2 sensorSize3D = new Vector2(36f, 36f / camAspectRatio);
+                Debug.Log($"[VRCLensResolutionModifier] Using Half SBS 3D with sensor size: {sensorSize3D}");
+                stereoLeftColor.sensorSize = sensorSize3D;
+                stereoLeftDepth.sensorSize = sensorSize3D;
+                stereoRightColor.sensorSize = sensorSize3D;
+                stereoRightDepth.sensorSize = sensorSize3D;
+            }
         }
 
         // Set MSAA

@@ -14,6 +14,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
 
     public bool useCustomResolution;
     public Vector2Int sensorRes;
+    public bool useFullSBS3d;
     public int msaa;
 
     public void Modify(string tempDir)
@@ -74,7 +75,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
 
         if (useCustomResolution)
         {
-            if (!VRCLensResolutionModifier.CopyAndModifyMaterials(vrclens, sensorRes, msaa, tempDir))
+            if (!VRCLensResolutionModifier.CopyAndModifyMaterials(vrclens, sensorRes, useFullSBS3d, msaa, tempDir))
             {
                 Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens materials for custom resolution.");
                 return;
