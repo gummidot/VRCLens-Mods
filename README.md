@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.7.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.8.0)
 
 ## Requirements
 
@@ -36,6 +36,7 @@ All mods are local-only or take no extra parameter memory.
 - [MaxBlurSize](#maxblursize) - Adjusts the maximum blur size for performance
 - [FixAvatarDrop](#fixavatardrop) - Fixes the Avatar Drop feature broken in VRCLens 1.9.1 and above
 - [AvatarOffset](#avataroffset) - Offsets the camera from your avatar while keeping hand control
+- [MenuExtra](#menuextra) - Miscellaneous improvements to the VRCLens menu
 
 ## SmoothRotate
 
@@ -220,6 +221,14 @@ There will be 3 toggles in your menu under `VRCLens/Custom/AvatarOffset`:
 - **Drop (Reset to Hand)** resets the camera back to your hand. It is the same as the Drone Drop button, just here for convenience.
 
 <video src="https://github.com/user-attachments/assets/8cfbe8ca-1adb-4b94-802d-95cf99186c06"></video>
+
+## MenuExtra
+
+**Miscellaneous improvements to the VRCLens menu**
+
+- Adds **DoF Mode** toggle to the Focus menu
+
+Last tested: VRCLens 1.9.2
 
 ## Other Mods
 
