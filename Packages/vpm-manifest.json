@@ -1,38 +1,28 @@
 {
   "dependencies": {
-    "com.vrchat.base": {
-      "version": "3.7.5"
-    },
-    "com.vrchat.avatars": {
-      "version": "3.7.5"
-    },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29"
     },
     "com.vrcfury.vrcfury": {
       "version": "1.1152.0"
     },
-    "vrchat.blackstartx.gesture-manager": {
-      "version": "3.9.3"
-    },
     "com.dreadscripts.controllereditor": {
       "version": "3.3.2"
     },
     "d4rkpl4y3r.d4rkavataroptimizer": {
       "version": "3.9.5"
+    },
+    "com.vrchat.base": {
+      "version": "3.10.1"
+    },
+    "com.vrchat.avatars": {
+      "version": "3.10.1"
+    },
+    "vrchat.blackstartx.gesture-manager": {
+      "version": "3.9.7"
     }
   },
   "locked": {
-    "com.vrchat.base": {
-      "version": "3.7.5",
-      "dependencies": {}
-    },
-    "com.vrchat.avatars": {
-      "version": "3.7.5",
-      "dependencies": {
-        "com.vrchat.base": "3.7.5"
-      }
-    },
     "com.vrchat.core.vpm-resolver": {
       "version": "0.1.29",
       "dependencies": {}
@@ -41,12 +31,6 @@
       "version": "1.1152.0",
       "dependencies": {}
     },
-    "vrchat.blackstartx.gesture-manager": {
-      "version": "3.9.3",
-      "dependencies": {
-        "com.vrchat.avatars": ">=3.5.2 < 3.8.X"
-      }
-    },
     "com.dreadscripts.controllereditor": {
       "version": "3.3.2",
       "dependencies": {}
@@ -54,6 +38,22 @@
     "d4rkpl4y3r.d4rkavataroptimizer": {
       "version": "3.9.5",
       "dependencies": {}
+    },
+    "com.vrchat.base": {
+      "version": "3.10.1",
+      "dependencies": {}
+    },
+    "com.vrchat.avatars": {
+      "version": "3.10.1",
+      "dependencies": {
+        "com.vrchat.base": "3.10.1"
+      }
+    },
+    "vrchat.blackstartx.gesture-manager": {
+      "version": "3.9.7",
+      "dependencies": {
+        "com.vrchat.avatars": ">=3.5.2 < 3.11.X"
+      }
     }
   }
 }
