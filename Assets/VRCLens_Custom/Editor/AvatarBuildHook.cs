@@ -11,7 +11,7 @@ using VRC.SDKBase.Editor.BuildPipeline;
 // Mostly adapted from https://github.com/d4rkc0d3r/d4rkAvatarOptimizer/blob/f1a85c9026cf62f0ab37bf6c385891a8a34680e2/Editor/AvatarBuildHook.cs
 
 [InitializeOnLoad]
-public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback
+public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostprocessAvatarCallback
 {
 
     // This has to be before -1024 when VRCSDK deletes our components.
@@ -22,10 +22,35 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback
     public int callbackOrder => -1025;
 
     public static string TempDir = "Assets/VRCLens_Custom/Temp";
+    
+    // Track if LowerMinFocus was used so we can clean up afterwards
+    private static bool _usedLowerMinFocus = false;
+    
+    // Static constructor to register play mode state change handler
+    static AvatarBuildHook()
+    {
+        EditorApplication.playModeStateChanged += OnPlayModeStateChanged;
+    }
+    
+    private static void OnPlayModeStateChanged(PlayModeStateChange state)
+    {
+        // Clean up when exiting Play mode
+        if (state == PlayModeStateChange.EnteredEditMode)
+        {
+            if (_usedLowerMinFocus)
+            {
+                Debug.Log("[VRCLensCustom] Exited Play mode - cleaning up LowerMinFocus shader...");
+                VRCLensLowerMinFocusModifier.Cleanup();
+                _usedLowerMinFocus = false;
+            }
+        }
+    }
 
     public bool OnPreprocessAvatar(GameObject avatarGameObject)
     {
         Debug.Log($"[VRCLensCustom] Running OnPreprocessAvatar for: {avatarGameObject.name}");
+        _usedLowerMinFocus = false;
+        
         // Optimzers
         var optimizers = avatarGameObject.GetComponentsInChildren<VRCLensOptimizer>();
         try
@@ -63,6 +88,12 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback
                 {
                     Debug.Log($"[VRCLensCustom] Running modifier from '{modifier.gameObject.name}' on avatar: {avatarGameObject.name}");
                     modifier.Modify(TempDir);
+                    
+                    // Track if LowerMinFocus was used
+                    if (modifier.enableLowerMinFocus)
+                    {
+                        _usedLowerMinFocus = true;
+                    }
                 }
             }
             catch (Exception e)
@@ -73,6 +104,17 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback
         }
 
         return true;
+    }
+    
+    public void OnPostprocessAvatar()
+    {
+        // Clean up LowerMinFocus shader if it was generated
+        if (_usedLowerMinFocus)
+        {
+            Debug.Log("[VRCLensCustom] Cleaning up LowerMinFocus shader...");
+            VRCLensLowerMinFocusModifier.Cleanup();
+            _usedLowerMinFocus = false;
+        }
     }
 
     // AssetDatabase suggests it doesn't support backslashes but doesn't explicitly say so.

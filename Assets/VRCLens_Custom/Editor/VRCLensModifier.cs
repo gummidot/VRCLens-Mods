@@ -17,6 +17,8 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public bool useFullSBS3d;
     public int msaa;
 
+    public bool enableLowerMinFocus;
+
     public void Modify(string tempDir)
     {
         Debug.Log($"[VRCLensModifier] Running Modify() for: {gameObject.name}");
@@ -78,6 +80,15 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
             if (!VRCLensResolutionModifier.CopyAndModifyMaterials(vrclens, sensorRes, useFullSBS3d, msaa, tempDir))
             {
                 Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens materials for custom resolution.");
+                return;
+            }
+        }
+
+        if (enableLowerMinFocus)
+        {
+            if (VRCLensLowerMinFocusModifier.CopyAndModifyShader(vrclens, tempDir) == null)
+            {
+                Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens shader for lower min focus.");
                 return;
             }
         }

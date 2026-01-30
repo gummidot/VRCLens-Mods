@@ -30,6 +30,7 @@ All mods are local-only or take no extra parameter memory.
 - [MoveDroneVertical](#movedronevertical) - Adds a puppet menu to move the drone vertically
 - [SmoothZoom](#smoothzoom) - Adds slight smoothing to the Zoom slider
 - [ManualFocus (9m)](#manualfocus-9m) - Limits the Manual Focus slider to 9m
+- [ManualFocus (0.1m to 9m)](#manualfocus-01m-to-9m) - Allows Manual Focus down to 0.1m instead of the default 0.5m minimum
 - [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 - [CustomResolution](#customresolution) - Overrides the camera resolution and anti-aliasing
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
@@ -115,6 +116,20 @@ Last tested: VRCLens 1.9.2
 Use the built-in Manual Focus slider as usual.
 
 <video src="https://github.com/user-attachments/assets/9f8496e8-8a36-44f0-b450-0b3474b765f4"></video>
+
+## ManualFocus (0.1m to 9m)
+
+**Allows Manual Focus down to 0.1m instead of the default 0.5m minimum**
+
+Modifies VRCLens to allow closer focus than the default 0.5m minimum. Also limits Manual Focus to a maximum of 9m, adds a small amount of smoothing, and disables Auto Focus.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Use the built-in Manual Focus slider as usual.
+
+<video src="https://github.com/user-attachments/assets/c04017d5-4824-4fda-b1ae-a4528d427ae5"></video>
 
 ## VRCLensOptimizer
 

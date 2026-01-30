@@ -18,6 +18,8 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty useFullSBS3dProp;
     private SerializedProperty msaaProp;
 
+    private SerializedProperty enableLowerMinFocusProp;
+
     private void OnEnable()
     {
         modifier = (VRCLensModifier)target;
@@ -30,6 +32,8 @@ public class VRCLensModifierEditor : Editor
         sensorResProp = serializedObject.FindProperty(nameof(modifier.sensorRes));
         useFullSBS3dProp = serializedObject.FindProperty(nameof(modifier.useFullSBS3d));
         msaaProp = serializedObject.FindProperty(nameof(modifier.msaa));
+
+        enableLowerMinFocusProp = serializedObject.FindProperty(nameof(modifier.enableLowerMinFocus));
     }
 
     public override void OnInspectorGUI()
@@ -67,6 +71,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for FixAvatarDrop
         EditorGUILayout.BeginHorizontal();
         fixAvatarDropProp.boolValue = EditorGUILayout.ToggleLeft("Fix Avatar Drop (bugged in VRCLens 1.9.1 and later)", fixAvatarDropProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for LowerMinFocus
+        EditorGUILayout.BeginHorizontal();
+        enableLowerMinFocusProp.boolValue = EditorGUILayout.ToggleLeft("Lower Minimum Focus Distance", enableLowerMinFocusProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
