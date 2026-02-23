@@ -107,7 +107,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                 {
                     if (shaderPatchVrclens == null)
                     {
-                        Debug.LogWarning("[VRCLensCustom] Shader patching requested but no VRCLens instance found.");
+                        Debug.LogError("[VRCLensCustom] Shader patching requested but no VRCLens instance found.");
+                        return false;
                     }
                     else
                     {
@@ -119,7 +120,10 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                         }
                         else
                         {
-                            Debug.LogWarning("[VRCLensCustom] Failed to patch VRCLens shader.");
+                            Debug.LogError("[VRCLensCustom] Failed to patch VRCLens shader. " +
+                                $"Please ensure you have VRCLens {VRCLensShaderPatcher.VRCLENS_TESTED_VERSION} " +
+                                "with an unmodified shader. Other versions are not guaranteed to work.");
+                            return false;
                         }
                     }
                 }

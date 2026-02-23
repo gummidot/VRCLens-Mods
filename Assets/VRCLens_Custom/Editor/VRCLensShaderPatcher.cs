@@ -61,7 +61,7 @@ public static class VRCLensShaderPatcher
 
     // VRCLens version tracking
     private const string VRCLENS_README_PATH = "Assets/Hirabiki/VRCLens/readme_DoNotDelete.txt";
-    private const string VRCLENS_TESTED_VERSION = "1.9.2";
+    public const string VRCLENS_TESTED_VERSION = "1.9.2";
 
     private const string PATCH_MARKER = "VRCLens_Custom BEGIN";
 
