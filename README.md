@@ -158,8 +158,8 @@ The default settings work well in most cases, but you can adjust them further in
 |---|---|---|---|
 | Enabled | On / Off | On | Enable or disable the effect. |
 | Strength | 0% - 100% | 85% | How much blur is reduced. 0 = no effect, 100 = fully sharp. |
-| Zone Size | 0m - 20m | 2m | Focus zone size around Manual Focus distance. |
-| Zone Softness | 0m - 5m | 1m | Fade distance at the edges of the zone. |
+| Zone Size | 0m - 20m | 2m | How far in front of and behind the focus distance avatars are affected. 2m means ±2m from focus. |
+| Zone Softness | 0m - 5m | 1m | Smooths the transition at zone edges so avatars don't suddenly jump between sharp and blurry. |
 | Edge Feather | 0 - 0.02 | 0.005 | Softens avatar edges where they meet the blurred background. Higher values = softer transition but may bleed. |
 | Peaking | On / Off | Off | Shows a debug overlay on detected avatars: green = within zone (blur reduced), yellow = transition zone (partial reduction), red = outside zone (full blur). Only visible in preview mode. |
 
