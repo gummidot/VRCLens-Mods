@@ -23,8 +23,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
 
     public static string TempDir = "Assets/VRCLens_Custom/Temp";
     
-    // Track if LowerMinFocus was used so we can clean up afterwards
-    private static bool _usedLowerMinFocus = false;
+    // Track whether shader patching was used so we can clean up afterwards
+    private static bool _usedShaderPatcher = false;
     
     // Static constructor to register play mode state change handler
     static AvatarBuildHook()
@@ -37,11 +37,11 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
         // Clean up when exiting Play mode
         if (state == PlayModeStateChange.EnteredEditMode)
         {
-            if (_usedLowerMinFocus)
+            if (_usedShaderPatcher)
             {
-                Debug.Log("[VRCLensCustom] Exited Play mode - cleaning up LowerMinFocus shader...");
-                VRCLensLowerMinFocusModifier.Cleanup();
-                _usedLowerMinFocus = false;
+                Debug.Log("[VRCLensCustom] Exited Play mode - cleaning up patched shader...");
+                VRCLensShaderModifier.Cleanup();
+                _usedShaderPatcher = false;
             }
         }
     }
@@ -49,7 +49,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
     public bool OnPreprocessAvatar(GameObject avatarGameObject)
     {
         Debug.Log($"[VRCLensCustom] Running OnPreprocessAvatar for: {avatarGameObject.name}");
-        _usedLowerMinFocus = false;
+        _usedShaderPatcher = false;
         
         // Optimzers
         var optimizers = avatarGameObject.GetComponentsInChildren<VRCLensOptimizer>();
@@ -84,15 +84,43 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
 
             try
             {
+                // Collect shader flags across all modifiers first
+                bool enableLowerMinFocus = false;
+                bool enableManualFocusAssist = false;
+                VRCLens shaderPatchVrclens = null;
+
                 foreach (var modifier in modifiers)
                 {
                     Debug.Log($"[VRCLensCustom] Running modifier from '{modifier.gameObject.name}' on avatar: {avatarGameObject.name}");
                     modifier.Modify(TempDir);
-                    
-                    // Track if LowerMinFocus was used
-                    if (modifier.enableLowerMinFocus)
+
+                    if (modifier.enableLowerMinFocus) enableLowerMinFocus = true;
+                    if (modifier.enableManualFocusAssist) enableManualFocusAssist = true;
+                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist) && shaderPatchVrclens == null)
                     {
-                        _usedLowerMinFocus = true;
+                        shaderPatchVrclens = modifier.GetVRCLens();
+                    }
+                }
+
+                // Apply shader patching once with merged flags from all modifiers
+                if (enableLowerMinFocus || enableManualFocusAssist)
+                {
+                    if (shaderPatchVrclens == null)
+                    {
+                        Debug.LogWarning("[VRCLensCustom] Shader patching requested but no VRCLens instance found.");
+                    }
+                    else
+                    {
+                        string newPath = VRCLensShaderModifier.CopyAndModifyShader(
+                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist);
+                        if (newPath != null)
+                        {
+                            _usedShaderPatcher = true;
+                        }
+                        else
+                        {
+                            Debug.LogWarning("[VRCLensCustom] Failed to patch VRCLens shader.");
+                        }
                     }
                 }
             }
@@ -108,12 +136,12 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
     
     public void OnPostprocessAvatar()
     {
-        // Clean up LowerMinFocus shader if it was generated
-        if (_usedLowerMinFocus)
+        // Clean up generated shader
+        if (_usedShaderPatcher)
         {
-            Debug.Log("[VRCLensCustom] Cleaning up LowerMinFocus shader...");
-            VRCLensLowerMinFocusModifier.Cleanup();
-            _usedLowerMinFocus = false;
+            Debug.Log("[VRCLensCustom] Cleaning up patched shader...");
+            VRCLensShaderModifier.Cleanup();
+            _usedShaderPatcher = false;
         }
     }
 

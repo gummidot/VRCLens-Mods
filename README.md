@@ -2,7 +2,7 @@
 
 VRCLens mods with drag-n-drop VRCFury prefabs
 
-[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.8.0)
+[**Download the latest version**](https://github.com/gummidot/VRCLens-Mods/releases/tag/v1.10.0)
 
 ## Requirements
 
@@ -31,6 +31,7 @@ All mods are local-only or take no extra parameter memory.
 - [SmoothZoom](#smoothzoom) - Adds slight smoothing to the Zoom slider
 - [ManualFocus (9m)](#manualfocus-9m) - Limits the Manual Focus slider to 9m
 - [ManualFocus (0.1m to 9m)](#manualfocus-01m-to-9m) - Allows Manual Focus down to 0.1m instead of the default 0.5m minimum
+- [ManualFocusAssist](#manualfocusassist) - Uses avatar auto-focus to reduce blur on avatars near your Manual Focus point
 - [VRCLensOptimizer](#vrclensoptimizer) - Removes optional components from VRCLens (materials, poly count)
 - [CustomResolution](#customresolution) - Overrides the camera resolution and anti-aliasing
 - [FarClipPlane](#farclipplane) - Increases the camera's far clipping plane
@@ -130,6 +131,47 @@ Last tested: VRCLens 1.9.2
 Use the built-in Manual Focus slider as usual.
 
 <video src="https://github.com/user-attachments/assets/c04017d5-4824-4fda-b1ae-a4528d427ae5"></video>
+
+## ManualFocusAssist
+
+**Uses avatar auto-focus to reduce blur on avatars near your Manual Focus point**
+
+Helps keep avatars sharp when using Manual Focus. Enable Avatar AF, and all avatars within 2m of your focus distance get reduced blur. Everything else blurs normally.
+
+Last tested: VRCLens 1.9.2
+
+### Usage
+
+Enable **Avatar Auto-Focus** (Avatar AF) in VRCLens. Use the built-in Manual Focus slider as usual.
+
+Manual Focus Assist is **enabled by default** when the mod is installed. Use the toggle in the menu to turn it on or off in-game.
+
+<video src="https://github.com/user-attachments/assets/f07314cb-2abd-43c8-877f-fd09d580ecae"></video>
+
+### Menu Options
+
+The toggle will be in your menu under `VRCLens/Custom/ManualFocusAssist`.
+
+The default settings work well in most cases, but you can adjust them further in the menu.
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Enabled | On / Off | On | Enable or disable the effect. |
+| Strength | 0% - 100% | 85% | How much blur is reduced. 0 = no effect, 100 = fully sharp. |
+| Zone Size | 0m - 20m | 2m | Focus zone size around Manual Focus distance. |
+| Zone Softness | 0m - 5m | 1m | Fade distance at the edges of the zone. |
+| Edge Feather | 0 - 0.02 | 0.005 | Softens avatar edges where they meet the blurred background. Higher values = softer transition but may bleed. |
+| Peaking | On / Off | Off | Shows a debug overlay on detected avatars: green = within zone (blur reduced), yellow = transition zone (partial reduction), red = outside zone (full blur). Only visible in preview mode. |
+
+```
+Focus at 10m, Zone Size 2m, Zone Softness 1m:
+
+  Camera --[7m]~~[8m]=====FOCUS ZONE=====[12m]~~[13m]--
+                  ↑            ↑          ↑
+             zone start      focus    zone end
+                ↕                           ↕
+          softness (1m)               softness (1m)
+```
 
 ## VRCLensOptimizer
 

@@ -18,6 +18,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public int msaa;
 
     public bool enableLowerMinFocus;
+    public bool enableManualFocusAssist;
 
     public void Modify(string tempDir)
     {
@@ -84,14 +85,8 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
             }
         }
 
-        if (enableLowerMinFocus)
-        {
-            if (VRCLensLowerMinFocusModifier.CopyAndModifyShader(vrclens, tempDir) == null)
-            {
-                Debug.LogWarning($"[VRCLensModifier] Could not modify VRCLens shader for lower min focus.");
-                return;
-            }
-        }
+        // Shader patching is handled by AvatarBuildHook after all modifiers run,
+        // so that flags from multiple VRCLensModifier components are merged.
     }
 
     public VRCLens GetVRCLens()
