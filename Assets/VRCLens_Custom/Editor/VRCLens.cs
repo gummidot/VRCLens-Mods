@@ -27,6 +27,7 @@ public class VRCLens
         public const string LensChildCameraColorAvatar = "Camera_ColorAvatar";
         public const string LensChildCameraDepth = "Camera_Depth";
         public const string LensChildCameraDepthAvatar = "Camera_DepthAvatar";
+        public const string LensChildCameraFocusAvatar = "Camera_FocusAvatar";
         public const string LensChildStereoLeftColor = "Stereo/Left/CamLeft_Color";
         public const string LensChildStereoLeftDepth = "Stereo/Left/CamLeft_Depth";
         public const string LensChildStereoRightColor = "Stereo/Right/CamRight_Color";
@@ -109,6 +110,11 @@ public class VRCLens
     public Transform GetLensChildCameraDepthAvatar()
     {
         return GetLensChild().Find(Paths.LensChildCameraDepthAvatar);
+    }
+
+    public Transform GetLensChildCameraFocusAvatar()
+    {
+        return GetLensChild().Find(Paths.LensChildCameraFocusAvatar);
     }
 
     public Transform GetLensChildStereoLeftColor()

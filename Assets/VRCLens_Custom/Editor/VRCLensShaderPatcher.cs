@@ -292,10 +292,10 @@ public static class VRCLensShaderPatcher
 			}
 			
 			float getZoneProtectionFinal(float distance) {
-				bool isAutoFocusLocal = _FocusDistance < 0.5001;
+				bool isAutoFocus = _FocusDistance < 0.5001;
 				float focusDist = _FocusDistance;
 				
-				if(isAutoFocusLocal && _IsExternalFocus == 2) {
+				if(isAutoFocus && _IsExternalFocus == 2) {
 					float storedDepth = tex2Dlod(_AuxExpTex, half4(.25,.75,.0,.0)).z * 0.00390625;
 					focusDist = getLinearEyeDepthFinal(storedDepth);
 				}

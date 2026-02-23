@@ -72,6 +72,8 @@ public class VRCLensResolutionModifier
         Camera cameraDepth = vrclens.GetLensChildCameraDepth().GetComponent<Camera>();
         Camera cameraColorAvatar = vrclens.GetLensChildCameraColorAvatar().GetComponent<Camera>();
         Camera cameraDepthAvatar = vrclens.GetLensChildCameraDepthAvatar().GetComponent<Camera>();
+        // For ManualFocusAssist avatar detection
+        Camera cameraFocusAvatar = vrclens.GetLensChildCameraFocusAvatar().GetComponent<Camera>();
         // For 3D
         Camera stereoLeftColor = vrclens.GetLensChildStereoLeftColor().GetComponent<Camera>();
         Camera stereoLeftDepth = vrclens.GetLensChildStereoLeftDepth().GetComponent<Camera>();
@@ -91,6 +93,40 @@ public class VRCLensResolutionModifier
             // Set aspect ratio
             float camAspectRatio = (float)resolution.x / resolution.y;
             modifiedCamMat.SetFloat("_AspectRatio", camAspectRatio);
+
+            // Resize FocusAvatar render texture to match the custom aspect ratio.
+            // Camera_FocusAvatar renders a binary avatar mask used by ManualFocusAssist.
+            // Its default 512x288 (16:9) texture causes misaligned avatar detection at
+            // non-16:9 aspect ratios because the shader samples it with the main camera's UVs.
+            RenderTexture focusAvatarTex = cameraFocusAvatar.targetTexture;
+            if (focusAvatarTex != null)
+            {
+                string focusAvatarTexPath = AssetDatabase.GetAssetPath(focusAvatarTex);
+                string focusAvatarTexGUID = AssetDatabase.AssetPathToGUID(focusAvatarTexPath);
+                string modifiedFocusAvatarTexPath = $"{tempDir}/{focusAvatarTex.name}_{focusAvatarTexGUID}_modified.renderTexture";
+
+                if (AssetDatabase.CopyAsset(focusAvatarTexPath, modifiedFocusAvatarTexPath))
+                {
+                    RenderTexture modifiedFocusAvatarTex = AssetDatabase.LoadAssetAtPath<RenderTexture>(modifiedFocusAvatarTexPath);
+                    if (modifiedFocusAvatarTex != null)
+                    {
+                        // Keep it low-res (binary mask doesn't need high resolution), just match aspect ratio
+                        int focusWidth = 512;
+                        int focusHeight = Mathf.Max(1, Mathf.RoundToInt(512f / camAspectRatio));
+                        modifiedFocusAvatarTex.width = focusWidth;
+                        modifiedFocusAvatarTex.height = focusHeight;
+
+                        cameraFocusAvatar.targetTexture = modifiedFocusAvatarTex;
+                        modifiedCamMat.SetTexture("_DepthAvatarTex", modifiedFocusAvatarTex);
+                        Debug.Log($"[VRCLensResolutionModifier] Resized FocusAvatar texture to {focusWidth}x{focusHeight} (aspect {camAspectRatio:F3}) at {modifiedFocusAvatarTexPath}");
+                    }
+                }
+                else
+                {
+                    Debug.LogError("[VRCLensResolutionModifier] Failed to copy FocusAvatar render texture.");
+                    return false;
+                }
+            }
 
             // Does not seem to be necessary for 2D after testing, but left commented here for reference.
             // VRCLens installer always keeps this at 36x20.25 (16:9)
