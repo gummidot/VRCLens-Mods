@@ -19,6 +19,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty msaaProp;
 
     private SerializedProperty enableLowerMinFocusProp;
+    private SerializedProperty enableManualFocusAssistProp;
 
     private void OnEnable()
     {
@@ -34,6 +35,7 @@ public class VRCLensModifierEditor : Editor
         msaaProp = serializedObject.FindProperty(nameof(modifier.msaa));
 
         enableLowerMinFocusProp = serializedObject.FindProperty(nameof(modifier.enableLowerMinFocus));
+        enableManualFocusAssistProp = serializedObject.FindProperty(nameof(modifier.enableManualFocusAssist));
     }
 
     public override void OnInspectorGUI()
@@ -76,6 +78,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for LowerMinFocus
         EditorGUILayout.BeginHorizontal();
         enableLowerMinFocusProp.boolValue = EditorGUILayout.ToggleLeft("Lower Minimum Focus Distance", enableLowerMinFocusProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for ManualFocusAssist
+        EditorGUILayout.BeginHorizontal();
+        enableManualFocusAssistProp.boolValue = EditorGUILayout.ToggleLeft("Manual Focus Assist", enableManualFocusAssistProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
