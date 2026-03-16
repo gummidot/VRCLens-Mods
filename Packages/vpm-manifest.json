@@ -20,6 +20,9 @@
     },
     "vrchat.blackstartx.gesture-manager": {
       "version": "3.9.7"
+    },
+    "com.poiyomi.toon": {
+      "version": "9.3.64"
     }
   },
   "locked": {
@@ -54,6 +57,10 @@
       "dependencies": {
         "com.vrchat.avatars": ">=3.5.2 < 3.11.X"
       }
+    },
+    "com.poiyomi.toon": {
+      "version": "9.3.64",
+      "dependencies": {}
     }
   }
 }
