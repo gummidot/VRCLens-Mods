@@ -78,6 +78,16 @@ The VRChat SDK are located at:
 - Packages/com.vrchat.base
 - Packages/com.vrchat.avatars
 
+**VRChat SDK docs:** Use https://vrc-beta-docs.netlify.app/ as the primary reference for VRChat SDK behavior, components, and features. Key pages for avatar work:
+- [Avatars overview](https://vrc-beta-docs.netlify.app/avatars) — AV3 concepts, playable layers, Write Defaults, visemes, eye simulation
+- [Avatar components](https://vrc-beta-docs.netlify.app/avatars/avatar-components) — PhysBones, Contacts, Constraints, Raycast, Head Chop
+- [Expression Menu & Controls](https://vrc-beta-docs.netlify.app/avatars/expression-menu-and-controls) — menus, parameters, control types
+- [Animator parameters](https://vrc-beta-docs.netlify.app/avatars/animator-parameters) — built-in parameters and sync types
+- [Performance ranking](https://vrc-beta-docs.netlify.app/avatars/avatar-performance-ranking-system) — performance limits and rankings
+- [PhysBones](https://vrc-beta-docs.netlify.app/common-components/physbones), [Contacts](https://vrc-beta-docs.netlify.app/common-components/contacts), [Constraints](https://vrc-beta-docs.netlify.app/common-components/constraints) — detailed component docs
+
+Fetch these pages when you need to verify SDK behavior, check parameter names, or understand component capabilities — don't guess from memory.
+
 ## MCP Bridge (`execute_csharp`)
 
 C# snippets run inside the Unity Editor via the MCP `execute_csharp` tool. Key details:
@@ -208,6 +218,8 @@ Max 8 controls per menu. Control types: Button, Toggle, SubMenu, TwoAxisPuppet, 
 When configuring PhysBones, inspect the avatar's existing PhysBones first. For new PhysBones, reference the VRC SDK sample scene (discover via `AssetDatabase.FindAssets("t:Scene", new[]{"Packages/com.vrchat.avatars/Samples/"})`) and tune values to the specific avatar's scale and body part. Hair chains typically need a chest VRCPhysBoneCollider (capsule) to prevent clipping — size it to the avatar.
 
 ## VRCFury
+
+**VRCFury docs:** https://vrcfury.com/ — non-destructive avatar tools (toggles, gestures, controller merging, prefab-based workflows).
 
 Package path: `Packages/com.vrcfury.vrcfury`
 Ships as **pure C# source** (no DLLs).
