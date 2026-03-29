@@ -227,6 +227,12 @@
       "source": "embedded",
       "dependencies": {}
     },
+    "xyz.sentfromspace.agentic-tools": {
+      "version": "file:xyz.sentfromspace.agentic-tools",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,
