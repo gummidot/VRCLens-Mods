@@ -173,6 +173,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXAngle (""Rotation"", Range(0.0, 1.0)) = 0.0
 		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
+		_GhostFXLayers (""Layers"", Range(1.0, 5.0)) = 1.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.05, 0.4)) = 0.15
 		// VRCLens_Custom END";
@@ -199,9 +200,11 @@ public static class VRCLensShaderPatcher
 					}
 
 					// Multiple ghost layers with decreasing opacity
+					int ghostLayers = clamp((int)(_GhostFXLayers + 0.5), 1, 5);
 					half3 ghostAccum = col.rgb;
 					[unroll]
-					for(int gi = 1; gi <= 3; gi++) {
+					for(int gi = 1; gi <= 5; gi++) {
+						if(gi > ghostLayers) break;
 						half2 gUV = clamp(sbsUV0 + ghostBaseOffset * gi, 0.001, 0.999);
 						half3 gSample = tex2D(_HirabikiVRCLensPassTexture, gUV).rgb;
 						gSample = max(0.00001, gSample / finalExp.x);
@@ -216,7 +219,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GHOSTFX_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
-			uniform float _GhostFXOpacity, _GhostFXSoftEdge, _GhostFXCenterWidth;
+			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
