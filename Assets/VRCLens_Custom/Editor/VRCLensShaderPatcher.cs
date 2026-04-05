@@ -174,6 +174,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
 		_GhostFXLayers (""Layers"", Range(1.0, 5.0)) = 1.0
+		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.05, 0.4)) = 0.15
 		// VRCLens_Custom END";
@@ -201,12 +202,35 @@ public static class VRCLensShaderPatcher
 
 					// Multiple ghost layers with decreasing opacity
 					int ghostLayers = clamp((int)(_GhostFXLayers + 0.5), 1, 5);
+					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
 					half3 ghostAccum = col.rgb;
 					[unroll]
 					for(int gi = 1; gi <= 5; gi++) {
 						if(gi > ghostLayers) break;
-						half2 gUV = clamp(sbsUV0 + ghostBaseOffset * gi, 0.001, 0.999);
-						half3 gSample = tex2D(_HirabikiVRCLensPassTexture, gUV).rgb;
+						half2 gBaseUV = sbsUV0 + ghostBaseOffset * gi;
+						half3 gSample = half3(0,0,0);
+						if(_GhostFXSmear > 0.001) {
+							// UV distortion: cylindrical lens effect
+							// Decompose UV relative to ghost center into direction/perp components
+							half2 relUV = gBaseUV - 0.5;
+							float projDir = dot(relUV, ghostDir);
+							float projPerp = dot(relUV, ghostPerp);
+							// Scale < 1 = zoom in = elongate on screen. More along direction = smeared look.
+							float dirScale = 1.0 / (1.0 + _GhostFXSmear * gi * 1.2);
+							float perpScale = 1.0 / (1.0 + _GhostFXSmear * gi * 0.5);
+							half2 smearedUV = 0.5 + ghostDir * (projDir * dirScale) + ghostPerp * (projPerp * perpScale);
+							// Directional blur for smooth smear (5 gaussian-weighted taps)
+							float blurSpread = _GhostFXSmear * 0.02 * gi;
+							half3 w = half3(0.06136, 0.24477, 0.38774);
+							half2 blurStep = ghostDir * blurSpread;
+							gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV - blurStep * 2.0, 0.001, 0.999)).rgb * w.x;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV - blurStep, 0.001, 0.999)).rgb * w.y;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV, 0.001, 0.999)).rgb * w.z;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV + blurStep, 0.001, 0.999)).rgb * w.y;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV + blurStep * 2.0, 0.001, 0.999)).rgb * w.x;
+						} else {
+							gSample = tex2D(_HirabikiVRCLensPassTexture, clamp(gBaseUV, 0.001, 0.999)).rgb;
+						}
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
 						half3 gBlended = 1.0 - (1.0 - ghostAccum) * (1.0 - gSample);
@@ -219,7 +243,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GHOSTFX_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
-			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSoftEdge, _GhostFXCenterWidth;
+			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
