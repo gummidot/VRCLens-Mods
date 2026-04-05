@@ -401,3 +401,49 @@ Authoring-time parameter names work even when VRCFury renames them with `VF###_`
 - `[PASS]` = toggle caused visible changes
 - `[FAIL]` = toggle changed nothing (broken animation path, wrong parameter, WD issue)
 - `[WARN]` = parameter not found in expression menu or Gesture Manager
+
+## VRCLens Custom Shader Mods
+
+This project adds optional shader mods to VRCLens without modifying the original VRCLens assets. Mods are patched into the shader at avatar build time.
+
+### Discovery Workflow
+
+When working on a new shader mod or understanding existing ones:
+
+1. **Read existing plan files** in `.github/prompts/` — these are the source of truth for each mod's design, shader anchors, and implementation details. Start here.
+2. **Read the patcher** at `Assets/VRCLens_Custom/Editor/VRCLensShaderPatcher.cs` — this contains all anchor constants, code blocks, and injection methods. Each mod follows the same `Apply<Feature>Insertions()` pattern.
+3. **Read the build pipeline** — `AvatarBuildHook.cs` → `VRCLensShaderModifier.cs` → `VRCLensShaderPatcher.cs`. Flags flow from `VRCLensModifier` component through this chain.
+4. **Read the original shader** at `Assets/Hirabiki/VRCLens/Resource/DepthOfField.shader` — understand the pass structure and identify anchor strings for new injection sites.
+5. **Reference existing prefabs** under `Assets/VRCLens_Custom/` (e.g., `ManualFocusAssist/`) for animation clip and VRCFury prefab patterns.
+
+### Architecture Overview
+
+| Component | File | Role |
+|-----------|------|------|
+| Toggle flag | `VRCLensModifier.cs` | `public bool enable<Feature>` field on the MonoBehaviour |
+| Inspector UI | `VRCLensModifierEditor.cs` | Checkbox in the component inspector |
+| Build hook | `AvatarBuildHook.cs` | OR-merges flags across modifiers, passes to shader modifier |
+| Shader modifier | `VRCLensShaderModifier.cs` | Copies material, calls patcher, swaps shader on ScreenOverride |
+| Shader patcher | `VRCLensShaderPatcher.cs` | Text replacement + anchor-based code injection into DepthOfField.shader |
+| Animation clips | `Assets/VRCLens_Custom/<Feature>/` | Material property animations for VRCFury toggles/radials |
+| VRCFury prefab | `Assets/VRCLens_Custom/<Feature>.prefab` or `<Feature>/<Feature>.prefab` | Toggles + radial puppets under `VRCLens/Custom/<Feature>` menu path |
+
+### Shader Patching Patterns
+
+- **Text replacement** — Direct string substitution (e.g., changing a threshold value). Used for simple mods like LowerMinFocus.
+- **Anchor-based insertion** — Find a stable line in the shader, inject code after it. Used for feature additions like ManualFocusAssist. All injections wrapped in `// VRCLens_Custom BEGIN/END` markers for idempotency.
+- **Anchor sites** are numbered (Site 1a, 1b, 2, 3, 4a, 4b, 5a, 5b, etc.) — see patcher source for the full list. Multiple mods can share anchor sites (injections stack).
+
+### VRCFury Menu Convention
+
+All custom features use `VRCLens/Custom/<Feature>` as the menu path. For features with multiple controls, use a submenu (e.g., `VRCLens/Custom/GhostFX` containing toggles + radial puppets).
+
+### Pass Structure Reference
+
+| Pass | Purpose | Key textures |
+|------|---------|-------------|
+| Pass 0 | Camera feed capture, CoC calculation | `_RenderTex`, `_DepthTex` → outputs color.rgb + CoC in .a |
+| Pass 1 | Bokeh blur (228-348 sample disk kernel) | GrabPass `_HirabikiVRCLensPassTex_One` |
+| Pass 2 | Final composition: tone mapping, exposure, overlays | GrabPass `_HirabikiVRCLensPassTexture` |
+
+**Critical rule:** CoC serves dual purposes (blur amount + focus zone threshold). Modifications must preserve the original CoC in Pass 0's alpha for focus peaking, then apply changes only in Pass 1 (blur sampling) or Pass 2 (post-processing).
