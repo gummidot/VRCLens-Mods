@@ -200,43 +200,36 @@ public static class VRCLensShaderPatcher
 						ghostBaseOffset = ghostDir * _GhostFXDistance * sign(ghostProj);
 					}
 
-					// Multiple ghost layers with decreasing opacity
-					int ghostLayers = clamp((int)(_GhostFXLayers + 0.5), 1, 5);
+					// Directional streak: continuous trail from source toward ghost offset
+					// _GhostFXLayers controls trail distance, _GhostFXSmear controls density (1-16 taps)
+					float trailLength = _GhostFXLayers;
+					float nearT = lerp(1.0, 0.15, _GhostFXSmear);
+					int smearTaps = clamp((int)(_GhostFXSmear * 15.0 + 1.5), 1, 16);
 					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
-					half3 ghostAccum = col.rgb;
+					half3 ghostAccum = half3(0,0,0);
+					float totalWeight = 0.0;
 					[unroll]
-					for(int gi = 1; gi <= 5; gi++) {
-						if(gi > ghostLayers) break;
-						half2 gBaseUV = sbsUV0 + ghostBaseOffset * gi;
-						half3 gSample = half3(0,0,0);
-						if(_GhostFXSmear > 0.001) {
-							// UV distortion: cylindrical lens effect
-							// Decompose UV relative to ghost center into direction/perp components
-							half2 relUV = gBaseUV - 0.5;
-							float projDir = dot(relUV, ghostDir);
-							float projPerp = dot(relUV, ghostPerp);
-							// Scale < 1 = zoom in = elongate on screen. More along direction = smeared look.
-							float dirScale = 1.0 / (1.0 + _GhostFXSmear * gi * 1.2);
-							float perpScale = 1.0 / (1.0 + _GhostFXSmear * gi * 0.5);
-							half2 smearedUV = 0.5 + ghostDir * (projDir * dirScale) + ghostPerp * (projPerp * perpScale);
-							// Directional blur for smooth smear (5 gaussian-weighted taps)
-							float blurSpread = _GhostFXSmear * 0.02 * gi;
-							half3 w = half3(0.06136, 0.24477, 0.38774);
-							half2 blurStep = ghostDir * blurSpread;
-							gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV - blurStep * 2.0, 0.001, 0.999)).rgb * w.x;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV - blurStep, 0.001, 0.999)).rgb * w.y;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV, 0.001, 0.999)).rgb * w.z;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV + blurStep, 0.001, 0.999)).rgb * w.y;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(smearedUV + blurStep * 2.0, 0.001, 0.999)).rgb * w.x;
-						} else {
-							gSample = tex2D(_HirabikiVRCLensPassTexture, clamp(gBaseUV, 0.001, 0.999)).rgb;
+					for(int gi = 0; gi < 16; gi++) {
+						if(gi >= smearTaps) break;
+						float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1)));
+						half2 gUV = sbsUV0 + ghostBaseOffset * t;
+						if(_GhostFXSmear > 0.2) {
+							half2 relUV = gUV - 0.5;
+							float pp = dot(relUV, ghostPerp);
+							float expandScale = 1.0 / (1.0 + _GhostFXSmear * t * 0.3);
+							gUV = gUV + ghostPerp * (pp * (expandScale - 1.0));
 						}
+						gUV = clamp(gUV, 0.001, 0.999);
+						half3 gSample = tex2D(_HirabikiVRCLensPassTexture, gUV).rgb;
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
-						half3 gBlended = 1.0 - (1.0 - ghostAccum) * (1.0 - gSample);
-						ghostAccum = lerp(ghostAccum, gBlended, ghostZoneMask * _GhostFXOpacity / (float)gi);
+						float tapWeight = 1.0 / (1.0 + t * 0.5);
+						ghostAccum += gSample * tapWeight;
+						totalWeight += tapWeight;
 					}
-					col.rgb = ghostAccum;
+					ghostAccum /= totalWeight;
+					half3 ghostBlended = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum);
+					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
 				}
 				// VRCLens_Custom END";
 
