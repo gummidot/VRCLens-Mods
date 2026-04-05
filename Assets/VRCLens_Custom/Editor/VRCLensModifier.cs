@@ -19,6 +19,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
 
     public bool enableLowerMinFocus;
     public bool enableManualFocusAssist;
+    public bool enableGhostFX;
 
     public void Modify(string tempDir)
     {

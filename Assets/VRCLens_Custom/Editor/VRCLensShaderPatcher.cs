@@ -153,6 +153,68 @@ public static class VRCLensShaderPatcher
     // Site 7: Debug visualization — insert after the focus peaking line
     private const string ANCHOR_FOCUS_PEAKING = "lerp(col, _FocusPeakingColor, edgeDetect(";
 
+    // ═══════════════════════════════════════════════════════════════════
+    // GhostFX — anchor-based insertion (Pass 2 / final composition)
+    // ═══════════════════════════════════════════════════════════════════
+
+    // Site 8a: Properties block — reuses ANCHOR_PROPERTIES (same insertion point as MFA)
+    // Site 8b: Pass 2 uniforms — after white balance line (before tone mapping)
+    private const string ANCHOR_GHOSTFX_UNIFORMS = "col.rgb *= colorTemp(-_WhiteBalance);";
+
+    // Site 8c: Ghost FX application — after white balance, before tone mapping
+    // Uses same anchor as 8b, function + call injected together
+
+    // ── GhostFX code blocks ─────────────────────────────────────────────
+
+    private static readonly string BLOCK_GHOSTFX_PROPERTIES = @"
+		// VRCLens_Custom BEGIN - Ghost FX Properties
+		[Header(Ghost FX)]
+		[Enum(Disabled,0,Split,1,Dual,2)] _GhostFXMode (""Ghost FX Mode"", float) = 0
+		_GhostFXAngle (""Rotation"", Range(0.0, 1.0)) = 0.0
+		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
+		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
+		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
+		_GhostFXCenterWidth (""Center Width"", Range(0.05, 0.4)) = 0.15
+		// VRCLens_Custom END";
+
+    private static readonly string BLOCK_GHOSTFX_PASS2 = @"
+				// VRCLens_Custom BEGIN - Ghost FX
+				if(_GhostFXMode > 0.5) {
+					half2 ghostCenter = sbsUV0 - 0.5;
+					float ghostAngleRad = _GhostFXAngle * 6.28318530718;
+					half2 ghostDir = half2(cos(ghostAngleRad), sin(ghostAngleRad));
+					float ghostProj = dot(ghostCenter, ghostDir);
+
+					float ghostZoneMask;
+					half2 ghostUV;
+					if(_GhostFXMode < 1.5) {
+						// Split mode: half-image single ghost
+						ghostZoneMask = smoothstep(-_GhostFXSoftEdge, _GhostFXSoftEdge, ghostProj);
+						ghostUV = sbsUV0 + ghostDir * _GhostFXDistance;
+					} else {
+						// Dual mode: center-clear double ghost
+						float ghostAbsDist = abs(ghostProj);
+						ghostZoneMask = smoothstep(_GhostFXCenterWidth - _GhostFXSoftEdge, _GhostFXCenterWidth + _GhostFXSoftEdge, ghostAbsDist);
+						ghostUV = sbsUV0 + ghostDir * _GhostFXDistance * sign(ghostProj);
+					}
+
+					ghostUV = clamp(ghostUV, 0.001, 0.999);
+					half3 ghostSample = tex2D(_HirabikiVRCLensPassTexture, ghostUV).rgb;
+					// Apply same exposure + white balance to ghost sample
+					ghostSample = max(0.00001, ghostSample / finalExp.x);
+					ghostSample *= colorTemp(-_WhiteBalance);
+					// Screen blend
+					half3 ghostBlended = 1.0 - (1.0 - col.rgb) * (1.0 - ghostSample);
+					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
+				}
+				// VRCLens_Custom END";
+
+    private static readonly string BLOCK_GHOSTFX_UNIFORMS = @"
+			// VRCLens_Custom BEGIN - Ghost FX Uniforms
+			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
+			uniform float _GhostFXOpacity, _GhostFXSoftEdge, _GhostFXCenterWidth;
+			// VRCLens_Custom END";
+
     // ── Code blocks to inject ───────────────────────────────────────────
 
     private static readonly string BLOCK_PROPERTIES = @"
@@ -335,7 +397,7 @@ public static class VRCLensShaderPatcher
     /// Reads from ORIGINAL_SHADER_PATH, writes to OUTPUT_SHADER_PATH.
     /// Returns the compiled Shader, or null on failure.
     /// </summary>
-    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist)
+    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false)
     {
         if (!File.Exists(ORIGINAL_SHADER_PATH))
         {
@@ -392,10 +454,36 @@ public static class VRCLensShaderPatcher
             }
         }
 
+        // Validate GhostFX anchors if that feature is enabled
+        if (enableGhostFX)
+        {
+            var ghostAnchors = GetGhostFXAnchors();
+            List<string> missingGhost = new List<string>();
+            foreach (var anchor in ghostAnchors)
+            {
+                if (!content.Contains(anchor.SearchString))
+                    missingGhost.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+            }
+            if (missingGhost.Count > 0)
+            {
+                string errorMsg = $"Cannot patch shader — expected GhostFX anchor lines not found.\n" +
+                    $"VRCLens may have been updated with incompatible changes.\n\n" +
+                    $"Missing anchors:\n{string.Join("\n", missingGhost)}";
+                Debug.LogError($"{LOG_PREFIX} {errorMsg}");
+                return null;
+            }
+        }
+
         // Step 1: Apply ManualFocusAssist insertions FIRST (adds code blocks with 0.5001)
         if (enableManualFocusAssist)
         {
             content = ApplyManualFocusAssistInsertions(content);
+        }
+
+        // Step 1b: Apply GhostFX insertions
+        if (enableGhostFX)
+        {
+            content = ApplyGhostFXInsertions(content);
         }
 
         // Step 2: Apply LowerMinFocus replacements SECOND
@@ -407,12 +495,13 @@ public static class VRCLensShaderPatcher
         }
 
         // Step 3: Rename shader
-        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist);
+        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX);
 
         // Step 4: Add header comment
         List<string> enabledMods = new List<string>();
         if (enableLowerMinFocus) enabledMods.Add("LowerMinFocus");
         if (enableManualFocusAssist) enabledMods.Add("ManualFocusAssist");
+        if (enableGhostFX) enabledMods.Add("GhostFX");
         string modsStr = string.Join(" + ", enabledMods);
 
         string header = $"// VRCLens Patched Shader ({modsStr}) - Auto-generated by VRCLens Custom\n" +
@@ -551,8 +640,25 @@ public static class VRCLensShaderPatcher
             return;
         }
 
-        // Apply all modifications (both mods enabled for reference)
+        // Validate GhostFX anchors
+        var ghostAnchors = GetGhostFXAnchors();
+        List<string> missingGhost = new List<string>();
+        foreach (var anchor in ghostAnchors)
+        {
+            if (!content.Contains(anchor.SearchString))
+                missingGhost.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+        }
+        if (missingGhost.Count > 0)
+        {
+            string msg = $"Cannot patch — missing GhostFX anchors:\n{string.Join("\n", missingGhost)}";
+            Debug.LogError($"{LOG_PREFIX} {msg}");
+            EditorUtility.DisplayDialog("Generate Patched Reference", msg, "OK");
+            return;
+        }
+
+        // Apply all modifications (all mods enabled for reference)
         content = ApplyManualFocusAssistInsertions(content);
+        content = ApplyGhostFXInsertions(content);
         content = ApplyLowerMinFocusReplacements(content);
         File.WriteAllText(PATCHED_REF_PATH, content);
 
@@ -651,8 +757,27 @@ public static class VRCLensShaderPatcher
         }
         messages.Add($"All {LowerMinFocusReplacements.Count} LowerMinFocus patterns found.");
 
-        // Patch the original (both mods) and compare to reference
+        // Validate GhostFX anchors
+        var ghostAnchorsV = GetGhostFXAnchors();
+        List<string> missingGhostV = new List<string>();
+        foreach (var anchor in ghostAnchorsV)
+        {
+            if (!originalContent.Contains(anchor.SearchString))
+                missingGhostV.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+        }
+        if (missingGhostV.Count > 0)
+        {
+            string msg = $"GhostFX validation FAILED — missing anchors:\n{string.Join("\n", missingGhostV)}\n\n" +
+                "VRCLens may have been updated. See maintenance steps in the patcher source code.";
+            Debug.LogError($"{LOG_PREFIX} {msg}");
+            EditorUtility.DisplayDialog("Verify Patcher — FAILED", msg, "OK");
+            return;
+        }
+        messages.Add($"All {ghostAnchorsV.Count} GhostFX anchors found.");
+
+        // Patch the original (all mods) and compare to reference
         string patched = ApplyManualFocusAssistInsertions(originalContent);
+        patched = ApplyGhostFXInsertions(patched);
         patched = ApplyLowerMinFocusReplacements(patched);
         string expected = File.ReadAllText(PATCHED_REF_PATH);
 
@@ -696,10 +821,10 @@ public static class VRCLensShaderPatcher
 
     // ── Debug menu ──────────────────────────────────────────────────────
 
-    [MenuItem("Tools/VRCLens Custom/Debug/Test Generate Patched Shader (both mods)")]
+    [MenuItem("Tools/VRCLens Custom/Debug/Test Generate Patched Shader (all mods)")]
     public static void GenerateFromMenu()
     {
-        Shader shader = PatchShader(true, true);
+        Shader shader = PatchShader(true, true, true);
         if (shader != null)
         {
             EditorUtility.DisplayDialog("VRCLens Shader Patcher",
@@ -824,6 +949,41 @@ public static class VRCLensShaderPatcher
         return string.Join("\n", lines);
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // GhostFX insertion logic
+    // ═══════════════════════════════════════════════════════════════════
+
+    private static List<AnchorInfo> GetGhostFXAnchors()
+    {
+        return new List<AnchorInfo>
+        {
+            new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 6: _FocusDistance uniform"),
+            new AnchorInfo(ANCHOR_GHOSTFX_UNIFORMS, "Pass 2: white balance line"),
+        };
+    }
+
+    private static string ApplyGhostFXInsertions(string content)
+    {
+        var lines = new List<string>(content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+        int insertions = 0;
+
+        // Process from bottom to top so line indices don't shift
+
+        // Site 8c: Ghost FX application — after white balance line (before tone mapping)
+        insertions += InsertAfterLine(lines, ANCHOR_GHOSTFX_UNIFORMS, BLOCK_GHOSTFX_PASS2, "GhostFX pass 2 application");
+
+        // Site 8b: Ghost FX uniforms in Pass 2 — after second _FocusDistance uniform
+        insertions += InsertAfterLine(lines, ANCHOR_PASS6_UNIFORMS, BLOCK_GHOSTFX_UNIFORMS, "GhostFX uniforms", false, 2);
+
+        // Site 8a: Ghost FX properties — after _DoFStrength line
+        insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_GHOSTFX_PROPERTIES, "GhostFX properties");
+
+        Debug.Log($"{LOG_PREFIX} Applied {insertions} GhostFX insertion sites");
+
+        return string.Join("\n", lines);
+    }
+
     /// <summary>
     /// Find a line containing searchString and insert blockText after it.
     /// If findEndOfStatement is true, finds the end of the statement (line ending with ";") first.
@@ -933,12 +1093,13 @@ public static class VRCLensShaderPatcher
     /// <summary>
     /// Renames the shader by appending a suffix based on enabled mods.
     /// </summary>
-    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist)
+    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false)
     {
         // Build suffix from enabled mods
         var parts = new List<string>();
         if (enableLowerMinFocus) parts.Add("LowerMinFocus");
         if (enableManualFocusAssist) parts.Add("ManualFocusAssist");
+        if (enableGhostFX) parts.Add("GhostFX");
         if (parts.Count == 0) return content;
 
         string suffix = " " + string.Join(" ", parts);

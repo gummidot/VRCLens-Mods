@@ -87,6 +87,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                 // Collect shader flags across all modifiers first
                 bool enableLowerMinFocus = false;
                 bool enableManualFocusAssist = false;
+                bool enableGhostFX = false;
                 VRCLens shaderPatchVrclens = null;
 
                 foreach (var modifier in modifiers)
@@ -96,14 +97,15 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
 
                     if (modifier.enableLowerMinFocus) enableLowerMinFocus = true;
                     if (modifier.enableManualFocusAssist) enableManualFocusAssist = true;
-                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist) && shaderPatchVrclens == null)
+                    if (modifier.enableGhostFX) enableGhostFX = true;
+                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist || modifier.enableGhostFX) && shaderPatchVrclens == null)
                     {
                         shaderPatchVrclens = modifier.GetVRCLens();
                     }
                 }
 
                 // Apply shader patching once with merged flags from all modifiers
-                if (enableLowerMinFocus || enableManualFocusAssist)
+                if (enableLowerMinFocus || enableManualFocusAssist || enableGhostFX)
                 {
                     if (shaderPatchVrclens == null)
                     {
@@ -113,7 +115,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                     else
                     {
                         string newPath = VRCLensShaderModifier.CopyAndModifyShader(
-                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist);
+                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX);
                         if (newPath != null)
                         {
                             _usedShaderPatcher = true;
