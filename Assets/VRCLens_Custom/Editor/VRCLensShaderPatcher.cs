@@ -186,26 +186,30 @@ public static class VRCLensShaderPatcher
 					float ghostProj = dot(ghostCenter, ghostDir);
 
 					float ghostZoneMask;
-					half2 ghostUV;
+					half2 ghostBaseOffset;
 					if(_GhostFXMode < 1.5) {
-						// Split mode: half-image single ghost
+						// Split mode
 						ghostZoneMask = smoothstep(-_GhostFXSoftEdge, _GhostFXSoftEdge, ghostProj);
-						ghostUV = sbsUV0 + ghostDir * _GhostFXDistance;
+						ghostBaseOffset = ghostDir * _GhostFXDistance;
 					} else {
-						// Dual mode: center-clear double ghost
+						// Dual mode: center-clear
 						float ghostAbsDist = abs(ghostProj);
 						ghostZoneMask = smoothstep(_GhostFXCenterWidth - _GhostFXSoftEdge, _GhostFXCenterWidth + _GhostFXSoftEdge, ghostAbsDist);
-						ghostUV = sbsUV0 + ghostDir * _GhostFXDistance * sign(ghostProj);
+						ghostBaseOffset = ghostDir * _GhostFXDistance * sign(ghostProj);
 					}
 
-					ghostUV = clamp(ghostUV, 0.001, 0.999);
-					half3 ghostSample = tex2D(_HirabikiVRCLensPassTexture, ghostUV).rgb;
-					// Apply same exposure + white balance to ghost sample
-					ghostSample = max(0.00001, ghostSample / finalExp.x);
-					ghostSample *= colorTemp(-_WhiteBalance);
-					// Screen blend
-					half3 ghostBlended = 1.0 - (1.0 - col.rgb) * (1.0 - ghostSample);
-					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
+					// Multiple ghost layers with decreasing opacity
+					half3 ghostAccum = col.rgb;
+					[unroll]
+					for(int gi = 1; gi <= 3; gi++) {
+						half2 gUV = clamp(sbsUV0 + ghostBaseOffset * gi, 0.001, 0.999);
+						half3 gSample = tex2D(_HirabikiVRCLensPassTexture, gUV).rgb;
+						gSample = max(0.00001, gSample / finalExp.x);
+						gSample *= colorTemp(-_WhiteBalance);
+						half3 gBlended = 1.0 - (1.0 - ghostAccum) * (1.0 - gSample);
+						ghostAccum = lerp(ghostAccum, gBlended, ghostZoneMask * _GhostFXOpacity / (float)gi);
+					}
+					col.rgb = ghostAccum;
 				}
 				// VRCLens_Custom END";
 
