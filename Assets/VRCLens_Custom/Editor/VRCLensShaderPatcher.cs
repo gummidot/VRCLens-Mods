@@ -178,6 +178,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		[Toggle] _GhostFXLumaWeight (""Luminance Weighting"", float) = 0
+		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -248,7 +249,9 @@ public static class VRCLensShaderPatcher
 						totalWeight += tapWeight;
 					}
 					ghostAccum /= totalWeight;
-					half3 ghostBlended = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum);
+					half3 ghostBlended = _GhostFXBlendMode < 0.5
+						? 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum)  // Screen blend
+						: max(col.rgb, ghostAccum);                     // Lighten blend
 					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
 				}
 				// VRCLens_Custom END";
@@ -258,6 +261,7 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXLumaWeight;
+			uniform float _GhostFXBlendMode;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
