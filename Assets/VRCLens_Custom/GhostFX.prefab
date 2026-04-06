@@ -571,7 +571,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0
+        defaultSliderValue: 0.25
         useGlobalParam: 1
         globalParam: VRCL_Custom/GhostFXSmear
         holdButton: 0
@@ -835,7 +835,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0
+        defaultSliderValue: 0.25
         useGlobalParam: 1
         globalParam: GhostFXCenterWidth
         holdButton: 0
