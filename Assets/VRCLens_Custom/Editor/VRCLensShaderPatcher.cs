@@ -204,7 +204,7 @@ public static class VRCLensShaderPatcher
 					// _GhostFXLayers controls trail distance, _GhostFXSmear controls density + blur
 					float trailLength = _GhostFXLayers;
 					float nearT = lerp(1.0, 0.05, _GhostFXSmear);
-					int smearTaps = clamp((int)(_GhostFXSmear * 23.0 + 1.5), 1, 24);
+					int smearTaps = clamp((int)(_GhostFXSmear * 23.0 + 1.5), max(1, (int)trailLength), 24);
 
 					// Per-pixel Interleaved Gradient Noise
 					// Jorge Jimenez, "Next Generation Post Processing in Call of Duty: Advanced Warfare", SIGGRAPH 2014
@@ -213,7 +213,7 @@ public static class VRCLensShaderPatcher
 					float2 ghostPixelPos = floor(sbsUV0 * _ScreenParams.xy);
 					float ghostNoise = frac(52.9829189 * frac(dot(ghostPixelPos, float2(0.06711056, 0.00583715))));
 					float tapSpacing = (trailLength - nearT) / max(1.0, (float)(smearTaps - 1));
-					float tJitter = (ghostNoise - 0.5) * tapSpacing;
+					float tJitter = (ghostNoise - 0.5) * tapSpacing * _GhostFXSmear;
 
 					half3 ghostAccum = half3(0,0,0);
 					float totalWeight = 0.0;
