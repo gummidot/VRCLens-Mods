@@ -247,9 +247,23 @@ public static class VRCLensShaderPatcher
 						totalWeight += tapWeight;
 					}
 				ghostAccum /= totalWeight;
-					half3 ghostBlended = _GhostFXBlendMode < 0.5
-						? 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum)  // Screen blend
-						: max(col.rgb, ghostAccum);                     // Lighten blend
+					half3 ghostBlended;
+					if(_GhostFXBlendMode < 0.5) {
+						// Screen blend with saturation preservation
+						// Compute original hue ratios to prevent color shifts
+						half maxOrig = max(col.r, max(col.g, col.b));
+						half3 screenRaw = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum);
+						// Preserve hue by scaling the screen result to maintain channel ratios
+						half maxScreen = max(screenRaw.r, max(screenRaw.g, screenRaw.b));
+						half3 ghostHueRatio = ghostAccum / max(0.001, max(ghostAccum.r, max(ghostAccum.g, ghostAccum.b)));
+						// Blend between raw screen (at low ghost intensity) and hue-preserved (at high)
+						half ghostIntensity = max(ghostAccum.r, max(ghostAccum.g, ghostAccum.b));
+						half hueBlend = smoothstep(0.3, 0.8, ghostIntensity);
+						half3 hueCorrected = maxScreen * ghostHueRatio;
+						ghostBlended = lerp(screenRaw, hueCorrected, hueBlend);
+					} else {
+						ghostBlended = max(col.rgb, ghostAccum);  // Lighten blend
+					}
 					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
 				}
 				// VRCLens_Custom END";
