@@ -177,7 +177,6 @@ public static class VRCLensShaderPatcher
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
-		[Toggle] _GhostFXLumaWeight (""Luminance Weighting"", float) = 0
 		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		// VRCLens_Custom END";
 
@@ -241,14 +240,11 @@ public static class VRCLensShaderPatcher
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
 						// Gaussian falloff: bright center, soft trailing edge
-						// Luminance weighting: bright pixels streak more (mimics sensor photon accumulation)
 						float tapWeight = exp(-2.5 * t * t);
-						float luminance = dot(gSample, half3(0.2126, 0.7152, 0.0722));
-						tapWeight *= lerp(1.0, luminance, _GhostFXSmear * _GhostFXLumaWeight);
 						ghostAccum += gSample * tapWeight;
 						totalWeight += tapWeight;
 					}
-					ghostAccum /= totalWeight;
+				ghostAccum /= totalWeight;
 					half3 ghostBlended = _GhostFXBlendMode < 0.5
 						? 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum)  // Screen blend
 						: max(col.rgb, ghostAccum);                     // Lighten blend
@@ -260,7 +256,6 @@ public static class VRCLensShaderPatcher
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
-			uniform float _GhostFXLumaWeight;
 			uniform float _GhostFXBlendMode;
 			// VRCLens_Custom END";
 
