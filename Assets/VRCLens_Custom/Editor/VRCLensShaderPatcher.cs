@@ -206,14 +206,19 @@ public static class VRCLensShaderPatcher
 					float nearT = lerp(1.0, 0.05, _GhostFXSmear);
 					int smearTaps = clamp((int)(_GhostFXSmear * 23.0 + 1.5), max(1, (int)trailLength), 24);
 
-					// Per-pixel Interleaved Gradient Noise
-					// Jorge Jimenez, "Next Generation Post Processing in Call of Duty: Advanced Warfare", SIGGRAPH 2014
-					// Each pixel gets a unique random offset, breaking coherent tap
-					// edges into imperceptible grain that reads as continuous smear
+					// Per-pixel 2D Interleaved Gradient Noise
+					// Jorge Jimenez, Next Generation Post Processing in Call of Duty: Advanced Warfare, SIGGRAPH 2014
+					// Two independent noise values: one for along-streak jitter,
+					// one for perpendicular jitter — breaks both horizontal and
+					// vertical coherence into fine grain
 					float2 ghostPixelPos = floor(sbsUV0 * _ScreenParams.xy);
 					float ghostNoise = frac(52.9829189 * frac(dot(ghostPixelPos, float2(0.06711056, 0.00583715))));
+					float ghostNoise2 = frac(52.9829189 * frac(dot(ghostPixelPos + float2(47.0, 17.0), float2(0.06711056, 0.00583715))));
 					float tapSpacing = (trailLength - nearT) / max(1.0, (float)(smearTaps - 1));
 					float tJitter = (ghostNoise - 0.5) * tapSpacing * _GhostFXSmear;
+					// Perpendicular direction for cross-streak jitter
+					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
+					float perpJitter = (ghostNoise2 - 0.5) * _GhostFXSmear * 0.008;
 
 					half3 ghostAccum = half3(0,0,0);
 					float totalWeight = 0.0;
@@ -222,7 +227,7 @@ public static class VRCLensShaderPatcher
 						if(gi >= smearTaps) break;
 						float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
 						t = max(0.01, t);
-						half2 gUV = sbsUV0 + ghostBaseOffset * t;
+						half2 gUV = sbsUV0 + ghostBaseOffset * t + ghostPerp * perpJitter;
 						// Per-tap directional blur: 3 sub-samples along streak direction
 						// Blur radius grows with distance for progressive edge loss
 						float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
@@ -233,8 +238,8 @@ public static class VRCLensShaderPatcher
 						gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
-						// Exponential falloff: luminous trail that fades with distance
-						float tapWeight = exp(-t * 0.8);
+						// Gaussian falloff: bright center, soft trailing edge
+						float tapWeight = exp(-2.5 * t * t);
 						ghostAccum += gSample * tapWeight;
 						totalWeight += tapWeight;
 					}
