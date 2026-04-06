@@ -200,30 +200,41 @@ public static class VRCLensShaderPatcher
 						ghostBaseOffset = ghostDir * _GhostFXDistance * sign(ghostProj);
 					}
 
-					// Directional streak: continuous trail from source toward ghost offset
-					// _GhostFXLayers controls trail distance, _GhostFXSmear controls density (1-16 taps)
+					// Continuous directional smear with per-pixel spatial jitter
+					// _GhostFXLayers controls trail distance, _GhostFXSmear controls density + blur
 					float trailLength = _GhostFXLayers;
-					float nearT = lerp(1.0, 0.15, _GhostFXSmear);
-					int smearTaps = clamp((int)(_GhostFXSmear * 15.0 + 1.5), 1, 16);
-					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
+					float nearT = lerp(1.0, 0.05, _GhostFXSmear);
+					int smearTaps = clamp((int)(_GhostFXSmear * 23.0 + 1.5), 1, 24);
+
+					// Per-pixel Interleaved Gradient Noise
+					// Jorge Jimenez, "Next Generation Post Processing in Call of Duty: Advanced Warfare", SIGGRAPH 2014
+					// Each pixel gets a unique random offset, breaking coherent tap
+					// edges into imperceptible grain that reads as continuous smear
+					float2 ghostPixelPos = floor(sbsUV0 * _ScreenParams.xy);
+					float ghostNoise = frac(52.9829189 * frac(dot(ghostPixelPos, float2(0.06711056, 0.00583715))));
+					float tapSpacing = (trailLength - nearT) / max(1.0, (float)(smearTaps - 1));
+					float tJitter = (ghostNoise - 0.5) * tapSpacing;
+
 					half3 ghostAccum = half3(0,0,0);
 					float totalWeight = 0.0;
 					[unroll]
-					for(int gi = 0; gi < 16; gi++) {
+					for(int gi = 0; gi < 24; gi++) {
 						if(gi >= smearTaps) break;
-						float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1)));
+						float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
+						t = max(0.01, t);
 						half2 gUV = sbsUV0 + ghostBaseOffset * t;
-						if(_GhostFXSmear > 0.2) {
-							half2 relUV = gUV - 0.5;
-							float pp = dot(relUV, ghostPerp);
-							float expandScale = 1.0 / (1.0 + _GhostFXSmear * t * 0.3);
-							gUV = gUV + ghostPerp * (pp * (expandScale - 1.0));
-						}
-						gUV = clamp(gUV, 0.001, 0.999);
-						half3 gSample = tex2D(_HirabikiVRCLensPassTexture, gUV).rgb;
+						// Per-tap directional blur: 3 sub-samples along streak direction
+						// Blur radius grows with distance for progressive edge loss
+						float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
+						half2 blurStep = ghostDir * blurRadius;
+						// 3-tap gaussian kernel (0.25, 0.50, 0.25)
+						half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.25;
+						gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.50;
+						gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
-						float tapWeight = 1.0 / (1.0 + t * 0.5);
+						// Exponential falloff: luminous trail that fades with distance
+						float tapWeight = exp(-t * 0.8);
 						ghostAccum += gSample * tapWeight;
 						totalWeight += tapWeight;
 					}
