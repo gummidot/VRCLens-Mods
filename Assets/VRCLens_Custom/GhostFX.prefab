@@ -626,7 +626,7 @@ MonoBehaviour:
         slider: 0
         sliderInactiveAtZero: 0
         securityEnabled: 0
-        defaultOn: 1
+        defaultOn: 0
         includeInRest: 0
         exclusiveOffState: 0
         enableExclusiveTag: 1
@@ -714,7 +714,7 @@ MonoBehaviour:
         slider: 0
         sliderInactiveAtZero: 0
         securityEnabled: 0
-        defaultOn: 0
+        defaultOn: 1
         includeInRest: 0
         exclusiveOffState: 0
         enableExclusiveTag: 1
