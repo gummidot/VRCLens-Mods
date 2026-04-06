@@ -176,7 +176,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXLayers (""Layers"", Range(1.0, 5.0)) = 1.0
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
-		_GhostFXCenterWidth (""Center Width"", Range(0.05, 0.4)) = 0.15
+		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
