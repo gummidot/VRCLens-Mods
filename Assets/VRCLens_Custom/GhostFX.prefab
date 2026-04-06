@@ -15,10 +15,11 @@ GameObject:
   - component: {fileID: 1000000000000000040}
   - component: {fileID: 1000000000000000050}
   - component: {fileID: 6353086663564189297}
-  - component: {fileID: 4643781157321567659}
   - component: {fileID: 3436625758805562299}
-  - component: {fileID: 2833441274162745478}
+  - component: {fileID: -2269780119840326049}
   - component: {fileID: -4902929017158743794}
+  - component: {fileID: 2833441274162745478}
+  - component: {fileID: 4643781157321567659}
   m_Layer: 0
   m_Name: GhostFX
   m_TagString: Untagged
@@ -285,7 +286,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0
+        defaultSliderValue: 0.5
         useGlobalParam: 1
         globalParam: VRCL_Custom/GhostFXAngle
         holdButton: 0
@@ -502,94 +503,6 @@ MonoBehaviour:
   enableLowerMinFocus: 0
   enableManualFocusAssist: 0
   enableGhostFX: 1
---- !u!114 &4643781157321567659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1000000000000000000}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 3
-  unityVersion: 2022.3.22f1
-  vrcfuryVersion: 1.1152.0
-  somethingIsBroken: 0
-  config:
-    features: []
-  content:
-    rid: 455501412253040859
-  references:
-    version: 2
-    RefIds:
-    - rid: 455501412253040859
-      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
-      data:
-        version: 3
-        name: VRCLens/Custom/GhostFX/Layers
-        state:
-          actions:
-          - rid: 455501412253040860
-        saved: 1
-        slider: 1
-        sliderInactiveAtZero: 0
-        securityEnabled: 0
-        defaultOn: 0
-        includeInRest: 0
-        exclusiveOffState: 0
-        enableExclusiveTag: 0
-        exclusiveTag: 
-        resetPhysbones: []
-        hasExitTime: 0
-        enableIcon: 0
-        icon:
-          version: 1
-          fileID: 0
-          guid: 
-          id: 
-          objRef: {fileID: 0}
-        enableDriveGlobalParam: 0
-        driveGlobalParam: 
-        separateLocal: 0
-        localState:
-          actions: []
-        hasTransition: 0
-        transitionStateIn:
-          actions: []
-        transitionStateOut:
-          actions: []
-        transitionTimeIn: 0
-        transitionTimeOut: 0
-        localTransitionStateIn:
-          actions: []
-        localTransitionStateOut:
-          actions: []
-        localTransitionTimeIn: 0
-        localTransitionTimeOut: 0
-        simpleOutTransition: 1
-        defaultSliderValue: 0
-        useGlobalParam: 1
-        globalParam: VRCL_Custom/GhostFXLayers
-        holdButton: 0
-        invertRestLogic: 0
-        expandIntoTransition: 1
-    - rid: 455501412253040860
-      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
-      data:
-        version: 0
-        desktopActive: 0
-        androidActive: 0
-        localOnly: 0
-        remoteOnly: 0
-        clip:
-          version: 1
-          fileID: 0
-          guid: 
-          id: 47aeda772638e5e448e3ba36abe42ef0|Assets/VRCLens_Custom/GhostFX/GhostFX_Layers.anim
-          objRef: {fileID: 7400000, guid: 47aeda772638e5e448e3ba36abe42ef0, type: 2}
 --- !u!114 &3436625758805562299
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -678,6 +591,182 @@ MonoBehaviour:
           guid: 
           id: 8b56447171acc4b4eb29f162df0192be|Assets/VRCLens_Custom/GhostFX/GhostFX_Smear.anim
           objRef: {fileID: 7400000, guid: 8b56447171acc4b4eb29f162df0192be, type: 2}
+--- !u!114 &-2269780119840326049
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501412253041165
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501412253041165
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/GhostFX/Blend Mode/Screen
+        state:
+          actions:
+          - rid: 455501412253041166
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 1
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: GhostFXBlendMode
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0
+        useGlobalParam: 1
+        globalParam: GhostFXBlendScreen
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501412253041166
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 1888c0961ecf1b040b697d2304c1ad5c|Assets/VRCLens_Custom/GhostFX/GhostFX_BlendScreen.anim
+          objRef: {fileID: 7400000, guid: 1888c0961ecf1b040b697d2304c1ad5c, type: 2}
+--- !u!114 &-4902929017158743794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501412253040869
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501412253040869
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/GhostFX/Blend Mode/Lighten
+        state:
+          actions:
+          - rid: 455501412253040870
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: GhostFXBlendMode
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0
+        useGlobalParam: 1
+        globalParam: GhostFXBlendLighten
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501412253040870
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 8a4fdc6e6f1ce2545ad2789b64f43b33|Assets/VRCLens_Custom/GhostFX/GhostFX_BlendLighten.anim
+          objRef: {fileID: 7400000, guid: 8a4fdc6e6f1ce2545ad2789b64f43b33, type: 2}
 --- !u!114 &2833441274162745478
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -766,7 +855,7 @@ MonoBehaviour:
           guid: 
           id: eb5ab506a960b7d4f9f0139213fbe506|Assets/VRCLens_Custom/GhostFX/GhostFX_CenterWidth.anim
           objRef: {fileID: 7400000, guid: eb5ab506a960b7d4f9f0139213fbe506, type: 2}
---- !u!114 &-4902929017158743794
+--- !u!114 &4643781157321567659
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -785,20 +874,20 @@ MonoBehaviour:
   config:
     features: []
   content:
-    rid: 455501412253040869
+    rid: 455501412253040859
   references:
     version: 2
     RefIds:
-    - rid: 455501412253040869
+    - rid: 455501412253040859
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Lighten
+        name: VRCLens/Custom/GhostFX/Layers
         state:
           actions:
-          - rid: 455501412253040870
+          - rid: 455501412253040860
         saved: 1
-        slider: 0
+        slider: 1
         sliderInactiveAtZero: 0
         securityEnabled: 0
         defaultOn: 0
@@ -836,11 +925,11 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0
         useGlobalParam: 1
-        globalParam: GhostFXBlendLighten
+        globalParam: VRCL_Custom/GhostFXLayers
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
-    - rid: 455501412253040870
+    - rid: 455501412253040860
       type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
       data:
         version: 0
@@ -852,5 +941,5 @@ MonoBehaviour:
           version: 1
           fileID: 0
           guid: 
-          id: 8a4fdc6e6f1ce2545ad2789b64f43b33|Assets/VRCLens_Custom/GhostFX/GhostFX_BlendLighten.anim
-          objRef: {fileID: 7400000, guid: 8a4fdc6e6f1ce2545ad2789b64f43b33, type: 2}
+          id: 47aeda772638e5e448e3ba36abe42ef0|Assets/VRCLens_Custom/GhostFX/GhostFX_Layers.anim
+          objRef: {fileID: 7400000, guid: 47aeda772638e5e448e3ba36abe42ef0, type: 2}

@@ -240,7 +240,9 @@ public static class VRCLensShaderPatcher
 						gSample = max(0.00001, gSample / finalExp.x);
 						gSample *= colorTemp(-_WhiteBalance);
 						// Gaussian falloff: bright center, soft trailing edge
-						float tapWeight = exp(-2.5 * t * t);
+						// Normalize t to [0,1] range so outer layers remain visible
+						float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
+						float tapWeight = exp(-2.5 * tNorm * tNorm);
 						ghostAccum += gSample * tapWeight;
 						totalWeight += tapWeight;
 					}
