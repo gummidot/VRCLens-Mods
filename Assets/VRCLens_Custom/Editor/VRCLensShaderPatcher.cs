@@ -190,15 +190,17 @@ public static class VRCLensShaderPatcher
 
 					float ghostZoneMask;
 					half2 ghostBaseOffset;
+					int ghostDirCount = 1;
 					if(_GhostFXMode < 1.5) {
 						// Split mode
 						ghostZoneMask = smoothstep(-_GhostFXSoftEdge, _GhostFXSoftEdge, ghostProj);
 						ghostBaseOffset = ghostDir * _GhostFXDistance;
 					} else if(_GhostFXMode < 2.5) {
-						// Dual mode: center-clear
+						// Dual mode: center-clear, sample both directions
 						float ghostAbsDist = abs(ghostProj);
 						ghostZoneMask = smoothstep(_GhostFXCenterWidth - _GhostFXSoftEdge, _GhostFXCenterWidth + _GhostFXSoftEdge, ghostAbsDist);
-						ghostBaseOffset = ghostDir * _GhostFXDistance * sign(ghostProj);
+						ghostBaseOffset = ghostDir * _GhostFXDistance;
+						ghostDirCount = 2;
 					} else {
 						// Full mode: entire frame, unidirectional
 						ghostZoneMask = 1.0;
@@ -213,60 +215,56 @@ public static class VRCLensShaderPatcher
 
 					// Per-pixel 2D Interleaved Gradient Noise
 					// Jorge Jimenez, Next Generation Post Processing in Call of Duty: Advanced Warfare, SIGGRAPH 2014
-					// Two independent noise values: one for along-streak jitter,
-					// one for perpendicular jitter — breaks both horizontal and
-					// vertical coherence into fine grain
 					float2 ghostPixelPos = floor(sbsUV0 * _ScreenParams.xy);
 					float ghostNoise = frac(52.9829189 * frac(dot(ghostPixelPos, float2(0.06711056, 0.00583715))));
 					float ghostNoise2 = frac(52.9829189 * frac(dot(ghostPixelPos + float2(47.0, 17.0), float2(0.06711056, 0.00583715))));
 					float tapSpacing = (trailLength - nearT) / max(1.0, (float)(smearTaps - 1));
 					float tJitter = (ghostNoise - 0.5) * tapSpacing * _GhostFXSmear;
-					// Perpendicular direction for cross-streak jitter
 					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
 					float perpJitter = (ghostNoise2 - 0.5) * _GhostFXSmear * 0.008;
 
-					half3 ghostAccum = half3(0,0,0);
-					float totalWeight = 0.0;
-					[unroll]
-					for(int gi = 0; gi < 24; gi++) {
-						if(gi >= smearTaps) break;
-						float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
-						t = max(0.01, t);
-						half2 gUV = sbsUV0 + ghostBaseOffset * t + ghostPerp * perpJitter;
-						// Per-tap directional blur: 3 sub-samples along streak direction
-						// Blur radius grows with distance for progressive edge loss
-						float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
-						half2 blurStep = ghostDir * blurRadius;
-						// 3-tap gaussian kernel (0.25, 0.50, 0.25)
-						half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.25;
-						gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.50;
-						gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
-						gSample = max(0.00001, gSample / finalExp.x);
-						gSample *= colorTemp(-_WhiteBalance);
-						// Gaussian falloff: bright center, soft trailing edge
-						// Normalize t to [0,1] range so outer layers remain visible
-						float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
-						float tapWeight = exp(-2.5 * tNorm * tNorm);
-						ghostAccum += gSample * tapWeight;
-						totalWeight += tapWeight;
+					// Direction loop: 1 pass for Split/Full, 2 passes for Dual (both directions)
+					half3 ghostAccumFinal = half3(0,0,0);
+					for(int gdir = 0; gdir < 2; gdir++) {
+						if(gdir >= ghostDirCount) break;
+						float dirSign = (gdir == 0) ? 1.0 : -1.0;
+						half2 curOffset = ghostBaseOffset * dirSign;
+
+						half3 ghostAccum = half3(0,0,0);
+						float totalWeight = 0.0;
+						[unroll]
+						for(int gi = 0; gi < 24; gi++) {
+							if(gi >= smearTaps) break;
+							float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
+							t = max(0.01, t);
+							half2 gUV = sbsUV0 + curOffset * t + ghostPerp * perpJitter;
+							float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
+							half2 blurStep = ghostDir * blurRadius;
+							half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.25;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.50;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
+							gSample = max(0.00001, gSample / finalExp.x);
+							gSample *= colorTemp(-_WhiteBalance);
+							float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
+							float tapWeight = exp(-2.5 * tNorm * tNorm);
+							ghostAccum += gSample * tapWeight;
+							totalWeight += tapWeight;
+						}
+						ghostAccum /= totalWeight;
+						ghostAccumFinal = max(ghostAccumFinal, ghostAccum);
 					}
-				ghostAccum /= totalWeight;
+
 					half3 ghostBlended;
 					if(_GhostFXBlendMode < 0.5) {
-						// Screen blend with saturation preservation
-						// Compute original hue ratios to prevent color shifts
-						half maxOrig = max(col.r, max(col.g, col.b));
-						half3 screenRaw = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccum);
-						// Preserve hue by scaling the screen result to maintain channel ratios
+						half3 screenRaw = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccumFinal);
 						half maxScreen = max(screenRaw.r, max(screenRaw.g, screenRaw.b));
-						half3 ghostHueRatio = ghostAccum / max(0.001, max(ghostAccum.r, max(ghostAccum.g, ghostAccum.b)));
-						// Blend between raw screen (at low ghost intensity) and hue-preserved (at high)
-						half ghostIntensity = max(ghostAccum.r, max(ghostAccum.g, ghostAccum.b));
+						half3 ghostHueRatio = ghostAccumFinal / max(0.001, max(ghostAccumFinal.r, max(ghostAccumFinal.g, ghostAccumFinal.b)));
+						half ghostIntensity = max(ghostAccumFinal.r, max(ghostAccumFinal.g, ghostAccumFinal.b));
 						half hueBlend = smoothstep(0.3, 0.8, ghostIntensity);
 						half3 hueCorrected = maxScreen * ghostHueRatio;
 						ghostBlended = lerp(screenRaw, hueCorrected, hueBlend);
 					} else {
-						ghostBlended = max(col.rgb, ghostAccum);  // Lighten blend
+						ghostBlended = max(col.rgb, ghostAccumFinal);
 					}
 					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
 				}
