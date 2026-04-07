@@ -169,7 +169,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GHOSTFX_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Ghost FX Properties
 		[Header(Ghost FX)]
-		[Enum(Disabled,0,Split,1,Dual,2)] _GhostFXMode (""Ghost FX Mode"", float) = 0
+		[Enum(Disabled,0,Split,1,Dual,2,Full,3)] _GhostFXMode (""Ghost FX Mode"", float) = 0
 		_GhostFXAngle (""Rotation"", Range(0.0, 1.0)) = 0.0
 		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
@@ -194,11 +194,15 @@ public static class VRCLensShaderPatcher
 						// Split mode
 						ghostZoneMask = smoothstep(-_GhostFXSoftEdge, _GhostFXSoftEdge, ghostProj);
 						ghostBaseOffset = ghostDir * _GhostFXDistance;
-					} else {
+					} else if(_GhostFXMode < 2.5) {
 						// Dual mode: center-clear
 						float ghostAbsDist = abs(ghostProj);
 						ghostZoneMask = smoothstep(_GhostFXCenterWidth - _GhostFXSoftEdge, _GhostFXCenterWidth + _GhostFXSoftEdge, ghostAbsDist);
 						ghostBaseOffset = ghostDir * _GhostFXDistance * sign(ghostProj);
+					} else {
+						// Full mode: entire frame, unidirectional
+						ghostZoneMask = 1.0;
+						ghostBaseOffset = ghostDir * _GhostFXDistance;
 					}
 
 					// Continuous directional smear with per-pixel spatial jitter
