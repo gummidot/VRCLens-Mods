@@ -4,12 +4,20 @@
 
 When operating in **plan mode**, always save the plan as a Markdown file in `.github/prompts/`.
 
-### File naming
+### File organization
 
-`YYYY-MM-DD-plan-<short-topic>.prompt.md`
+Each plan gets its own folder under `.github/prompts/`:
 
-- Use the current date for `YYYY-MM-DD`.
-- `<short-topic>` should be a concise kebab-case slug describing the plan (e.g., `drone-roll-modifier`, `blur-enhancement`).
+`YYYY-MM-DD-<short-topic>/`
+
+- Use the plan's start date for `YYYY-MM-DD`.
+- `<short-topic>` should be a concise kebab-case slug (e.g., `ghost-fx`, `blur-enhancement`).
+
+The main plan file lives inside the folder:
+
+`YYYY-MM-DD-<short-topic>/YYYY-MM-DD-plan-<short-topic>.prompt.md`
+
+Related documents (research logs, reference material) go in the same folder.
 
 ### File format
 
