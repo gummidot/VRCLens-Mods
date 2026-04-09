@@ -180,8 +180,9 @@ public static class VRCLensShaderPatcher
 		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
 		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
-		_GhostFXDepthFade (""Depth Fade"", Range(0.01, 2.0)) = 0.5
+		_GhostFXDepthFade (""Depth Fade"", Range(0.1, 4.0)) = 1.0
 		[Toggle] _GhostFXDepthInvert (""Depth Invert"", float) = 0
+		[Toggle] _GhostFXAvatarMask (""Avatar Mask"", float) = 0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -220,10 +221,19 @@ public static class VRCLensShaderPatcher
 							float fRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, focusPos);
 							gFocusDist = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * fRaw + 1.0/32000.0);
 						}
-						float depthDiff = abs(gDepthZ - gFocusDist) / max(0.001, gFocusDist);
-						float depthMask = smoothstep(0.0, max(0.001, _GhostFXDepthFade), depthDiff);
+						float depthDiff = abs(log(max(0.001, gDepthZ) / max(0.001, gFocusDist)));
+						float depthMask = smoothstep(0.0, _GhostFXDepthFade, depthDiff);
 						if(_GhostFXDepthInvert > 0.5) depthMask = 1.0 - depthMask;
 						ghostZoneMask *= depthMask;
+					}
+
+					// Avatar masking: suppress ghost on avatar pixels (requires Avatar AF)
+					// Respects Depth Invert: normal = protect avatars, inverted = ghost only on avatars
+					if(_GhostFXAvatarMask > 0.5 && _IsExternalFocus == 2) {
+						float gAvatarPixel = tex2D(_DepthAvatarTex, sbsUV0).r;
+						float avatarMask = gAvatarPixel > 0.0 ? 0.0 : 1.0;
+						if(_GhostFXDepthInvert > 0.5) avatarMask = 1.0 - avatarMask;
+						ghostZoneMask *= avatarMask;
 					}
 
 					// Continuous directional smear with per-pixel spatial jitter
@@ -306,6 +316,7 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXBlendMode;
 			uniform float _GhostFXEdgeFix;
 			uniform float _GhostFXDepthMask, _GhostFXDepthFade, _GhostFXDepthInvert;
+			uniform float _GhostFXAvatarMask;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
@@ -1051,10 +1062,23 @@ public static class VRCLensShaderPatcher
         return new List<AnchorInfo>
         {
             new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_TEXTURE_PROPERTY, "Properties: _FocusTex texture line"),
+            new AnchorInfo(ANCHOR_PASS2_UNIFORMS, "Pass 2: _SensorScale uniform"),
             new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 6: _FocusDistance uniform"),
             new AnchorInfo(ANCHOR_GHOSTFX_UNIFORMS, "Pass 2: white balance line"),
         };
     }
+
+    // Optional blocks for _DepthAvatarTex — only inserted if MFA hasn't already declared them
+    private static readonly string BLOCK_GHOSTFX_AVATAR_PROPERTY = @"
+		// VRCLens_Custom BEGIN - Ghost FX Avatar Depth Texture
+		_DepthAvatarTex (""Avatar Depth Texture"", 2D) = ""black"" {}
+		// VRCLens_Custom END";
+
+    private static readonly string BLOCK_GHOSTFX_AVATAR_SAMPLER = @"
+			// VRCLens_Custom BEGIN - Ghost FX Avatar Depth Sampler
+			sampler2D _DepthAvatarTex;
+			// VRCLens_Custom END";
 
     private static string ApplyGhostFXInsertions(string content)
     {
@@ -1071,6 +1095,22 @@ public static class VRCLensShaderPatcher
 
         // Site 8a: Ghost FX properties — after _DoFStrength line
         insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_GHOSTFX_PROPERTIES, "GhostFX properties");
+
+        // Conditional: _DepthAvatarTex property + sampler (only if MFA hasn't declared them)
+        string rejoined = string.Join("\n", lines);
+        if (!rejoined.Contains("_DepthAvatarTex"))
+        {
+            lines = new List<string>(rejoined.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+            // Property after _FocusTex (same anchor MFA uses, or after _DoFStrength if _FocusTex absent)
+            insertions += InsertAfterLine(lines, ANCHOR_TEXTURE_PROPERTY, BLOCK_GHOSTFX_AVATAR_PROPERTY, "GhostFX avatar texture property");
+            // Sampler in Pass 2 uniforms — after _SensorScale
+            insertions += InsertAfterLine(lines, ANCHOR_PASS2_UNIFORMS, BLOCK_GHOSTFX_AVATAR_SAMPLER, "GhostFX avatar texture sampler");
+            Debug.Log($"{LOG_PREFIX} Added _DepthAvatarTex declarations (MFA not enabled)");
+        }
+        else
+        {
+            Debug.Log($"{LOG_PREFIX} _DepthAvatarTex already declared by MFA, skipping");
+        }
 
         Debug.Log($"{LOG_PREFIX} Applied {insertions} GhostFX insertion sites");
 
