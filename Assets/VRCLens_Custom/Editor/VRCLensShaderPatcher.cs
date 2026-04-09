@@ -178,6 +178,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
+		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -225,6 +226,9 @@ public static class VRCLensShaderPatcher
 
 					// Direction loop: 1 pass for Split/Full, 2 passes for Dual (both directions)
 					half3 ghostAccumFinal = half3(0,0,0);
+					// Pre-compute scene color for OOB decay target (same processing as taps)
+					half3 ghostSceneColor = max(0.00001, tex2D(_HirabikiVRCLensPassTexture, sbsUV0).rgb / finalExp.x);
+					ghostSceneColor *= colorTemp(-_WhiteBalance);
 					for(int gdir = 0; gdir < 2; gdir++) {
 						if(gdir >= ghostDirCount) break;
 						float dirSign = (gdir == 0) ? 1.0 : -1.0;
@@ -238,6 +242,8 @@ public static class VRCLensShaderPatcher
 							float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
 							t = max(0.01, t);
 							half2 gUV = sbsUV0 + curOffset * t + ghostPerp * perpJitter;
+							float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
+							float tapWeight = exp(-2.5 * tNorm * tNorm);
 							float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
 							half2 blurStep = ghostDir * blurRadius;
 							half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.25;
@@ -245,12 +251,17 @@ public static class VRCLensShaderPatcher
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
 							gSample = max(0.00001, gSample / finalExp.x);
 							gSample *= colorTemp(-_WhiteBalance);
-							float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
-							float tapWeight = exp(-2.5 * tNorm * tNorm);
+							// Edge fix: decay OOB taps toward scene color instead of black
+							if(_GhostFXEdgeFix > 0.5) {
+								half2 oobAmount = max(half2(0,0), max(-gUV, gUV - half2(1,1)));
+								float oobDist = max(oobAmount.x, oobAmount.y);
+								float oobDecay = exp(-oobDist * 80.0);
+								gSample = lerp(ghostSceneColor, gSample, oobDecay);
+							}
 							ghostAccum += gSample * tapWeight;
 							totalWeight += tapWeight;
 						}
-						ghostAccum /= totalWeight;
+						ghostAccum /= max(0.001, totalWeight);
 						ghostAccumFinal = max(ghostAccumFinal, ghostAccum);
 					}
 
@@ -275,6 +286,7 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXBlendMode;
+			uniform float _GhostFXEdgeFix;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
