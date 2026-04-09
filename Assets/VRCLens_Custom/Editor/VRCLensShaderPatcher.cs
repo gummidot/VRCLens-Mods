@@ -177,7 +177,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
-		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
+		[Enum(Screen,0,Lighten,1,Normal,2)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
 		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
 		_GhostFXDepthFade (""Depth Fade"", Range(0.1, 4.0)) = 1.0
@@ -302,8 +302,11 @@ public static class VRCLensShaderPatcher
 						half hueBlend = smoothstep(0.3, 0.8, ghostIntensity);
 						half3 hueCorrected = maxScreen * ghostHueRatio;
 						ghostBlended = lerp(screenRaw, hueCorrected, hueBlend);
-					} else {
+					} else if(_GhostFXBlendMode < 1.5) {
 						ghostBlended = max(col.rgb, ghostAccumFinal);
+					} else {
+						// Normal blend: direct mix regardless of brightness
+						ghostBlended = ghostAccumFinal;
 					}
 					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
 				}
