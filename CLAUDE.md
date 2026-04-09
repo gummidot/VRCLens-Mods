@@ -446,6 +446,21 @@ When working on a new shader mod or understanding existing ones:
 
 All custom features use `VRCLens/Custom/<Feature>` as the menu path. For features with multiple controls, use a submenu (e.g., `VRCLens/Custom/GhostFX` containing toggles + radial puppets).
 
+### VRCFury Parameter Convention — Unsynced (Local-Only)
+
+All VRCFury toggles and radials in custom prefabs **must use unsynced parameters**. Camera settings are local-only — no need to sync to other players, and we avoid consuming the 256-bit synced parameter budget.
+
+**Pattern (see ManualFocusAssist for reference):**
+
+1. **Global parameter names:** Each toggle uses `useGlobalParam = true` with a namespaced name: `VRCL_Custom/<Feature><Control>` (e.g., `VRCL_Custom/GhostFXSplit`, `VRCL_Custom/ManualFocusAssistStrength`). This is separate from the menu path (`VRCLens/Custom/<Feature>/...`).
+
+2. **LocalParams asset:** Create `LocalParams_<Feature>.asset` (VRCExpressionParameters ScriptableObject) in the feature folder. Every parameter has `networkSynced: 0` and `saved: 1`. Set `defaultValue` to match the toggle/slider defaults.
+
+3. **FullController:** Add one VRCFury FullController component to the prefab with:
+   - `prms` array referencing the LocalParams asset
+   - `globalParams: ['*']` — makes all params in the asset global and unsynced
+   - No controllers or menus needed — only params
+
 ### Pass Structure Reference
 
 | Pass | Purpose | Key textures |

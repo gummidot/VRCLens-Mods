@@ -25,6 +25,7 @@ GameObject:
   - component: {fileID: 6703404689528432909}
   - component: {fileID: 6903360316486254092}
   - component: {fileID: 4280950384875500560}
+  - component: {fileID: 176068002636913060}
   m_Layer: 0
   m_Name: GhostFX
   m_TagString: Untagged
@@ -292,8 +293,8 @@ MonoBehaviour:
         localTransitionTimeOut: 0
         simpleOutTransition: 1
         defaultSliderValue: 0
-        useGlobalParam: 0
-        globalParam: 
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/GhostFXFull
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -754,7 +755,7 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0
         useGlobalParam: 1
-        globalParam: GhostFXBlendScreen
+        globalParam: VRCL_Custom/GhostFXBlendScreen
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -842,7 +843,7 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0
         useGlobalParam: 1
-        globalParam: GhostFXBlendLighten
+        globalParam: VRCL_Custom/GhostFXBlendLighten
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -930,7 +931,7 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0.25
         useGlobalParam: 1
-        globalParam: GhostFXCenterWidth
+        globalParam: VRCL_Custom/GhostFXCenterWidth
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -1105,8 +1106,8 @@ MonoBehaviour:
         localTransitionTimeOut: 0
         simpleOutTransition: 1
         defaultSliderValue: 0
-        useGlobalParam: 0
-        globalParam: 
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/GhostFXEdgeFix
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -1193,8 +1194,8 @@ MonoBehaviour:
         localTransitionTimeOut: 0
         simpleOutTransition: 1
         defaultSliderValue: 0
-        useGlobalParam: 0
-        globalParam: 
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/GhostFXDepthMask
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -1281,8 +1282,8 @@ MonoBehaviour:
         localTransitionTimeOut: 0
         simpleOutTransition: 1
         defaultSliderValue: 0.25
-        useGlobalParam: 0
-        globalParam: 
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/GhostFXDepthFade
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -1369,8 +1370,8 @@ MonoBehaviour:
         localTransitionTimeOut: 0
         simpleOutTransition: 1
         defaultSliderValue: 0
-        useGlobalParam: 0
-        globalParam: 
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/GhostFXDepthInvert
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -1388,3 +1389,73 @@ MonoBehaviour:
           guid: 
           id: 776e76d4a1362714a9a98dcf7cc4d49b|Assets/VRCLens_Custom/GhostFX/GhostFX_DepthInvert.anim
           objRef: {fileID: 7400000, guid: 776e76d4a1362714a9a98dcf7cc4d49b, type: 2}
+--- !u!114 &176068002636913060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501484273173026
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501484273173026
+      type: {class: FullController, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 4
+        controllers: []
+        menus: []
+        prms:
+        - parameters:
+            version: 1
+            fileID: 0
+            guid: 
+            id: f405ab96df98cd643a1ce4a6efaa03fe|Assets/VRCLens_Custom/GhostFX/LocalParams_GhostFX.asset
+            objRef: {fileID: 11400000, guid: f405ab96df98cd643a1ce4a6efaa03fe, type: 2}
+        smoothedPrms: []
+        globalParams:
+        - '*'
+        allNonsyncedAreGlobal: 0
+        ignoreSaved: 0
+        toggleParam: 
+        rootObjOverride: {fileID: 0}
+        rootBindingsApplyToAvatar: 0
+        rewriteBindings: []
+        allowMissingAssets: 0
+        injectSpsDepthParam: 
+        injectSpsVelocityParam: 
+        controller:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        menu:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        parameters:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        submenu: 
+        removePrefixes: []
+        addPrefix: 
+        useSecurityForToggle: 0
