@@ -179,6 +179,9 @@ public static class VRCLensShaderPatcher
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		[Enum(Screen,0,Lighten,1)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
+		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
+		_GhostFXDepthFade (""Depth Fade"", Range(0.01, 2.0)) = 0.5
+		[Toggle] _GhostFXDepthInvert (""Depth Invert"", float) = 0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -206,6 +209,21 @@ public static class VRCLensShaderPatcher
 						// Full mode: entire frame, unidirectional
 						ghostZoneMask = 1.0;
 						ghostBaseOffset = ghostDir * _GhostFXDistance;
+					}
+
+					// Depth-based ghost masking: suppress ghost in focal zone
+					if(_GhostFXDepthMask > 0.5) {
+						float gDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, sbsUV0);
+						float gDepthZ = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * gDepthRaw + 1.0/32000.0);
+						float gFocusDist = _FocusDistance;
+						if(_FocusDistance < 0.5001) {
+							float fRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, focusPos);
+							gFocusDist = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * fRaw + 1.0/32000.0);
+						}
+						float depthDiff = abs(gDepthZ - gFocusDist) / max(0.001, gFocusDist);
+						float depthMask = smoothstep(0.0, max(0.001, _GhostFXDepthFade), depthDiff);
+						if(_GhostFXDepthInvert > 0.5) depthMask = 1.0 - depthMask;
+						ghostZoneMask *= depthMask;
 					}
 
 					// Continuous directional smear with per-pixel spatial jitter
@@ -287,6 +305,7 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXBlendMode;
 			uniform float _GhostFXEdgeFix;
+			uniform float _GhostFXDepthMask, _GhostFXDepthFade, _GhostFXDepthInvert;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
