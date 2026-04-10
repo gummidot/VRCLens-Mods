@@ -891,7 +891,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Depth Mask/Depth Mask
+        name: VRCLens/Custom/GhostFX/Masking/Focus Depth
         state:
           actions:
           - rid: 455501432117527363
@@ -979,7 +979,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Depth Mask/Depth Fade
+        name: VRCLens/Custom/GhostFX/Masking/Falloff
         state:
           actions:
           - rid: 455501432117527365
@@ -1067,7 +1067,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Depth Mask/Depth Invert
+        name: VRCLens/Custom/GhostFX/Masking/Invert
         state:
           actions:
           - rid: 455501432117527367
@@ -1225,7 +1225,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Depth Mask/Avatar Mask
+        name: VRCLens/Custom/GhostFX/Masking/Avatar AF
         state:
           actions:
           - rid: 455501488113582201

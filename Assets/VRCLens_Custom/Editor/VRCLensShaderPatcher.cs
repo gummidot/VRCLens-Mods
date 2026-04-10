@@ -179,10 +179,10 @@ public static class VRCLensShaderPatcher
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		[Enum(Normal,0,Lighten,1,Screen,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 1
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
-		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
-		_GhostFXDepthFade (""Depth Fade"", Range(0.1, 4.0)) = 1.0
-		[Toggle] _GhostFXDepthInvert (""Depth Invert"", float) = 0
-		[Toggle] _GhostFXAvatarMask (""Avatar Mask"", float) = 0
+		[Toggle] _GhostFXDepthMask (""Focus Depth"", float) = 0
+		_GhostFXDepthFade (""Falloff"", Range(0.1, 4.0)) = 1.0
+		[Toggle] _GhostFXDepthInvert (""Invert"", float) = 0
+		[Toggle] _GhostFXAvatarMask (""Avatar AF"", float) = 0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
