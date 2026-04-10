@@ -169,7 +169,8 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GHOSTFX_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Ghost FX Properties
 		[Header(Ghost FX)]
-		[Enum(Disabled,0,Split,1,Dual,2,Full,3)] _GhostFXMode (""Ghost FX Mode"", float) = 0
+		[Toggle] _GhostFXEnable (""Enable Ghost FX"", float) = 0
+		[Enum(Split,1,Dual,2,Full,3)] _GhostFXMode (""Ghost FX Mode"", float) = 3
 		_GhostFXAngle (""Rotation"", Range(0.0, 1.0)) = 0.0
 		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
@@ -187,7 +188,7 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
 				// VRCLens_Custom BEGIN - Ghost FX
-				if(_GhostFXMode > 0.5) {
+				if(_GhostFXEnable > 0.5) {
 					half2 ghostCenter = sbsUV0 - 0.5;
 					float ghostAngleRad = _GhostFXAngle * 6.28318530718;
 					half2 ghostDir = half2(cos(ghostAngleRad), sin(ghostAngleRad));
@@ -320,6 +321,7 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_GHOSTFX_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
+			uniform float _GhostFXEnable;
 			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXBlendMode;

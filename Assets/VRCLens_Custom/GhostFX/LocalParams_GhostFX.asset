@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isEmpty: 0
   parameters:
+  - name: VRCL_Custom/GhostFXEnable
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
   - name: VRCL_Custom/GhostFXSplit
     valueType: 2
     saved: 1
