@@ -29,7 +29,7 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
-  - name: VRCL_Custom/GhostFXFull
+  - name: VRCL_Custom/GhostFXFullScreen
     valueType: 2
     saved: 1
     defaultValue: 0

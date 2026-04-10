@@ -170,7 +170,8 @@ public static class VRCLensShaderPatcher
 		// VRCLens_Custom BEGIN - Ghost FX Properties
 		[Header(Ghost FX)]
 		[Toggle] _GhostFXEnable (""Enable Ghost FX"", float) = 0
-		[Enum(Split,1,Dual,2,Full,3)] _GhostFXMode (""Ghost FX Mode"", float) = 3
+		[Enum(Split,1,Dual,2)] _GhostFXMode (""Ghost FX Mode"", float) = 1
+		[Toggle] _GhostFXFullScreen (""Full Screen"", float) = 0
 		_GhostFXAngle (""Rotation"", Range(0.0, 1.0)) = 0.0
 		_GhostFXDistance (""Distance"", Range(0.0, 0.15)) = 0.05
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
@@ -195,22 +196,19 @@ public static class VRCLensShaderPatcher
 					float ghostProj = dot(ghostCenter, ghostDir);
 
 					float ghostZoneMask;
-					half2 ghostBaseOffset;
+					half2 ghostBaseOffset = ghostDir * _GhostFXDistance;
 					int ghostDirCount = 1;
-					if(_GhostFXMode < 1.5) {
+					if(_GhostFXFullScreen > 0.5) {
+						ghostZoneMask = 1.0;
+						if(_GhostFXMode > 1.5) ghostDirCount = 2;
+					} else if(_GhostFXMode < 1.5) {
 						// Split mode
 						ghostZoneMask = smoothstep(-_GhostFXSoftEdge, _GhostFXSoftEdge, ghostProj);
-						ghostBaseOffset = ghostDir * _GhostFXDistance;
-					} else if(_GhostFXMode < 2.5) {
+					} else {
 						// Dual mode: center-clear, sample both directions
 						float ghostAbsDist = abs(ghostProj);
 						ghostZoneMask = smoothstep(_GhostFXCenterWidth - _GhostFXSoftEdge, _GhostFXCenterWidth + _GhostFXSoftEdge, ghostAbsDist);
-						ghostBaseOffset = ghostDir * _GhostFXDistance;
 						ghostDirCount = 2;
-					} else {
-						// Full mode: entire frame, unidirectional
-						ghostZoneMask = 1.0;
-						ghostBaseOffset = ghostDir * _GhostFXDistance;
 					}
 
 					// Depth-based ghost masking: suppress ghost in focal zone
@@ -322,7 +320,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GHOSTFX_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
 			uniform float _GhostFXEnable;
-			uniform float _GhostFXMode, _GhostFXAngle, _GhostFXDistance;
+			uniform float _GhostFXMode, _GhostFXFullScreen, _GhostFXAngle, _GhostFXDistance;
 			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXBlendMode;
 			uniform float _GhostFXEdgeFix;

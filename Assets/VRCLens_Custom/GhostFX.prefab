@@ -196,9 +196,9 @@ MonoBehaviour:
         slider: 0
         sliderInactiveAtZero: 0
         securityEnabled: 0
-        defaultOn: 0
+        defaultOn: 1
         includeInRest: 0
-        exclusiveOffState: 0
+        exclusiveOffState: 1
         enableExclusiveTag: 1
         exclusiveTag: VRCL_GhostFXMode
         resetPhysbones: []
@@ -364,7 +364,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Ghost Mode/Full Ghost
+        name: VRCLens/Custom/GhostFX/Ghost Mode/Full Screen
         state:
           actions:
           - rid: 455501509037654151
@@ -372,11 +372,11 @@ MonoBehaviour:
         slider: 0
         sliderInactiveAtZero: 0
         securityEnabled: 0
-        defaultOn: 1
+        defaultOn: 0
         includeInRest: 0
-        exclusiveOffState: 1
-        enableExclusiveTag: 1
-        exclusiveTag: VRCL_GhostFXMode
+        exclusiveOffState: 0
+        enableExclusiveTag: 0
+        exclusiveTag: 
         resetPhysbones: []
         hasExitTime: 0
         enableIcon: 0
@@ -407,7 +407,7 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0
         useGlobalParam: 1
-        globalParam: VRCL_Custom/GhostFXFull
+        globalParam: VRCL_Custom/GhostFXFullScreen
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -423,8 +423,8 @@ MonoBehaviour:
           version: 1
           fileID: 0
           guid: 
-          id: 1f49581e21013fc4eb8853c5cc5ea3a4|Assets/VRCLens_Custom/GhostFX/GhostFX_Full.anim
-          objRef: {fileID: 7400000, guid: 1f49581e21013fc4eb8853c5cc5ea3a4, type: 2}
+          id: ee0f138f1f5a454498b4203e820d4a3c|Assets/VRCLens_Custom/GhostFX/GhostFX_FullScreen.anim
+          objRef: {fileID: 7400000, guid: ee0f138f1f5a454498b4203e820d4a3c, type: 2}
 --- !u!114 &6928002277598306824
 MonoBehaviour:
   m_ObjectHideFlags: 0
