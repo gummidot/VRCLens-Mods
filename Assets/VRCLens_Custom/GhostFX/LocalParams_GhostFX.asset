@@ -57,12 +57,12 @@ MonoBehaviour:
   - name: VRCL_Custom/GhostFXBlendLighten
     valueType: 2
     saved: 1
-    defaultValue: 1
+    defaultValue: 0
     networkSynced: 0
   - name: VRCL_Custom/GhostFXBlendNormal
     valueType: 2
     saved: 1
-    defaultValue: 0
+    defaultValue: 1
     networkSynced: 0
   - name: VRCL_Custom/GhostFXBlendAdditive
     valueType: 2
