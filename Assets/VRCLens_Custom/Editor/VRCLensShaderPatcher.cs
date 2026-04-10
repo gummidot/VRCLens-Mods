@@ -177,7 +177,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
-		[Enum(Normal,0,Lighten,1,Screen,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 0
+		[Enum(Normal,0,Lighten,1,Screen,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 1
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
 		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
 		_GhostFXDepthFade (""Depth Fade"", Range(0.1, 4.0)) = 1.0

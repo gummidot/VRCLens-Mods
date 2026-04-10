@@ -293,6 +293,16 @@ Prefer specific actions (ObjectToggleAction, BlendShapeAction, MaterialAction, e
 
 When using `hasTransition = true`, **the ON state (`state.actions`) must not be empty** — VRCFury uses it for resting state registration, WD ON defaults, and `expandIntoTransition`. Read `Editor/VF/Feature/ToggleBuilder.cs` for the full state machine structure.
 
+### Exclusive Tags (Radio Groups)
+
+Use exclusive tags to make a set of toggles act as a radio group — only one active at a time. Ref: https://vrcfury.com/components/toggle
+
+- **Exclusive Tag:** Give all toggles in the group the same tag string (e.g., `GhostFXBlendMode`). When one is enabled, all others with that tag are disabled. Multiple tags can be comma-separated.
+- **Exclusive Off State:** Set on exactly **one** toggle — the "default" option. It auto-activates when all other toggles with the same tag are disabled. Without this, deselecting all toggles leaves the group in an undriven state (falls back to shader default).
+- **Default On:** Set on the same toggle as Exclusive Off State so it starts enabled on avatar load.
+- **Do NOT set Exclusive Off State on multiple toggles** — they will fight for enablement when all others are off.
+- **Public API:** `SetExclusiveOffState()` sets `exclusiveOffState = true`. `AddExclusiveTag(tag)` adds the tag. `SetDefaultOn()` sets default on.
+
 ### Key Source Paths
 
 | Content | Path (relative to package root) |
