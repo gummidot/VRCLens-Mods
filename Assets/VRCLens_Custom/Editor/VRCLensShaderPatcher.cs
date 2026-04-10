@@ -177,7 +177,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
-		[Enum(Screen,0,Lighten,1,Normal,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 2
+		[Enum(Normal,0,Lighten,1,Screen,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 0
 		[Toggle] _GhostFXEdgeFix (""Edge Fix"", float) = 1
 		[Toggle] _GhostFXDepthMask (""Depth Mask"", float) = 0
 		_GhostFXDepthFade (""Depth Fade"", Range(0.1, 4.0)) = 1.0
@@ -295,6 +295,11 @@ public static class VRCLensShaderPatcher
 
 					half3 ghostBlended;
 					if(_GhostFXBlendMode < 0.5) {
+						// Normal blend: direct mix regardless of brightness
+						ghostBlended = ghostAccumFinal;
+					} else if(_GhostFXBlendMode < 1.5) {
+						ghostBlended = max(col.rgb, ghostAccumFinal);
+					} else if(_GhostFXBlendMode < 2.5) {
 						half3 screenRaw = 1.0 - (1.0 - col.rgb) * (1.0 - ghostAccumFinal);
 						half maxScreen = max(screenRaw.r, max(screenRaw.g, screenRaw.b));
 						half3 ghostHueRatio = ghostAccumFinal / max(0.001, max(ghostAccumFinal.r, max(ghostAccumFinal.g, ghostAccumFinal.b)));
@@ -302,11 +307,6 @@ public static class VRCLensShaderPatcher
 						half hueBlend = smoothstep(0.3, 0.8, ghostIntensity);
 						half3 hueCorrected = maxScreen * ghostHueRatio;
 						ghostBlended = lerp(screenRaw, hueCorrected, hueBlend);
-					} else if(_GhostFXBlendMode < 1.5) {
-						ghostBlended = max(col.rgb, ghostAccumFinal);
-					} else if(_GhostFXBlendMode < 2.5) {
-						// Normal blend: direct mix regardless of brightness
-						ghostBlended = ghostAccumFinal;
 					} else if(_GhostFXBlendMode < 3.5) {
 						// Additive: maximum energy, no capping
 						ghostBlended = col.rgb + ghostAccumFinal;
