@@ -84,11 +84,6 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
-  - name: VRCL_Custom/GhostFXEdgeFix
-    valueType: 2
-    saved: 1
-    defaultValue: 1
-    networkSynced: 0
   - name: VRCL_Custom/GhostFXDepthMask
     valueType: 2
     saved: 1
