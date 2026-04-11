@@ -185,6 +185,9 @@ public static class VRCLensShaderPatcher
 		_GhostFXDepthFade (""Falloff"", Range(0.1, 4.0)) = 1.0
 		[Toggle] _GhostFXDepthInvert (""Invert"", float) = 0
 		[Toggle] _GhostFXAvatarMask (""Avatar AF"", float) = 0
+		_GhostFXShake (""Shake"", Range(0.0, 1.0)) = 0.0
+		_GhostFXShakeSpeed (""Shake Speed"", Range(0.0, 1.0)) = 0.3
+		_GhostFXShakeDist (""Shake Distance"", Range(0.0, 1.0)) = 0.0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -192,11 +195,24 @@ public static class VRCLensShaderPatcher
 				if(_GhostFXEnable > 0.5) {
 					half2 ghostCenter = sbsUV0 - 0.5;
 					float ghostAngleRad = _GhostFXAngle * 6.28318530718;
+					// Handheld shake: multi-frequency sine wobble on angle + distance
+					if(_GhostFXShake > 0.001) {
+						float shakeSpd = lerp(0.1, 5.0, _GhostFXShakeSpeed);
+						float ghostShakeAmt = _GhostFXShake * 0.5;
+						ghostAngleRad += sin(_Time.y * 0.7 * shakeSpd) * ghostShakeAmt
+						               + sin(_Time.y * 1.3 * shakeSpd) * ghostShakeAmt * 0.6
+						               + sin(_Time.y * 2.9 * shakeSpd) * ghostShakeAmt * 0.3;
+					}
 					half2 ghostDir = half2(cos(ghostAngleRad), sin(ghostAngleRad));
 					float ghostProj = dot(ghostCenter, ghostDir);
 
 					float ghostZoneMask;
-					half2 ghostBaseOffset = ghostDir * _GhostFXDistance;
+					float ghostDistShake = 0.0;
+					if(_GhostFXShakeDist > 0.001 && _GhostFXShake > 0.001) {
+						float shakeSpd = lerp(0.1, 5.0, _GhostFXShakeSpeed);
+						ghostDistShake = sin(_Time.y * 0.9 * shakeSpd) * _GhostFXShakeDist * _GhostFXShake * 0.06;
+					}
+					half2 ghostBaseOffset = ghostDir * (_GhostFXDistance + ghostDistShake);
 					int ghostDirCount = 1;
 					if(_GhostFXFullScreen > 0.5) {
 						ghostZoneMask = 1.0;
@@ -326,6 +342,7 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXEdgeFix;
 			uniform float _GhostFXDepthMask, _GhostFXDepthFade, _GhostFXDepthInvert;
 			uniform float _GhostFXAvatarMask;
+			uniform float _GhostFXShake, _GhostFXShakeSpeed, _GhostFXShakeDist;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
