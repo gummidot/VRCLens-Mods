@@ -18,9 +18,9 @@ public class VRCLensShaderModifier
     /// Returns the output shader path, or null on failure.
     /// </summary>
     public static string CopyAndModifyShader(VRCLens vrclens, string tempDir,
-        bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false)
+        bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false)
     {
-        Shader patchedShader = VRCLensShaderPatcher.PatchShader(enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration);
+        Shader patchedShader = VRCLensShaderPatcher.PatchShader(enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain);
         if (patchedShader == null)
         {
             Debug.LogError($"{LOG_PREFIX} Failed to patch shader.");

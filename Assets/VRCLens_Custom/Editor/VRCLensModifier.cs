@@ -21,6 +21,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public bool enableManualFocusAssist;
     public bool enableGhostFX;
     public bool enableChromaticAberration;
+    public bool enableFilmGrain;
 
     public void Modify(string tempDir)
     {

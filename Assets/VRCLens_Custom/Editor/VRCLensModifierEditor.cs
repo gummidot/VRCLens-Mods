@@ -22,6 +22,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty enableManualFocusAssistProp;
     private SerializedProperty enableGhostFXProp;
     private SerializedProperty enableChromaticAberrationProp;
+    private SerializedProperty enableFilmGrainProp;
 
     private void OnEnable()
     {
@@ -40,6 +41,7 @@ public class VRCLensModifierEditor : Editor
         enableManualFocusAssistProp = serializedObject.FindProperty(nameof(modifier.enableManualFocusAssist));
         enableGhostFXProp = serializedObject.FindProperty(nameof(modifier.enableGhostFX));
         enableChromaticAberrationProp = serializedObject.FindProperty(nameof(modifier.enableChromaticAberration));
+        enableFilmGrainProp = serializedObject.FindProperty(nameof(modifier.enableFilmGrain));
     }
 
     public override void OnInspectorGUI()
@@ -97,6 +99,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for Chromatic Aberration
         EditorGUILayout.BeginHorizontal();
         enableChromaticAberrationProp.boolValue = EditorGUILayout.ToggleLeft("Chromatic Aberration", enableChromaticAberrationProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for Film Grain
+        EditorGUILayout.BeginHorizontal();
+        enableFilmGrainProp.boolValue = EditorGUILayout.ToggleLeft("Film Grain", enableFilmGrainProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
