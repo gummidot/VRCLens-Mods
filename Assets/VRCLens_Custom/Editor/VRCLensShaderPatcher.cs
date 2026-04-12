@@ -409,21 +409,24 @@ public static class VRCLensShaderPatcher
 					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr, 0.001, 0.999)).r, caEdgeR);
 					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb, 0.001, 0.999)).b, caEdgeB);
 				}
-				// Axial CA: depth-dependent color fringing on out-of-focus areas
+				// Axial CA: per-channel blur with different radii (colored halos)
 				if(_AxialCA > 0.001) {
-					float cocCA = abs(rawColor.a);
-					float2 axCenter = sbsUV0 - 0.5;
-					float axRadius = length(axCenter);
-					float2 axDir = axCenter / max(0.001, axRadius);
-					float axOffset = _AxialCA * cocCA * axRadius * 0.1;
-					float2 axUVr = sbsUV0 + axDir * axOffset;
-					float2 axUVb = sbsUV0 - axDir * axOffset;
-					float2 axOobR = max(float2(0,0), max(-axUVr, axUVr - float2(1,1)));
-					float axEdgeR = exp(-max(axOobR.x, axOobR.y) * 80.0);
-					float2 axOobB = max(float2(0,0), max(-axUVb, axUVb - float2(1,1)));
-					float axEdgeB = exp(-max(axOobB.x, axOobB.y) * 80.0);
-					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(axUVr, 0.001, 0.999)).r, axEdgeR);
-					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(axUVb, 0.001, 0.999)).b, axEdgeB);
+					float axPx = _AxialCA * 16.0;
+					float2 axTs = 1.0 / _ScreenParams.xy;
+					float2 axO1 = float2(axPx, 0) * axTs;
+					float2 axO2 = float2(0, axPx) * axTs;
+					col.r = 0.2 * (
+						tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO1).r
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO1).r
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO2).r
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO2).r);
+					col.b = 0.2 * (
+						tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO1 * 0.5).b
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO1 * 0.5).b
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO2 * 0.5).b
+						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO2 * 0.5).b);
 				}
 				// VRCLens_Custom END";
 
