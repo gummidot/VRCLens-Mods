@@ -378,6 +378,43 @@ public static class VRCLensShaderPatcher
 			uniform float _GhostFXShimmer, _GhostFXChroma;
 			// VRCLens_Custom END";
 
+    // ── Chromatic Aberration code blocks ─────────────────────────────────
+
+    private static readonly string BLOCK_CA_PROPERTIES = @"
+		// VRCLens_Custom BEGIN - Chromatic Aberration Properties
+		[Header(Chromatic Aberration)]
+		_TransverseCA (""Transverse CA"", Range(0.0, 1.0)) = 0.0
+		_AxialCA (""Axial CA"", Range(0.0, 1.0)) = 0.0
+		// VRCLens_Custom END";
+
+    private static readonly string BLOCK_CA_UNIFORMS = @"
+			// VRCLens_Custom BEGIN - Chromatic Aberration Uniforms
+			uniform float _TransverseCA, _AxialCA;
+			// VRCLens_Custom END";
+
+    private static readonly string BLOCK_CA_PASS2 = @"
+				// VRCLens_Custom BEGIN - Chromatic Aberration
+				// Transverse CA: radial color fringing increasing toward screen edges
+				if(_TransverseCA > 0.001) {
+					float2 caCenter = sbsUV0 - 0.5;
+					float caRadius = length(caCenter);
+					float2 caDir = caCenter / max(0.001, caRadius);
+					float caOffset = _TransverseCA * caRadius * caRadius * 0.04;
+					col.r = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + caDir * caOffset, 0.001, 0.999)).r;
+					col.b = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - caDir * caOffset, 0.001, 0.999)).b;
+				}
+				// Axial CA: depth-dependent color fringing on out-of-focus areas
+				if(_AxialCA > 0.001) {
+					float cocCA = rawColor.a;
+					float2 axCenter = sbsUV0 - 0.5;
+					float axRadius = length(axCenter);
+					float2 axDir = axCenter / max(0.001, axRadius);
+					float axOffset = _AxialCA * cocCA * 0.03;
+					col.r = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axDir * axOffset, 0.001, 0.999)).r;
+					col.b = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axDir * axOffset, 0.001, 0.999)).b;
+				}
+				// VRCLens_Custom END";
+
     // ── Code blocks to inject ───────────────────────────────────────────
 
     private static readonly string BLOCK_PROPERTIES = @"
@@ -560,7 +597,7 @@ public static class VRCLensShaderPatcher
     /// Reads from ORIGINAL_SHADER_PATH, writes to OUTPUT_SHADER_PATH.
     /// Returns the compiled Shader, or null on failure.
     /// </summary>
-    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false)
+    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false)
     {
         if (!File.Exists(ORIGINAL_SHADER_PATH))
         {
@@ -637,6 +674,26 @@ public static class VRCLensShaderPatcher
             }
         }
 
+        // Validate ChromaticAberration anchors if that feature is enabled
+        if (enableChromaticAberration)
+        {
+            var caAnchors = GetChromaticAberrationAnchors();
+            List<string> missingCA = new List<string>();
+            foreach (var anchor in caAnchors)
+            {
+                if (!content.Contains(anchor.SearchString))
+                    missingCA.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+            }
+            if (missingCA.Count > 0)
+            {
+                string errorMsg = $"Cannot patch shader — expected ChromaticAberration anchor lines not found.\n" +
+                    $"VRCLens may have been updated with incompatible changes.\n\n" +
+                    $"Missing anchors:\n{string.Join("\n", missingCA)}";
+                Debug.LogError($"{LOG_PREFIX} {errorMsg}");
+                return null;
+            }
+        }
+
         // Step 1: Apply ManualFocusAssist insertions FIRST (adds code blocks with 0.5001)
         if (enableManualFocusAssist)
         {
@@ -649,6 +706,12 @@ public static class VRCLensShaderPatcher
             content = ApplyGhostFXInsertions(content);
         }
 
+        // Step 1c: Apply ChromaticAberration insertions
+        if (enableChromaticAberration)
+        {
+            content = ApplyChromaticAberrationInsertions(content);
+        }
+
         // Step 2: Apply LowerMinFocus replacements SECOND
         // This replaces 0.5001 → 0.0001 in BOTH the original shader lines
         // AND any ManualFocusAssist code blocks that were just inserted.
@@ -658,13 +721,14 @@ public static class VRCLensShaderPatcher
         }
 
         // Step 3: Rename shader
-        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX);
+        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration);
 
         // Step 4: Add header comment
         List<string> enabledMods = new List<string>();
         if (enableLowerMinFocus) enabledMods.Add("LowerMinFocus");
         if (enableManualFocusAssist) enabledMods.Add("ManualFocusAssist");
         if (enableGhostFX) enabledMods.Add("GhostFX");
+        if (enableChromaticAberration) enabledMods.Add("ChromaticAberration");
         string modsStr = string.Join(" + ", enabledMods);
 
         string header = $"// VRCLens Patched Shader ({modsStr}) - Auto-generated by VRCLens Custom\n" +
@@ -822,6 +886,7 @@ public static class VRCLensShaderPatcher
         // Apply all modifications (all mods enabled for reference)
         content = ApplyManualFocusAssistInsertions(content);
         content = ApplyGhostFXInsertions(content);
+        content = ApplyChromaticAberrationInsertions(content);
         content = ApplyLowerMinFocusReplacements(content);
         File.WriteAllText(PATCHED_REF_PATH, content);
 
@@ -941,6 +1006,7 @@ public static class VRCLensShaderPatcher
         // Patch the original (all mods) and compare to reference
         string patched = ApplyManualFocusAssistInsertions(originalContent);
         patched = ApplyGhostFXInsertions(patched);
+        patched = ApplyChromaticAberrationInsertions(patched);
         patched = ApplyLowerMinFocusReplacements(patched);
         string expected = File.ReadAllText(PATCHED_REF_PATH);
 
@@ -1176,6 +1242,41 @@ public static class VRCLensShaderPatcher
         return string.Join("\n", lines);
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // Chromatic Aberration insertion logic
+    // ═══════════════════════════════════════════════════════════════════
+
+    private static List<AnchorInfo> GetChromaticAberrationAnchors()
+    {
+        return new List<AnchorInfo>
+        {
+            new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 6: _FocusDistance uniform"),
+            new AnchorInfo(ANCHOR_GHOSTFX_UNIFORMS, "Pass 2: white balance line"),
+        };
+    }
+
+    private static string ApplyChromaticAberrationInsertions(string content)
+    {
+        var lines = new List<string>(content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+        int insertions = 0;
+
+        // Process from bottom to top so line indices don't shift
+
+        // CA application — after white balance line (before tone mapping), same anchor as GhostFX
+        insertions += InsertAfterLine(lines, ANCHOR_GHOSTFX_UNIFORMS, BLOCK_CA_PASS2, "ChromaticAberration pass 2 application");
+
+        // CA uniforms in Pass 2 — after second _FocusDistance uniform (same as GhostFX)
+        insertions += InsertAfterLine(lines, ANCHOR_PASS6_UNIFORMS, BLOCK_CA_UNIFORMS, "ChromaticAberration uniforms", false, 2);
+
+        // CA properties — after _DoFStrength line
+        insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_CA_PROPERTIES, "ChromaticAberration properties");
+
+        Debug.Log($"{LOG_PREFIX} Applied {insertions} ChromaticAberration insertion sites");
+
+        return string.Join("\n", lines);
+    }
+
     /// <summary>
     /// Find a line containing searchString and insert blockText after it.
     /// If findEndOfStatement is true, finds the end of the statement (line ending with ";") first.
@@ -1285,13 +1386,14 @@ public static class VRCLensShaderPatcher
     /// <summary>
     /// Renames the shader by appending a suffix based on enabled mods.
     /// </summary>
-    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false)
+    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false)
     {
         // Build suffix from enabled mods
         var parts = new List<string>();
         if (enableLowerMinFocus) parts.Add("LowerMinFocus");
         if (enableManualFocusAssist) parts.Add("ManualFocusAssist");
         if (enableGhostFX) parts.Add("GhostFX");
+        if (enableChromaticAberration) parts.Add("ChromaticAberration");
         if (parts.Count == 0) return content;
 
         string suffix = " " + string.Join(" ", parts);

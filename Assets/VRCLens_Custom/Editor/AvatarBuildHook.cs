@@ -88,6 +88,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                 bool enableLowerMinFocus = false;
                 bool enableManualFocusAssist = false;
                 bool enableGhostFX = false;
+                bool enableChromaticAberration = false;
                 VRCLens shaderPatchVrclens = null;
 
                 foreach (var modifier in modifiers)
@@ -98,14 +99,15 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                     if (modifier.enableLowerMinFocus) enableLowerMinFocus = true;
                     if (modifier.enableManualFocusAssist) enableManualFocusAssist = true;
                     if (modifier.enableGhostFX) enableGhostFX = true;
-                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist || modifier.enableGhostFX) && shaderPatchVrclens == null)
+                    if (modifier.enableChromaticAberration) enableChromaticAberration = true;
+                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist || modifier.enableGhostFX || modifier.enableChromaticAberration) && shaderPatchVrclens == null)
                     {
                         shaderPatchVrclens = modifier.GetVRCLens();
                     }
                 }
 
                 // Apply shader patching once with merged flags from all modifiers
-                if (enableLowerMinFocus || enableManualFocusAssist || enableGhostFX)
+                if (enableLowerMinFocus || enableManualFocusAssist || enableGhostFX || enableChromaticAberration)
                 {
                     if (shaderPatchVrclens == null)
                     {
@@ -115,7 +117,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                     else
                     {
                         string newPath = VRCLensShaderModifier.CopyAndModifyShader(
-                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX);
+                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration);
                         if (newPath != null)
                         {
                             _usedShaderPatcher = true;

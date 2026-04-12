@@ -21,6 +21,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty enableLowerMinFocusProp;
     private SerializedProperty enableManualFocusAssistProp;
     private SerializedProperty enableGhostFXProp;
+    private SerializedProperty enableChromaticAberrationProp;
 
     private void OnEnable()
     {
@@ -38,6 +39,7 @@ public class VRCLensModifierEditor : Editor
         enableLowerMinFocusProp = serializedObject.FindProperty(nameof(modifier.enableLowerMinFocus));
         enableManualFocusAssistProp = serializedObject.FindProperty(nameof(modifier.enableManualFocusAssist));
         enableGhostFXProp = serializedObject.FindProperty(nameof(modifier.enableGhostFX));
+        enableChromaticAberrationProp = serializedObject.FindProperty(nameof(modifier.enableChromaticAberration));
     }
 
     public override void OnInspectorGUI()
@@ -90,6 +92,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for GhostFX
         EditorGUILayout.BeginHorizontal();
         enableGhostFXProp.boolValue = EditorGUILayout.ToggleLeft("Ghost FX", enableGhostFXProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for Chromatic Aberration
+        EditorGUILayout.BeginHorizontal();
+        enableChromaticAberrationProp.boolValue = EditorGUILayout.ToggleLeft("Chromatic Aberration", enableChromaticAberrationProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
