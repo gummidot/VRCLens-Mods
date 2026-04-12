@@ -106,7 +106,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Enable
+        name: VRCLens/Custom/Ghost FX/Enable
         state:
           actions:
           - rid: 455501509037654145
@@ -194,7 +194,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Ghost Mode/Split Ghost
+        name: VRCLens/Custom/Ghost FX/Ghost Mode/Split Ghost
         state:
           actions:
           - rid: 455501509037654147
@@ -282,7 +282,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Ghost Mode/Dual Ghost
+        name: VRCLens/Custom/Ghost FX/Ghost Mode/Dual Ghost
         state:
           actions:
           - rid: 455501509037654149
@@ -370,7 +370,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Ghost Mode/Full Screen
+        name: VRCLens/Custom/Ghost FX/Ghost Mode/Full Screen
         state:
           actions:
           - rid: 455501509037654151
@@ -458,7 +458,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Rotation
+        name: VRCLens/Custom/Ghost FX/Rotation
         state:
           actions:
           - rid: 9000000000000000031
@@ -546,7 +546,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Distance
+        name: VRCLens/Custom/Ghost FX/Distance
         state:
           actions:
           - rid: 9000000000000000041
@@ -634,7 +634,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Intensity
+        name: VRCLens/Custom/Ghost FX/Intensity
         state:
           actions:
           - rid: 9000000000000000051
@@ -722,7 +722,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Smear
+        name: VRCLens/Custom/Ghost FX/Smear
         state:
           actions:
           - rid: 455501412253040862
@@ -810,7 +810,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Lighten
+        name: VRCLens/Custom/Ghost FX/Blend Mode/Lighten
         state:
           actions:
           - rid: 455501488113582484
@@ -898,7 +898,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Normal
+        name: VRCLens/Custom/Ghost FX/Blend Mode/Normal
         state:
           actions:
           - rid: 455501488113582482
@@ -986,7 +986,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Screen
+        name: VRCLens/Custom/Ghost FX/Blend Mode/Screen
         state:
           actions:
           - rid: 455501488113582486
@@ -1074,7 +1074,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Additive
+        name: VRCLens/Custom/Ghost FX/Blend Mode/Additive
         state:
           actions:
           - rid: 455501488113582488
@@ -1162,7 +1162,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Blend Mode/Darken
+        name: VRCLens/Custom/Ghost FX/Blend Mode/Darken
         state:
           actions:
           - rid: 455501488113582490
@@ -1250,7 +1250,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Center Width (Dual)
+        name: VRCLens/Custom/Ghost FX/Center Width (Dual)
         state:
           actions:
           - rid: 455501412253040864
@@ -1338,7 +1338,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Layers
+        name: VRCLens/Custom/Ghost FX/Layers
         state:
           actions:
           - rid: 455501412253040860
@@ -1426,7 +1426,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Masking/Focus Depth
+        name: VRCLens/Custom/Ghost FX/Masking/Focus Depth
         state:
           actions:
           - rid: 455501432117527363
@@ -1514,7 +1514,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Masking/Falloff
+        name: VRCLens/Custom/Ghost FX/Masking/Falloff
         state:
           actions:
           - rid: 455501432117527365
@@ -1602,7 +1602,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Masking/Invert
+        name: VRCLens/Custom/Ghost FX/Masking/Invert
         state:
           actions:
           - rid: 455501432117527367
@@ -1760,7 +1760,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Masking/Avatars
+        name: VRCLens/Custom/Ghost FX/Masking/Avatars
         state:
           actions:
           - rid: 455501488113582201
@@ -1848,7 +1848,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Shake/Intensity
+        name: VRCLens/Custom/Ghost FX/Shake/Intensity
         state:
           actions:
           - rid: 455501514341351726
@@ -1936,7 +1936,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Shake/Speed
+        name: VRCLens/Custom/Ghost FX/Shake/Speed
         state:
           actions:
           - rid: 455501514341351728
@@ -2024,7 +2024,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Shake/Distance
+        name: VRCLens/Custom/Ghost FX/Shake/Distance
         state:
           actions:
           - rid: 455501514341351730
@@ -2112,7 +2112,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Smear Width
+        name: VRCLens/Custom/Ghost FX/Smear Width
         state:
           actions:
           - rid: 455501514341352211
@@ -2200,7 +2200,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Shimmer
+        name: VRCLens/Custom/Ghost FX/Shimmer
         state:
           actions:
           - rid: 455501530410778859
@@ -2288,7 +2288,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/GhostFX/Chroma
+        name: VRCLens/Custom/Ghost FX/Chroma
         state:
           actions:
           - rid: 455501530410778861
