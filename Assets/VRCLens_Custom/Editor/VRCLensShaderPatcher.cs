@@ -409,24 +409,29 @@ public static class VRCLensShaderPatcher
 					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr, 0.001, 0.999)).r, caEdgeR);
 					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb, 0.001, 0.999)).b, caEdgeB);
 				}
-				// Axial CA: per-channel blur with different radii (colored halos)
+				// Axial CA: depth-scaled per-channel circular blur (colored halos on distant objects)
 				if(_AxialCA > 0.001) {
-					float axPx = _AxialCA * 16.0;
-					float2 axTs = 1.0 / _ScreenParams.xy;
-					float2 axO1 = float2(axPx, 0) * axTs;
-					float2 axO2 = float2(0, axPx) * axTs;
-					col.r = 0.2 * (
-						tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO1).r
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO1).r
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO2).r
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO2).r);
-					col.b = 0.2 * (
-						tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO1 * 0.5).b
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO1 * 0.5).b
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axO2 * 0.5).b
-						+ tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axO2 * 0.5).b);
+					float axDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, sbsUV0);
+					float axDepth = 1.0 / (axDepthRaw * (32000.0 / 0.04 - 1.0) / 32000.0 + 1.0 / 32000.0);
+					float axDepthFade = saturate(axDepth / 50.0);
+					float axPx = _AxialCA * 16.0 * axDepthFade;
+					float2 axTs = axPx / _ScreenParams.xy;
+					float2 axD0 = float2(1.0, 0.0) * axTs;
+					float2 axD1 = float2(0.707, 0.707) * axTs;
+					float2 axD2 = float2(0.0, 1.0) * axTs;
+					float2 axD3 = float2(-0.707, 0.707) * axTs;
+					float rAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r;
+					rAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD0).r + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD0).r;
+					rAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD1).r + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD1).r;
+					rAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD2).r + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD2).r;
+					rAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD3).r + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD3).r;
+					col.r = rAcc / 9.0;
+					float bAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD0 * 0.5).b + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD0 * 0.5).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD1 * 0.5).b + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD1 * 0.5).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD2 * 0.5).b + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD2 * 0.5).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + axD3 * 0.5).b + tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - axD3 * 0.5).b;
+					col.b = bAcc / 9.0;
 				}
 				// VRCLens_Custom END";
 
