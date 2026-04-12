@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6739146508150698255}
   - component: {fileID: 7544547306005082646}
   - component: {fileID: 4245122815520342126}
+  - component: {fileID: 2188345044134052871}
   m_Layer: 0
   m_Name: ChromaticAberration
   m_TagString: Untagged
@@ -280,3 +281,26 @@ MonoBehaviour:
         removePrefixes: []
         addPrefix: 
         useSecurityForToggle: 0
+--- !u!114 &2188345044134052871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513423230492740302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddbceacccf7f264478a545963717b230, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  addDroneV: 0
+  fixAvatarDrop: 0
+  useCustomResolution: 0
+  sensorRes: {x: 0, y: 0}
+  useFullSBS3d: 0
+  msaa: 0
+  enableLowerMinFocus: 0
+  enableManualFocusAssist: 0
+  enableGhostFX: 0
+  enableChromaticAberration: 1
+  enableFilmGrain: 0

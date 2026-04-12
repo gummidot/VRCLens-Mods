@@ -446,6 +446,8 @@ When working on a new shader mod or understanding existing ones:
 | Animation clips | `Assets/VRCLens_Custom/<Feature>/` | Material property animations for VRCFury toggles/radials |
 | VRCFury prefab | `Assets/VRCLens_Custom/<Feature>.prefab` or `<Feature>/<Feature>.prefab` | Toggles + radial puppets under `VRCLens/Custom/<Feature>` menu path |
 
+**Critical: Every mod prefab that adds custom shader properties MUST include a `VRCLensModifier` component with its `enable<Feature>` flag set.** Without it, `AvatarBuildHook` won't pass the flag to the shader patcher, so the patched shader won't contain the new properties. Then d4rk Avatar Optimizer strips the animation bindings because the material properties don't exist on the shader. Symptom: all radials do nothing in-game (built clips replaced with `DummyClip_0`).
+
 ### Shader Patching Patterns
 
 - **Text replacement** — Direct string substitution (e.g., changing a threshold value). Used for simple mods like LowerMinFocus.
