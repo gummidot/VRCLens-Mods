@@ -399,19 +399,31 @@ public static class VRCLensShaderPatcher
 					float2 caCenter = sbsUV0 - 0.5;
 					float caRadius = length(caCenter);
 					float2 caDir = caCenter / max(0.001, caRadius);
-					float caOffset = _TransverseCA * caRadius * caRadius * 0.04;
-					col.r = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + caDir * caOffset, 0.001, 0.999)).r;
-					col.b = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - caDir * caOffset, 0.001, 0.999)).b;
+					float caOffset = _TransverseCA * caRadius * caRadius * 0.08;
+					float2 caUVr = sbsUV0 + caDir * caOffset;
+					float2 caUVb = sbsUV0 - caDir * caOffset;
+					float2 caOobR = max(float2(0,0), max(-caUVr, caUVr - float2(1,1)));
+					float caEdgeR = exp(-max(caOobR.x, caOobR.y) * 80.0);
+					float2 caOobB = max(float2(0,0), max(-caUVb, caUVb - float2(1,1)));
+					float caEdgeB = exp(-max(caOobB.x, caOobB.y) * 80.0);
+					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr, 0.001, 0.999)).r, caEdgeR);
+					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb, 0.001, 0.999)).b, caEdgeB);
 				}
 				// Axial CA: depth-dependent color fringing on out-of-focus areas
 				if(_AxialCA > 0.001) {
-					float cocCA = rawColor.a;
+					float cocCA = abs(rawColor.a);
 					float2 axCenter = sbsUV0 - 0.5;
 					float axRadius = length(axCenter);
 					float2 axDir = axCenter / max(0.001, axRadius);
-					float axOffset = _AxialCA * cocCA * 0.03;
-					col.r = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axDir * axOffset, 0.001, 0.999)).r;
-					col.b = tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axDir * axOffset, 0.001, 0.999)).b;
+					float axOffset = _AxialCA * cocCA * axRadius * 0.1;
+					float2 axUVr = sbsUV0 + axDir * axOffset;
+					float2 axUVb = sbsUV0 - axDir * axOffset;
+					float2 axOobR = max(float2(0,0), max(-axUVr, axUVr - float2(1,1)));
+					float axEdgeR = exp(-max(axOobR.x, axOobR.y) * 80.0);
+					float2 axOobB = max(float2(0,0), max(-axUVb, axUVb - float2(1,1)));
+					float axEdgeB = exp(-max(axOobB.x, axOobB.y) * 80.0);
+					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(axUVr, 0.001, 0.999)).r, axEdgeR);
+					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(axUVb, 0.001, 0.999)).b, axEdgeB);
 				}
 				// VRCLens_Custom END";
 
@@ -435,12 +447,10 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GRAIN_PASS2 = @"
 				// VRCLens_Custom BEGIN - Film Grain
 				if(_FilmGrain > 0.001) {
-					float grainScale = max(1.0, lerp(1.0, 4.0, _FilmGrainSize));
-					float2 grainPixel = floor(sbsUV0 * _ScreenParams.xy / grainScale);
-					float grainNoise = frac(52.9829189 * frac(dot(grainPixel + float2(_Time.y * 7.3, _Time.y * 11.1), float2(0.06711056, 0.00583715))));
-					float luma = dot(col.rgb, float3(0.299, 0.587, 0.114));
-					float shadowWeight = lerp(1.0, 0.3, saturate(luma * 2.0));
-					col.rgb += (grainNoise - 0.5) * _FilmGrain * 0.15 * shadowWeight;
+					float grainScale = lerp(1.0, 3.0, _FilmGrainSize);
+					float2 grainPos = floor(sbsUV0 * _ScreenParams.xy / grainScale);
+					float noise = frac(sin(dot(grainPos, float2(12.9898, 78.233)) + _Time.y * 3.0) * 43758.5453);
+					col.rgb += (noise - 0.5) * _FilmGrain * 0.15;
 				}
 				// VRCLens_Custom END";
 
