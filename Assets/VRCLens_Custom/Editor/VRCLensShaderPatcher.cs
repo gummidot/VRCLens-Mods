@@ -177,6 +177,7 @@ public static class VRCLensShaderPatcher
 		_GhostFXOpacity (""Intensity"", Range(0.0, 1.0)) = 0.5
 		_GhostFXLayers (""Layers"", Range(1.0, 5.0)) = 1.0
 		_GhostFXSmear (""Smear"", Range(0.0, 1.0)) = 0.0
+		_GhostFXSmearWidth (""Smear Width"", Range(0.0, 1.0)) = 0.25
 		_GhostFXSoftEdge (""Soft Edge"", Range(0.01, 0.3)) = 0.08
 		_GhostFXCenterWidth (""Center Width"", Range(0.0, 0.4)) = 0.05
 		[Enum(Normal,0,Lighten,1,Screen,2,Additive,3,Darken,4)] _GhostFXBlendMode (""Blend Mode"", float) = 1
@@ -188,6 +189,8 @@ public static class VRCLensShaderPatcher
 		_GhostFXShake (""Shake"", Range(0.0, 1.0)) = 0.0
 		_GhostFXShakeSpeed (""Shake Speed"", Range(0.0, 1.0)) = 0.3
 		_GhostFXShakeDist (""Shake Distance"", Range(0.0, 1.0)) = 0.0
+		_GhostFXShimmer (""Shimmer"", Range(0.0, 1.0)) = 0.0
+		_GhostFXChroma (""Chroma"", Range(0.0, 1.0)) = 0.0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GHOSTFX_PASS2 = @"
@@ -265,7 +268,9 @@ public static class VRCLensShaderPatcher
 					float tapSpacing = (trailLength - nearT) / max(1.0, (float)(smearTaps - 1));
 					float tJitter = (ghostNoise - 0.5) * tapSpacing * _GhostFXSmear;
 					half2 ghostPerp = half2(-ghostDir.y, ghostDir.x);
-					float perpJitter = (ghostNoise2 - 0.5) * _GhostFXSmear * 0.008;
+					float perpJitter = (ghostNoise2 - 0.5) * _GhostFXSmear * lerp(0.008, 0.05, _GhostFXSmearWidth);
+					// Shimmer: slow temporal seed for per-tap noise drift
+					float shimmerSeed = _Time.y * 3.0;
 
 					// Direction loop: 1 pass for Split/Full, 2 passes for Dual (both directions)
 					half3 ghostAccumFinal = half3(0,0,0);
@@ -282,16 +287,43 @@ public static class VRCLensShaderPatcher
 						[unroll]
 						for(int gi = 0; gi < 24; gi++) {
 							if(gi >= smearTaps) break;
-							float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + tJitter;
+							// Per-tap shimmer: re-hash noise with tap index + time when shimmer active
+							float tapNoise = ghostNoise;
+							float tapNoise2 = ghostNoise2;
+							if(_GhostFXShimmer > 0.001) {
+								float tapSeed = shimmerSeed + (float)gi * 3.7;
+								tapNoise = frac(52.9829189 * frac(dot(ghostPixelPos + float2(tapSeed, tapSeed * 0.73), float2(0.06711056, 0.00583715))));
+								tapNoise2 = frac(52.9829189 * frac(dot(ghostPixelPos + float2(47.0 + tapSeed, 17.0 + tapSeed * 0.73), float2(0.06711056, 0.00583715))));
+							}
+							float tapTJitter = (tapNoise - 0.5) * tapSpacing * _GhostFXSmear;
+							float tapPerpJitter = (tapNoise2 - 0.5) * _GhostFXSmear * lerp(0.008, 0.05, _GhostFXSmearWidth);
+							// Blend between base jitter and per-tap jitter (capped at 35% for subtlety)
+							float shimmerBlend = _GhostFXShimmer * 0.35;
+							float curTJitter = lerp(tJitter, tapTJitter, shimmerBlend);
+							float curPerpJitter = lerp(perpJitter, tapPerpJitter, shimmerBlend);
+							float t = lerp(nearT, trailLength, (float)gi / max(1.0, (float)(smearTaps - 1))) + curTJitter;
 							t = max(0.01, t);
-							half2 gUV = sbsUV0 + curOffset * t + ghostPerp * perpJitter;
+							half2 gUV = sbsUV0 + curOffset * t + ghostPerp * curPerpJitter;
 							float tNorm = (t - nearT) / max(0.001, trailLength - nearT);
 							float tapWeight = exp(-2.5 * tNorm * tNorm);
-							float blurRadius = _GhostFXSmear * 0.015 * (0.3 + t);
+							float blurRadius = _GhostFXSmear * lerp(0.015, 0.08, _GhostFXSmearWidth) * (0.3 + t);
 							half2 blurStep = ghostDir * blurRadius;
-							half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.25;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.50;
-							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.25;
+							// 5-tap Gaussian blur kernel (1/16, 4/16, 6/16, 4/16, 1/16)
+							half2 blurHalf = blurStep * 0.5;
+							half3 gSample  = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurStep, 0.001, 0.999)).rgb * 0.0625;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - blurHalf, 0.001, 0.999)).rgb * 0.25;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.375;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurHalf, 0.001, 0.999)).rgb * 0.25;
+							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.0625;
+							// Chromatic smear: offset R/B channels along trail direction
+							if(_GhostFXChroma > 0.001) {
+								float chromaSpread = _GhostFXChroma * t * 0.015;
+								half2 chromaOff = curOffset * chromaSpread;
+								half rShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + chromaOff, 0.001, 0.999)).r;
+								half bShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - chromaOff, 0.001, 0.999)).b;
+								gSample.r = lerp(gSample.r, rShift, _GhostFXChroma);
+								gSample.b = lerp(gSample.b, bShift, _GhostFXChroma);
+							}
 							gSample = max(0.00001, gSample / finalExp.x);
 							gSample *= colorTemp(-_WhiteBalance);
 							// Edge fix: decay OOB taps toward scene color instead of black
@@ -337,12 +369,13 @@ public static class VRCLensShaderPatcher
 			// VRCLens_Custom BEGIN - Ghost FX Uniforms
 			uniform float _GhostFXEnable;
 			uniform float _GhostFXMode, _GhostFXFullScreen, _GhostFXAngle, _GhostFXDistance;
-			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSoftEdge, _GhostFXCenterWidth;
+			uniform float _GhostFXOpacity, _GhostFXLayers, _GhostFXSmear, _GhostFXSmearWidth, _GhostFXSoftEdge, _GhostFXCenterWidth;
 			uniform float _GhostFXBlendMode;
 			uniform float _GhostFXEdgeFix;
 			uniform float _GhostFXDepthMask, _GhostFXDepthFade, _GhostFXDepthInvert;
 			uniform float _GhostFXAvatarMask;
 			uniform float _GhostFXShake, _GhostFXShakeSpeed, _GhostFXShakeDist;
+			uniform float _GhostFXShimmer, _GhostFXChroma;
 			// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────

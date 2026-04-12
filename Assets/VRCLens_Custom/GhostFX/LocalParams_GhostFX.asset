@@ -124,3 +124,18 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
+  - name: VRCL_Custom/GhostFXSmearWidth
+    valueType: 1
+    saved: 1
+    defaultValue: 0.25
+    networkSynced: 0
+  - name: VRCL_Custom/GhostFXShimmer
+    valueType: 1
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/GhostFXChroma
+    valueType: 1
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
