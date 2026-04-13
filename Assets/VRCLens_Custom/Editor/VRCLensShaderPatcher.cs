@@ -463,10 +463,21 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GRAIN_PASS2 = @"
 				// VRCLens_Custom BEGIN - Film Grain
 				if(_FilmGrain > 0.001) {
-					float grainScale = lerp(1.0, 3.0, _FilmGrainSize);
-					float2 grainPos = floor(sbsUV0 * _ScreenParams.xy / grainScale);
-					float noise = frac(sin(dot(grainPos, float2(12.9898, 78.233)) + _Time.y * 3.0) * 43758.5453);
-					col.rgb += (noise - 0.5) * _FilmGrain * 0.15;
+					float grainClump = lerp(1.5, 4.0, _FilmGrainSize);
+					float2 grainUV = sbsUV0 * _ScreenParams.xy / grainClump;
+					float2 gi = floor(grainUV);
+					float2 gf = frac(grainUV);
+					float2 gu = gf * gf * (3.0 - 2.0 * gf);
+					float3 gt = _Time.y * float3(1000.0, 1033.0, 1066.0);
+					float2 gs = float2(12.9898, 78.233);
+					float3 gn00 = frac(sin(dot(gi, gs) + gt) * 43758.5453);
+					float3 gn10 = frac(sin(dot(gi + float2(1,0), gs) + gt) * 43758.5453);
+					float3 gn01 = frac(sin(dot(gi + float2(0,1), gs) + gt) * 43758.5453);
+					float3 gn11 = frac(sin(dot(gi + float2(1,1), gs) + gt) * 43758.5453);
+					float3 grainNoise = lerp(lerp(gn00, gn10, gu.x), lerp(gn01, gn11, gu.x), gu.y) - 0.5;
+					float grainLuma = dot(col.rgb, float3(0.299, 0.587, 0.114));
+					float grainMask = max(0.1, 1.0 - smoothstep(0.6, 0.95, grainLuma));
+					col.rgb += grainNoise * float3(0.8, 0.8, 1.4) * _FilmGrain * 0.25 * grainMask;
 				}
 				// VRCLens_Custom END";
 
