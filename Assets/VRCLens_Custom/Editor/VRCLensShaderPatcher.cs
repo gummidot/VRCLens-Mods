@@ -477,8 +477,8 @@ public static class VRCLensShaderPatcher
 					float3 gn01 = frac(sin(dot(gi1 + float2(0,1), gs) + gt) * 43758.5453);
 					float3 gn11 = frac(sin(dot(gi1 + float2(1,1), gs) + gt) * 43758.5453);
 					float3 gnoise1 = lerp(lerp(gn00, gn10, gu1.x), lerp(gn01, gn11, gu1.x), gu1.y) - 0.5;
-					// Octave 2: fine detail (2x frequency, half amplitude, phase-shifted)
-					float2 guv2 = guv1 * 2.0;
+					// Octave 2: rotated grid (0.8/0.6 Pythagorean rotation breaks Cartesian alignment)
+					float2 guv2 = float2(guv1.x * 0.8 + guv1.y * 0.6, guv1.x * -0.6 + guv1.y * 0.8) * 2.0;
 					float2 gi2 = floor(guv2);
 					float2 gf2 = frac(guv2);
 					float2 gu2 = gf2 * gf2 * (3.0 - 2.0 * gf2);
@@ -488,13 +488,14 @@ public static class VRCLensShaderPatcher
 					float3 gn01b = frac(sin(dot(gi2 + float2(0,1), gs) + gt2) * 43758.5453);
 					float3 gn11b = frac(sin(dot(gi2 + float2(1,1), gs) + gt2) * 43758.5453);
 					float3 gnoise2 = lerp(lerp(gn00b, gn10b, gu2.x), lerp(gn01b, gn11b, gu2.x), gu2.y) - 0.5;
-					// FBM composite: normalize back to -0.5..0.5
-					// Brightness bias compensates for zero-clipping (GPU clamps negative to 0)
-					// _FilmGrainBrightness: 0.5=neutral, <0.5=darker, >0.5=brighter
+					// FBM composite + brightness bias
 					float3 grainNoise = (gnoise1 + gnoise2 * 0.5) / 1.5 + (_FilmGrainBrightness - 0.5) * 0.4;
+					// Midtone parabola: grain peaks at ~35% luma, fades in deep shadows AND highlights
 					float grainLuma = dot(col.rgb, float3(0.299, 0.587, 0.114));
-					float grainMask = max(0.1, 1.0 - smoothstep(0.6, 0.95, grainLuma));
-					col.rgb += grainNoise * float3(0.8, 0.8, 1.4) * _FilmGrain * 0.35 * grainMask;
+					float grainMask = max(0.05, saturate(1.0 - abs(grainLuma - 0.35) * 2.5));
+					// Lens vignette: heavier grain at frame edges (1.0x center, ~1.75x corners)
+					float grainVignette = 1.0 + length(sbsUV0 - 0.5) * 1.5;
+					col.rgb += grainNoise * float3(0.8, 0.8, 1.4) * _FilmGrain * 0.35 * grainMask * grainVignette;
 				}
 				// VRCLens_Custom END";
 
