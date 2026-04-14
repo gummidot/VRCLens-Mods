@@ -453,31 +453,48 @@ public static class VRCLensShaderPatcher
 		[Header(Film Grain)]
 		_FilmGrain (""Film Grain"", Range(0.0, 1.0)) = 0.0
 		_FilmGrainSize (""Grain Size"", Range(0.0, 1.0)) = 0.0
+		_FilmGrainBrightness (""Grain Brightness"", Range(0.0, 1.0)) = 0.5
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GRAIN_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Film Grain Uniforms
-			uniform float _FilmGrain, _FilmGrainSize;
+			uniform float _FilmGrain, _FilmGrainSize, _FilmGrainBrightness;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_GRAIN_PASS2 = @"
 				// VRCLens_Custom BEGIN - Film Grain
 				if(_FilmGrain > 0.001) {
 					float grainClump = lerp(1.5, 4.0, _FilmGrainSize);
-					float2 grainUV = sbsUV0 * _ScreenParams.xy / grainClump;
-					float2 gi = floor(grainUV);
-					float2 gf = frac(grainUV);
-					float2 gu = gf * gf * (3.0 - 2.0 * gf);
 					float3 gt = _Time.y * float3(1000.0, 1033.0, 1066.0);
 					float2 gs = float2(12.9898, 78.233);
-					float3 gn00 = frac(sin(dot(gi, gs) + gt) * 43758.5453);
-					float3 gn10 = frac(sin(dot(gi + float2(1,0), gs) + gt) * 43758.5453);
-					float3 gn01 = frac(sin(dot(gi + float2(0,1), gs) + gt) * 43758.5453);
-					float3 gn11 = frac(sin(dot(gi + float2(1,1), gs) + gt) * 43758.5453);
-					float3 grainNoise = lerp(lerp(gn00, gn10, gu.x), lerp(gn01, gn11, gu.x), gu.y) - 0.5;
+					// Octave 1: large clumps (base frequency)
+					float2 guv1 = sbsUV0 * _ScreenParams.xy / grainClump;
+					float2 gi1 = floor(guv1);
+					float2 gf1 = frac(guv1);
+					float2 gu1 = gf1 * gf1 * (3.0 - 2.0 * gf1);
+					float3 gn00 = frac(sin(dot(gi1, gs) + gt) * 43758.5453);
+					float3 gn10 = frac(sin(dot(gi1 + float2(1,0), gs) + gt) * 43758.5453);
+					float3 gn01 = frac(sin(dot(gi1 + float2(0,1), gs) + gt) * 43758.5453);
+					float3 gn11 = frac(sin(dot(gi1 + float2(1,1), gs) + gt) * 43758.5453);
+					float3 gnoise1 = lerp(lerp(gn00, gn10, gu1.x), lerp(gn01, gn11, gu1.x), gu1.y) - 0.5;
+					// Octave 2: fine detail (2x frequency, half amplitude, phase-shifted)
+					float2 guv2 = guv1 * 2.0;
+					float2 gi2 = floor(guv2);
+					float2 gf2 = frac(guv2);
+					float2 gu2 = gf2 * gf2 * (3.0 - 2.0 * gf2);
+					float3 gt2 = gt + float3(142.5, 231.1, 98.4);
+					float3 gn00b = frac(sin(dot(gi2, gs) + gt2) * 43758.5453);
+					float3 gn10b = frac(sin(dot(gi2 + float2(1,0), gs) + gt2) * 43758.5453);
+					float3 gn01b = frac(sin(dot(gi2 + float2(0,1), gs) + gt2) * 43758.5453);
+					float3 gn11b = frac(sin(dot(gi2 + float2(1,1), gs) + gt2) * 43758.5453);
+					float3 gnoise2 = lerp(lerp(gn00b, gn10b, gu2.x), lerp(gn01b, gn11b, gu2.x), gu2.y) - 0.5;
+					// FBM composite: normalize back to -0.5..0.5
+					// Brightness bias compensates for zero-clipping (GPU clamps negative to 0)
+					// _FilmGrainBrightness: 0.5=neutral, <0.5=darker, >0.5=brighter
+					float3 grainNoise = (gnoise1 + gnoise2 * 0.5) / 1.5 + (_FilmGrainBrightness - 0.5) * 0.4;
 					float grainLuma = dot(col.rgb, float3(0.299, 0.587, 0.114));
 					float grainMask = max(0.1, 1.0 - smoothstep(0.6, 0.95, grainLuma));
-					col.rgb += grainNoise * float3(0.8, 0.8, 1.4) * _FilmGrain * 0.25 * grainMask;
+					col.rgb += grainNoise * float3(0.8, 0.8, 1.4) * _FilmGrain * 0.35 * grainMask;
 				}
 				// VRCLens_Custom END";
 
