@@ -482,3 +482,5 @@ All VRCFury toggles and radials in custom prefabs **must use unsynced parameters
 | Pass 2 | Final composition: tone mapping, exposure, overlays | GrabPass `_HirabikiVRCLensPassTexture` |
 
 **Critical rule:** CoC serves dual purposes (blur amount + focus zone threshold). Modifications must preserve the original CoC in Pass 0's alpha for focus peaking, then apply changes only in Pass 1 (blur sampling) or Pass 2 (post-processing).
+
+**`_DepthTex` is always available:** The scene depth texture is populated by the VRCLens camera regardless of whether DoF is enabled. Mods can safely sample `_DepthTex` in Pass 2 for depth-dependent effects (e.g., axial CA depth fade) without requiring DoF to be active.
