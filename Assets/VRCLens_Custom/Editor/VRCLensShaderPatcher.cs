@@ -465,28 +465,40 @@ public static class VRCLensShaderPatcher
 				// VRCLens_Custom BEGIN - Film Grain
 				if(_FilmGrain > 0.001) {
 					float grainClump = lerp(1.5, 4.0, _FilmGrainSize);
-					float3 gt = _Time.y * float3(1000.0, 1033.0, 1066.0);
+					// Nested hash: spatial anchors decoupled from temporal evolution
+					// Lower multipliers are fine — no diagonal slide to hide anymore
+					float3 gt = _Time.y * float3(20.0, 26.0, 33.0);
 					float2 gs = float2(12.9898, 78.233);
 					// Octave 1: large clumps (base frequency)
 					float2 guv1 = sbsUV0 * _ScreenParams.xy / grainClump;
 					float2 gi1 = floor(guv1);
 					float2 gf1 = frac(guv1);
 					float2 gu1 = gf1 * gf1 * (3.0 - 2.0 * gf1);
-					float3 gn00 = frac(sin(dot(gi1, gs) + gt) * 43758.5453);
-					float3 gn10 = frac(sin(dot(gi1 + float2(1,0), gs) + gt) * 43758.5453);
-					float3 gn01 = frac(sin(dot(gi1 + float2(0,1), gs) + gt) * 43758.5453);
-					float3 gn11 = frac(sin(dot(gi1 + float2(1,1), gs) + gt) * 43758.5453);
+					// Step 1: Static spatial anchors (deterministic per corner)
+					float gh00_1 = sin(dot(gi1, gs));
+					float gh10_1 = sin(dot(gi1 + float2(1,0), gs));
+					float gh01_1 = sin(dot(gi1 + float2(0,1), gs));
+					float gh11_1 = sin(dot(gi1 + float2(1,1), gs));
+					// Step 2: Temporal boil (each corner evolves independently)
+					float3 gn00 = frac(sin(gh00_1 * 123.45 + gt) * 43758.5453);
+					float3 gn10 = frac(sin(gh10_1 * 123.45 + gt) * 43758.5453);
+					float3 gn01 = frac(sin(gh01_1 * 123.45 + gt) * 43758.5453);
+					float3 gn11 = frac(sin(gh11_1 * 123.45 + gt) * 43758.5453);
 					float3 gnoise1 = lerp(lerp(gn00, gn10, gu1.x), lerp(gn01, gn11, gu1.x), gu1.y) - 0.5;
 					// Octave 2: rotated grid (0.8/0.6 Pythagorean rotation breaks Cartesian alignment)
 					float2 guv2 = float2(guv1.x * 0.8 + guv1.y * 0.6, guv1.x * -0.6 + guv1.y * 0.8) * 2.0;
 					float2 gi2 = floor(guv2);
 					float2 gf2 = frac(guv2);
 					float2 gu2 = gf2 * gf2 * (3.0 - 2.0 * gf2);
-					float3 gt2 = gt + float3(142.5, 231.1, 98.4);
-					float3 gn00b = frac(sin(dot(gi2, gs) + gt2) * 43758.5453);
-					float3 gn10b = frac(sin(dot(gi2 + float2(1,0), gs) + gt2) * 43758.5453);
-					float3 gn01b = frac(sin(dot(gi2 + float2(0,1), gs) + gt2) * 43758.5453);
-					float3 gn11b = frac(sin(dot(gi2 + float2(1,1), gs) + gt2) * 43758.5453);
+					float3 gt2 = gt + float3(14.5, 23.1, 9.8);
+					float gh00_2 = sin(dot(gi2, gs));
+					float gh10_2 = sin(dot(gi2 + float2(1,0), gs));
+					float gh01_2 = sin(dot(gi2 + float2(0,1), gs));
+					float gh11_2 = sin(dot(gi2 + float2(1,1), gs));
+					float3 gn00b = frac(sin(gh00_2 * 123.45 + gt2) * 43758.5453);
+					float3 gn10b = frac(sin(gh10_2 * 123.45 + gt2) * 43758.5453);
+					float3 gn01b = frac(sin(gh01_2 * 123.45 + gt2) * 43758.5453);
+					float3 gn11b = frac(sin(gh11_2 * 123.45 + gt2) * 43758.5453);
 					float3 gnoise2 = lerp(lerp(gn00b, gn10b, gu2.x), lerp(gn01b, gn11b, gu2.x), gu2.y) - 0.5;
 					// FBM composite + brightness bias
 					float3 grainNoise = (gnoise1 + gnoise2 * 0.5) / 1.5 + (_FilmGrainBrightness - 0.5) * 0.4;
