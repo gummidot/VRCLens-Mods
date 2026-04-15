@@ -107,6 +107,7 @@ C# snippets run inside the Unity Editor via the MCP `execute_csharp` tool. Key d
 - Each snippet is independent — chain multiple MCP calls for multi-step operations
 - Always call `EditorUtility.SetDirty(obj)` on modified objects
 - Save with `AssetDatabase.SaveAssets()` or `EditorSceneManager.SaveOpenScenes()`
+- **Never call methods that use `EditorUtility.DisplayDialog()` from MCP.** The modal dialog blocks Unity's main thread waiting for a click, but MCP can't interact with the GUI — it hangs until VS Code times out and cancels. Instead, replicate the logic inline without dialogs.
 
 ## Workflow — Scene Exploration First
 
@@ -124,6 +125,18 @@ Start by exploring the scene hierarchy — find root GameObjects, locate the ava
 - **Blendshapes:** `EditorCurveBinding.FloatCurve("MeshPath", typeof(SkinnedMeshRenderer), "blendShape.ShapeName")`
 - **GameObject active:** `EditorCurveBinding.FloatCurve("ObjectPath", typeof(GameObject), "m_IsActive")`
 - Always `EditorUtility.SetDirty()` on modified objects; `Undo.RecordObject()` before changes
+
+### SetCurve vs EditorCurveBinding Gotcha
+
+- `AnimationClip.SetCurve(path, typeof(Transform), "m_LocalPosition.x", curve)` **AUTO-FILLS** the other 2 axes (y, z) at value 0. Creates 3 bindings instead of 1.
+- `AnimationUtility.SetEditorCurve(clip, EditorCurveBinding.FloatCurve(...), curve)` creates ONLY the specified binding. Use this for per-property isolation in blend trees.
+
+### Direct Blend Tree Normalization
+
+- `m_NormalizedBlendValues` defaults to FALSE on new BlendTree objects.
+- When false: result = Σ(child_output × directBlendParameter_value). Pure weighted sum, no normalization.
+- When true: weights are normalized to sum to 1. Per-property (only children with curves for that property contribute).
+- VRChat standard pattern: all children use `directBlendParameter = "Always 1"` (Float, default=1.0). With normalization OFF, each child contributes its full output.
 
 ## VRC SDK Notes
 
