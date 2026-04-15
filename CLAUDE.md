@@ -108,6 +108,7 @@ C# snippets run inside the Unity Editor via the MCP `execute_csharp` tool. Key d
 - Always call `EditorUtility.SetDirty(obj)` on modified objects
 - Save with `AssetDatabase.SaveAssets()` or `EditorSceneManager.SaveOpenScenes()`
 - **Never call methods that use `EditorUtility.DisplayDialog()` from MCP.** The modal dialog blocks Unity's main thread waiting for a click, but MCP can't interact with the GUI — it hangs until VS Code times out and cancels. Instead, replicate the logic inline without dialogs.
+- **Don't edit loaded asset files on disk** — Unity keeps assets in memory and overwrites disk changes on save. Use the C# API (`AssetDatabase.LoadAssetAtPath` + modify + `SetDirty` + `SaveAssets`) instead of editing `.asset` YAML directly for assets Unity has loaded.
 
 ## Workflow — Scene Exploration First
 
