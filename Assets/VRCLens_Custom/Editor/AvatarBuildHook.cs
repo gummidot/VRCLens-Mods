@@ -90,6 +90,8 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                 bool enableGhostFX = false;
                 bool enableChromaticAberration = false;
                 bool enableFilmGrain = false;
+                bool enableDepthFog = false;
+                bool enableTiltShift = false;
                 VRCLens shaderPatchVrclens = null;
 
                 foreach (var modifier in modifiers)
@@ -102,14 +104,16 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                     if (modifier.enableGhostFX) enableGhostFX = true;
                     if (modifier.enableChromaticAberration) enableChromaticAberration = true;
                     if (modifier.enableFilmGrain) enableFilmGrain = true;
-                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist || modifier.enableGhostFX || modifier.enableChromaticAberration || modifier.enableFilmGrain) && shaderPatchVrclens == null)
+                    if (modifier.enableDepthFog) enableDepthFog = true;
+                    if (modifier.enableTiltShift) enableTiltShift = true;
+                    if ((modifier.enableLowerMinFocus || modifier.enableManualFocusAssist || modifier.enableGhostFX || modifier.enableChromaticAberration || modifier.enableFilmGrain || modifier.enableDepthFog || modifier.enableTiltShift) && shaderPatchVrclens == null)
                     {
                         shaderPatchVrclens = modifier.GetVRCLens();
                     }
                 }
 
                 // Apply shader patching once with merged flags from all modifiers
-                if (enableLowerMinFocus || enableManualFocusAssist || enableGhostFX || enableChromaticAberration || enableFilmGrain)
+                if (enableLowerMinFocus || enableManualFocusAssist || enableGhostFX || enableChromaticAberration || enableFilmGrain || enableDepthFog || enableTiltShift)
                 {
                     if (shaderPatchVrclens == null)
                     {
@@ -119,7 +123,7 @@ public class AvatarBuildHook : IVRCSDKPreprocessAvatarCallback, IVRCSDKPostproce
                     else
                     {
                         string newPath = VRCLensShaderModifier.CopyAndModifyShader(
-                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain);
+                            shaderPatchVrclens, TempDir, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain, enableDepthFog, enableTiltShift);
                         if (newPath != null)
                         {
                             _usedShaderPatcher = true;

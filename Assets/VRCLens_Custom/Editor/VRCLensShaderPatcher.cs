@@ -509,6 +509,78 @@ public static class VRCLensShaderPatcher
 				}
 				// VRCLens_Custom END";
 
+    // ── Depth Fog code blocks ───────────────────────────────────────────
+
+    private static readonly string BLOCK_DEPTHFOG_PROPERTIES = @"
+		// VRCLens_Custom BEGIN - Depth Fog Properties
+		[Header(Depth Fog)]
+		[Toggle] _DepthFogEnable (""Enable Depth Fog"", float) = 0
+		_DepthFogDensity (""Fog Density"", Range(0.0, 1.0)) = 0
+		_DepthFogStart (""Fog Start (m)"", Range(0.0, 500.0)) = 0
+		_DepthFogColorR (""Fog Color R"", Range(0.0, 1.0)) = 0
+		_DepthFogColorG (""Fog Color G"", Range(0.0, 1.0)) = 0
+		_DepthFogColorB (""Fog Color B"", Range(0.0, 1.0)) = 0
+		// VRCLens_Custom END";
+
+    private static readonly string BLOCK_DEPTHFOG_UNIFORMS = @"
+			// VRCLens_Custom BEGIN - Depth Fog Uniforms
+			uniform float _DepthFogEnable, _DepthFogDensity, _DepthFogStart;
+			uniform float _DepthFogColorR, _DepthFogColorG, _DepthFogColorB;
+			// VRCLens_Custom END";
+
+    private static readonly string BLOCK_DEPTHFOG_PASS2 = @"
+				// VRCLens_Custom BEGIN - Depth Fog
+				if(_DepthFogEnable > 0.5) {
+					float fogDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, sbsUV0);
+					float fogDepthZ = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * fogDepthRaw + 1.0/32000.0);
+					float fogDist = max(0.0, fogDepthZ - _DepthFogStart);
+					float fogDensityScaled = _DepthFogDensity * _DepthFogDensity * _DepthFogDensity;
+					float fogFactor = 1.0 - exp(-fogDist * fogDensityScaled);
+					fogFactor = min(fogFactor, 0.95);
+					float3 fogColor = float3(_DepthFogColorR, _DepthFogColorG, _DepthFogColorB);
+					col.rgb = lerp(col.rgb, fogColor, saturate(fogFactor));
+				}
+				// VRCLens_Custom END";
+
+    // ── Tilt-Shift code blocks ──────────────────────────────────────────
+
+    // Anchor for Pass 0: CoC output line (unique — only appears once)
+    private const string ANCHOR_COC_OUTPUT = "getBlurSize(eyeDepthUV, 0.001 * _FocalLength";
+
+    // Anchor for Pass 0: bounds check line — after the if/else that may reset col.a to 1.0
+    private const string ANCHOR_BOUNDS_CHECK = "col = bounds(uv) ? col : half4(";
+
+    private static readonly string BLOCK_TILTSHIFT_PROPERTIES = @"
+		// VRCLens_Custom BEGIN - Tilt-Shift Properties
+		[Header(Tilt Shift)]
+		_TiltShift (""Tilt-Shift Blur"", Range(0.0, 1.0)) = 0.0
+		_TiltShiftPos (""Focus Band Position"", Range(0.0, 1.0)) = 0.0
+		_TiltShiftWidth (""Focus Band Width"", Range(0.0, 0.5)) = 0.0
+		// VRCLens_Custom END";
+
+    // Tilt-shift uniforms go in Pass 0 (occurrence 1 of _FocusDistance uniform)
+    private static readonly string BLOCK_TILTSHIFT_PASS0_UNIFORMS = @"
+			// VRCLens_Custom BEGIN - Tilt-Shift Uniforms
+			uniform float _TiltShift, _TiltShiftPos, _TiltShiftWidth;
+			// VRCLens_Custom END";
+
+    // Tilt-shift Pass 1 text replacements: enable blur even when DoF is off
+    private const string TILTSHIFT_PASS1_DOF_OLD = "if(_EnableDoF) {";
+    private const string TILTSHIFT_PASS1_DOF_NEW = "if(_EnableDoF || _TiltShift > 0.001) { // VRCLens_Custom: TiltShift";
+    private const string TILTSHIFT_PASS1_UNIFORM_ANCHOR = "uniform bool _EnableDoF;\n\t\t\tuniform float _SensorScale";
+    private const string TILTSHIFT_PASS1_UNIFORM_NEW = "uniform bool _EnableDoF;\n\t\t\tuniform float _TiltShift; // VRCLens_Custom: TiltShift\n\t\t\tuniform float _SensorScale";
+
+    private static readonly string BLOCK_TILTSHIFT_PASS0 = @"
+				// VRCLens_Custom BEGIN - Tilt-Shift
+				if(_TiltShift > 0.001) {
+					float tsBandDist = abs(uv.y - _TiltShiftPos);
+					float tsMask = smoothstep(_TiltShiftWidth, _TiltShiftWidth + 0.15, tsBandDist);
+					float tsStrength = _TiltShift * _TiltShift;
+					float tsCoC = tsMask * tsStrength * 300.0;
+					col.a = (abs(col.a) > abs(tsCoC)) ? col.a : sign(col.a + 0.0001) * tsCoC;
+				}
+				// VRCLens_Custom END";
+
     // ── Code blocks to inject ───────────────────────────────────────────
 
     private static readonly string BLOCK_PROPERTIES = @"
@@ -691,7 +763,7 @@ public static class VRCLensShaderPatcher
     /// Reads from ORIGINAL_SHADER_PATH, writes to OUTPUT_SHADER_PATH.
     /// Returns the compiled Shader, or null on failure.
     /// </summary>
-    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false)
+    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false)
     {
         if (!File.Exists(ORIGINAL_SHADER_PATH))
         {
@@ -808,6 +880,46 @@ public static class VRCLensShaderPatcher
             }
         }
 
+        // Validate DepthFog anchors if that feature is enabled
+        if (enableDepthFog)
+        {
+            var fogAnchors = GetDepthFogAnchors();
+            List<string> missingFog = new List<string>();
+            foreach (var anchor in fogAnchors)
+            {
+                if (!content.Contains(anchor.SearchString))
+                    missingFog.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+            }
+            if (missingFog.Count > 0)
+            {
+                string errorMsg = $"Cannot patch shader — expected DepthFog anchor lines not found.\n" +
+                    $"VRCLens may have been updated with incompatible changes.\n\n" +
+                    $"Missing anchors:\n{string.Join("\n", missingFog)}";
+                Debug.LogError($"{LOG_PREFIX} {errorMsg}");
+                return null;
+            }
+        }
+
+        // Validate TiltShift anchors if that feature is enabled
+        if (enableTiltShift)
+        {
+            var tsAnchors = GetTiltShiftAnchors();
+            List<string> missingTS = new List<string>();
+            foreach (var anchor in tsAnchors)
+            {
+                if (!content.Contains(anchor.SearchString))
+                    missingTS.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+            }
+            if (missingTS.Count > 0)
+            {
+                string errorMsg = $"Cannot patch shader — expected TiltShift anchor lines not found.\n" +
+                    $"VRCLens may have been updated with incompatible changes.\n\n" +
+                    $"Missing anchors:\n{string.Join("\n", missingTS)}";
+                Debug.LogError($"{LOG_PREFIX} {errorMsg}");
+                return null;
+            }
+        }
+
         // Step 1: Apply ManualFocusAssist insertions FIRST (adds code blocks with 0.5001)
         if (enableManualFocusAssist)
         {
@@ -832,6 +944,18 @@ public static class VRCLensShaderPatcher
             content = ApplyFilmGrainInsertions(content);
         }
 
+        // Step 1e: Apply DepthFog insertions
+        if (enableDepthFog)
+        {
+            content = ApplyDepthFogInsertions(content);
+        }
+
+        // Step 1f: Apply TiltShift insertions
+        if (enableTiltShift)
+        {
+            content = ApplyTiltShiftInsertions(content);
+        }
+
         // Step 2: Apply LowerMinFocus replacements SECOND
         // This replaces 0.5001 → 0.0001 in BOTH the original shader lines
         // AND any ManualFocusAssist code blocks that were just inserted.
@@ -841,7 +965,7 @@ public static class VRCLensShaderPatcher
         }
 
         // Step 3: Rename shader
-        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain);
+        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain, enableDepthFog, enableTiltShift);
 
         // Step 4: Add header comment
         List<string> enabledMods = new List<string>();
@@ -850,6 +974,8 @@ public static class VRCLensShaderPatcher
         if (enableGhostFX) enabledMods.Add("GhostFX");
         if (enableChromaticAberration) enabledMods.Add("ChromaticAberration");
         if (enableFilmGrain) enabledMods.Add("FilmGrain");
+        if (enableDepthFog) enabledMods.Add("DepthFog");
+        if (enableTiltShift) enabledMods.Add("TiltShift");
         string modsStr = string.Join(" + ", enabledMods);
 
         string header = $"// VRCLens Patched Shader ({modsStr}) - Auto-generated by VRCLens Custom\n" +
@@ -1009,6 +1135,8 @@ public static class VRCLensShaderPatcher
         content = ApplyGhostFXInsertions(content);
         content = ApplyChromaticAberrationInsertions(content);
         content = ApplyFilmGrainInsertions(content);
+        content = ApplyDepthFogInsertions(content);
+        content = ApplyTiltShiftInsertions(content);
         content = ApplyLowerMinFocusReplacements(content);
         File.WriteAllText(PATCHED_REF_PATH, content);
 
@@ -1125,11 +1253,49 @@ public static class VRCLensShaderPatcher
         }
         messages.Add($"All {ghostAnchorsV.Count} GhostFX anchors found.");
 
+        // Validate DepthFog anchors
+        var fogAnchorsV = GetDepthFogAnchors();
+        List<string> missingFogV = new List<string>();
+        foreach (var anchor in fogAnchorsV)
+        {
+            if (!originalContent.Contains(anchor.SearchString))
+                missingFogV.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+        }
+        if (missingFogV.Count > 0)
+        {
+            string msg = $"DepthFog validation FAILED — missing anchors:\n{string.Join("\n", missingFogV)}\n\n" +
+                "VRCLens may have been updated. See maintenance steps in the patcher source code.";
+            Debug.LogError($"{LOG_PREFIX} {msg}");
+            EditorUtility.DisplayDialog("Verify Patcher — FAILED", msg, "OK");
+            return;
+        }
+        messages.Add($"All {fogAnchorsV.Count} DepthFog anchors found.");
+
+        // Validate TiltShift anchors
+        var tsAnchorsV = GetTiltShiftAnchors();
+        List<string> missingTSV = new List<string>();
+        foreach (var anchor in tsAnchorsV)
+        {
+            if (!originalContent.Contains(anchor.SearchString))
+                missingTSV.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+        }
+        if (missingTSV.Count > 0)
+        {
+            string msg = $"TiltShift validation FAILED — missing anchors:\n{string.Join("\n", missingTSV)}\n\n" +
+                "VRCLens may have been updated. See maintenance steps in the patcher source code.";
+            Debug.LogError($"{LOG_PREFIX} {msg}");
+            EditorUtility.DisplayDialog("Verify Patcher — FAILED", msg, "OK");
+            return;
+        }
+        messages.Add($"All {tsAnchorsV.Count} TiltShift anchors found.");
+
         // Patch the original (all mods) and compare to reference
         string patched = ApplyManualFocusAssistInsertions(originalContent);
         patched = ApplyGhostFXInsertions(patched);
         patched = ApplyChromaticAberrationInsertions(patched);
         patched = ApplyFilmGrainInsertions(patched);
+        patched = ApplyDepthFogInsertions(patched);
+        patched = ApplyTiltShiftInsertions(patched);
         patched = ApplyLowerMinFocusReplacements(patched);
         string expected = File.ReadAllText(PATCHED_REF_PATH);
 
@@ -1176,7 +1342,7 @@ public static class VRCLensShaderPatcher
     [MenuItem("Tools/VRCLens Custom/Debug/Test Generate Patched Shader (all mods)")]
     public static void GenerateFromMenu()
     {
-        Shader shader = PatchShader(true, true, true);
+        Shader shader = PatchShader(true, true, true, true, true, true, true);
         if (shader != null)
         {
             EditorUtility.DisplayDialog("VRCLens Shader Patcher",
@@ -1435,6 +1601,106 @@ public static class VRCLensShaderPatcher
         return string.Join("\n", lines);
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // Depth Fog insertion logic
+    // ═══════════════════════════════════════════════════════════════════
+
+    private static List<AnchorInfo> GetDepthFogAnchors()
+    {
+        return new List<AnchorInfo>
+        {
+            new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 6: _FocusDistance uniform"),
+            new AnchorInfo(ANCHOR_GHOSTFX_UNIFORMS, "Pass 2: white balance line"),
+        };
+    }
+
+    private static string ApplyDepthFogInsertions(string content)
+    {
+        var lines = new List<string>(content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+        int insertions = 0;
+
+        // Process from bottom to top so line indices don't shift
+
+        // Depth Fog application — after white balance line (before tone mapping)
+        insertions += InsertAfterLine(lines, ANCHOR_GHOSTFX_UNIFORMS, BLOCK_DEPTHFOG_PASS2, "DepthFog pass 2 application");
+
+        // Depth Fog uniforms in Pass 2 — after second _FocusDistance uniform
+        insertions += InsertAfterLine(lines, ANCHOR_PASS6_UNIFORMS, BLOCK_DEPTHFOG_UNIFORMS, "DepthFog uniforms", false, 2);
+
+        // Depth Fog properties — after _DoFStrength line
+        insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_DEPTHFOG_PROPERTIES, "DepthFog properties");
+
+        Debug.Log($"{LOG_PREFIX} Applied {insertions} DepthFog insertion sites");
+
+        return string.Join("\n", lines);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // Tilt-Shift insertion logic
+    // ═══════════════════════════════════════════════════════════════════
+
+    private static List<AnchorInfo> GetTiltShiftAnchors()
+    {
+        return new List<AnchorInfo>
+        {
+            new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 0: _FocusDistance uniform"),
+            new AnchorInfo(ANCHOR_BOUNDS_CHECK, "Pass 0: bounds check after CoC if/else"),
+            new AnchorInfo(TILTSHIFT_PASS1_UNIFORM_ANCHOR, "Pass 1: _EnableDoF + _SensorScale uniforms"),
+            new AnchorInfo(TILTSHIFT_PASS1_DOF_OLD, "Pass 1: if(_EnableDoF) condition"),
+        };
+    }
+
+    private static string ApplyTiltShiftInsertions(string content)
+    {
+        var lines = new List<string>(content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+        int insertions = 0;
+
+        // Process from bottom to top so line indices don't shift
+
+        // Tilt-Shift CoC modification — BEFORE the bounds check line in Pass 0
+        // Must go after the if/else block that resets col.a=1.0 in non-render mode
+        insertions += InsertBeforeLine(lines, ANCHOR_BOUNDS_CHECK, BLOCK_TILTSHIFT_PASS0, "TiltShift pass 0 CoC modification");
+
+        // Tilt-Shift uniforms in Pass 0 — after first _FocusDistance uniform (occurrence 1)
+        insertions += InsertAfterLine(lines, ANCHOR_PASS6_UNIFORMS, BLOCK_TILTSHIFT_PASS0_UNIFORMS, "TiltShift pass 0 uniforms", false, 1);
+
+        // Tilt-Shift properties — after _DoFStrength line
+        insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_TILTSHIFT_PROPERTIES, "TiltShift properties");
+
+        // Rejoin for text replacements in Pass 1
+        content = string.Join("\n", lines);
+
+        // Pass 1: Add _TiltShift uniform declaration
+        if (content.Contains(TILTSHIFT_PASS1_UNIFORM_ANCHOR))
+        {
+            content = content.Replace(TILTSHIFT_PASS1_UNIFORM_ANCHOR, TILTSHIFT_PASS1_UNIFORM_NEW);
+            insertions++;
+            Debug.Log($"{LOG_PREFIX} Applied TiltShift Pass 1 uniform");
+        }
+        else
+        {
+            Debug.LogWarning($"{LOG_PREFIX} Could not find Pass 1 uniform anchor for TiltShift");
+        }
+
+        // Pass 1: Modify _EnableDoF condition to also trigger on TiltShift
+        if (content.Contains(TILTSHIFT_PASS1_DOF_OLD))
+        {
+            content = content.Replace(TILTSHIFT_PASS1_DOF_OLD, TILTSHIFT_PASS1_DOF_NEW);
+            insertions++;
+            Debug.Log($"{LOG_PREFIX} Applied TiltShift Pass 1 DoF condition override");
+        }
+        else
+        {
+            Debug.LogWarning($"{LOG_PREFIX} Could not find Pass 1 DoF condition for TiltShift");
+        }
+
+        Debug.Log($"{LOG_PREFIX} Applied {insertions} TiltShift insertion/replacement sites");
+
+        return content;
+    }
+
     /// <summary>
     /// Find a line containing searchString and insert blockText after it.
     /// If findEndOfStatement is true, finds the end of the statement (line ending with ";") first.
@@ -1479,6 +1745,37 @@ public static class VRCLensShaderPatcher
                 }
 
                 Debug.Log($"{LOG_PREFIX} Inserted {description} after line {insertIndex + 1}");
+                return 1;
+            }
+        }
+
+        Debug.LogWarning($"{LOG_PREFIX} Could not find anchor for {description}: \"{searchString}\"");
+        return 0;
+    }
+
+    /// <summary>
+    /// Find a line containing searchString and insert blockText BEFORE it.
+    /// </summary>
+    private static int InsertBeforeLine(List<string> lines, string searchString, string blockText,
+        string description, int occurrence = 1)
+    {
+        int found = 0;
+        for (int i = 0; i < lines.Count; i++)
+        {
+            if (lines[i].Contains(searchString))
+            {
+                found++;
+                if (found != occurrence) continue;
+
+                string[] blockLines = blockText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                int startLine = blockLines.Length > 0 && string.IsNullOrWhiteSpace(blockLines[0]) ? 1 : 0;
+
+                for (int b = startLine; b < blockLines.Length; b++)
+                {
+                    lines.Insert(i + (b - startLine), blockLines[b]);
+                }
+
+                Debug.Log($"{LOG_PREFIX} Inserted {description} before line {i + 1}");
                 return 1;
             }
         }
@@ -1544,7 +1841,7 @@ public static class VRCLensShaderPatcher
     /// <summary>
     /// Renames the shader by appending a suffix based on enabled mods.
     /// </summary>
-    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false)
+    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false)
     {
         // Build suffix from enabled mods
         var parts = new List<string>();
@@ -1553,6 +1850,8 @@ public static class VRCLensShaderPatcher
         if (enableGhostFX) parts.Add("GhostFX");
         if (enableChromaticAberration) parts.Add("ChromaticAberration");
         if (enableFilmGrain) parts.Add("FilmGrain");
+        if (enableDepthFog) parts.Add("DepthFog");
+        if (enableTiltShift) parts.Add("TiltShift");
         if (parts.Count == 0) return content;
 
         string suffix = " " + string.Join(" ", parts);
