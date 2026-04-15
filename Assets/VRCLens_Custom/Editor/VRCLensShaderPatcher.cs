@@ -556,12 +556,13 @@ public static class VRCLensShaderPatcher
 		_TiltShift (""Tilt-Shift Blur"", Range(0.0, 1.0)) = 0.0
 		_TiltShiftPos (""Focus Band Position"", Range(0.0, 1.0)) = 0.0
 		_TiltShiftWidth (""Focus Band Width"", Range(0.0, 0.5)) = 0.0
+		_TiltAngle (""Focus Band Angle"", Range(0.0, 1.0)) = 0.5
 		// VRCLens_Custom END";
 
     // Tilt-shift uniforms go in Pass 0 (occurrence 1 of _FocusDistance uniform)
     private static readonly string BLOCK_TILTSHIFT_PASS0_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Tilt-Shift Uniforms
-			uniform float _TiltShift, _TiltShiftPos, _TiltShiftWidth;
+			uniform float _TiltShift, _TiltShiftPos, _TiltShiftWidth, _TiltAngle;
 			// VRCLens_Custom END";
 
     // Tilt-shift Pass 1 text replacements: enable blur even when DoF is off
@@ -575,7 +576,15 @@ public static class VRCLensShaderPatcher
 				if(_TiltShift > 0.001) {
 					float tsDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, uv);
 					float tsDepthZ = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * tsDepthRaw + 1.0/32000.0);
-					float tsBandDist = abs(uv.y - _TiltShiftPos);
+					float tsAngleDeg = (_TiltAngle * 180.0) - 90.0;
+					float tsRad = tsAngleDeg * (3.14159265 / 180.0);
+					float tsS, tsC;
+					sincos(tsRad, tsS, tsC);
+					float2 tsCentered = uv - float2(0.5, 0.5);
+					float tsAspect = _ScreenParams.x / _ScreenParams.y;
+					tsCentered.x *= tsAspect;
+					float tsRotY = tsCentered.x * tsS + tsCentered.y * tsC;
+					float tsBandDist = abs(tsRotY - (_TiltShiftPos - 0.5));
 					float tsMask = smoothstep(_TiltShiftWidth, _TiltShiftWidth + 0.15, tsBandDist);
 					float tsDepthFactor = saturate(tsDepthZ / 30.0);
 					float tsStrength = _TiltShift * _TiltShift;
