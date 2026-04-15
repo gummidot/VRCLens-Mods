@@ -304,3 +304,5 @@ MonoBehaviour:
   enableGhostFX: 0
   enableChromaticAberration: 1
   enableFilmGrain: 0
+  enableDepthFog: 0
+  enableTiltShift: 0

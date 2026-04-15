@@ -317,7 +317,7 @@ public static class VRCLensShaderPatcher
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.0625;
 							// Chromatic smear: offset R/B channels along trail direction
 							if(_GhostFXChroma > 0.001) {
-								float chromaSpread = _GhostFXChroma * t * 0.015;
+								float chromaSpread = _GhostFXChroma * _GhostFXChroma * t * 0.04;
 								half2 chromaOff = curOffset * chromaSpread;
 								half rShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + chromaOff, 0.001, 0.999)).r;
 								half bShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - chromaOff, 0.001, 0.999)).b;
@@ -400,16 +400,39 @@ public static class VRCLensShaderPatcher
 					float caRadius = length(caCenter);
 					float2 caDir = caCenter / max(0.001, caRadius);
 					float caOffset = _TransverseCA * caRadius * caRadius * 0.08;
-					float2 caUVr = sbsUV0 + caDir * caOffset;
-					float2 caUVb = sbsUV0 - caDir * caOffset;
-					float2 caOobR = max(float2(0,0), max(-caUVr, caUVr - float2(1,1)));
+					// 5-tap radial blur: sample at offset and ±25%/±50% spread for soft fringing
+					float2 caUVr0 = sbsUV0 + caDir * caOffset;
+					float2 caUVr1 = sbsUV0 + caDir * caOffset * 0.75;
+					float2 caUVr2 = sbsUV0 + caDir * caOffset * 1.25;
+					float2 caUVr3 = sbsUV0 + caDir * caOffset * 0.5;
+					float2 caUVr4 = sbsUV0 + caDir * caOffset * 1.5;
+					float2 caUVb0 = sbsUV0 - caDir * caOffset;
+					float2 caUVb1 = sbsUV0 - caDir * caOffset * 0.75;
+					float2 caUVb2 = sbsUV0 - caDir * caOffset * 1.25;
+					float2 caUVb3 = sbsUV0 - caDir * caOffset * 0.5;
+					float2 caUVb4 = sbsUV0 - caDir * caOffset * 1.5;
+					// OOB edge decay on outermost sample
+					float2 caOobR = max(float2(0,0), max(-caUVr4, caUVr4 - float2(1,1)));
 					float caEdgeR = exp(-max(caOobR.x, caOobR.y) * 80.0);
-					float2 caOobB = max(float2(0,0), max(-caUVb, caUVb - float2(1,1)));
+					float2 caOobB = max(float2(0,0), max(-caUVb4, caUVb4 - float2(1,1)));
 					float caEdgeB = exp(-max(caOobB.x, caOobB.y) * 80.0);
-					col.r = lerp(col.r, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr, 0.001, 0.999)).r, caEdgeR);
-					col.b = lerp(col.b, tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb, 0.001, 0.999)).b, caEdgeB);
+					// Gaussian-ish weights: center=6, ±25%=4, ±50%=1 (sum=16)
+					float rBlur = tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr0, 0.001, 0.999)).r * 6.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr1, 0.001, 0.999)).r * 4.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr2, 0.001, 0.999)).r * 4.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr3, 0.001, 0.999)).r * 1.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr4, 0.001, 0.999)).r * 1.0;
+					rBlur /= 16.0;
+					float bBlur = tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb0, 0.001, 0.999)).b * 6.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb1, 0.001, 0.999)).b * 4.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb2, 0.001, 0.999)).b * 4.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb3, 0.001, 0.999)).b * 1.0
+					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb4, 0.001, 0.999)).b * 1.0;
+					bBlur /= 16.0;
+					col.r = lerp(col.r, rBlur, caEdgeR);
+					col.b = lerp(col.b, bBlur, caEdgeB);
 				}
-				// Axial CA: depth-scaled per-channel circular blur (colored halos on distant objects)
+				// Axial CA: depth-scaled per-channel disc blur (soft colored halos on distant objects)
 				if(_AxialCA > 0.001) {
 					// Linearize depth (same formula as getLinearEyeDepth in MFA, inlined
 					// because that helper is only injected when ManualFocusAssist is enabled)
@@ -421,25 +444,37 @@ public static class VRCLensShaderPatcher
 					float axDepth = 1.0 / (axDepthRaw * axZ + axW);
 					// Ramp: no CA at camera, full CA at 50m+ (atmospheric depth haze distance)
 					float axDepthFade = saturate(axDepth / 50.0);
-					float axPx = _AxialCA * 16.0 * axDepthFade;
+					float axPx = _AxialCA * 28.0 * axDepthFade;
 					float2 axTs = axPx / _ScreenParams.xy;
-					// 8-tap circular pattern at 45° intervals
+					// 8 directions at 45° intervals
 					float2 axD0 = float2(1.0, 0.0) * axTs;
 					float2 axD1 = float2(0.707, 0.707) * axTs;
 					float2 axD2 = float2(0.0, 1.0) * axTs;
 					float2 axD3 = float2(-0.707, 0.707) * axTs;
-					float rAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r;
+					// R channel: 2-ring weighted disc blur (center=3, inner@0.5r=2, outer@1.0r=1)
+					float rAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r * 3.0;
+					// Inner ring at 0.5× radius
+					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).r) * 2.0;
+					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).r) * 2.0;
+					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.5, 0.001, 0.999)).r) * 2.0;
+					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.5, 0.001, 0.999)).r) * 2.0;
+					// Outer ring at full radius
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3, 0.001, 0.999)).r;
-					col.r = rAcc / 9.0;
-					float bAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0 * 0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0 * 0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1 * 0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1 * 0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2 * 0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2 * 0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3 * 0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3 * 0.5, 0.001, 0.999)).b;
-					col.b = bAcc / 9.0;
+					col.r = rAcc / 27.0; // 3 + 8*2 + 8*1
+					// B channel: same 2-ring pattern at half the pixel radius
+					float bAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b * 3.0;
+					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.25, 0.001, 0.999)).b) * 2.0;
+					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.25, 0.001, 0.999)).b) * 2.0;
+					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.25, 0.001, 0.999)).b) * 2.0;
+					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.25, 0.001, 0.999)).b) * 2.0;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.5, 0.001, 0.999)).b;
+					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.5, 0.001, 0.999)).b;
+					col.b = bAcc / 27.0;
 				}
 				// VRCLens_Custom END";
 
