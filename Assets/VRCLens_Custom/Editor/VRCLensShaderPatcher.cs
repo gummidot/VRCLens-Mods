@@ -573,11 +573,14 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_TILTSHIFT_PASS0 = @"
 				// VRCLens_Custom BEGIN - Tilt-Shift
 				if(_TiltShift > 0.001) {
+					float tsDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, uv);
+					float tsDepthZ = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * tsDepthRaw + 1.0/32000.0);
 					float tsBandDist = abs(uv.y - _TiltShiftPos);
 					float tsMask = smoothstep(_TiltShiftWidth, _TiltShiftWidth + 0.15, tsBandDist);
+					float tsDepthFactor = saturate(tsDepthZ / 30.0);
 					float tsStrength = _TiltShift * _TiltShift;
-					float tsCoC = tsMask * tsStrength * 300.0;
-					col.a = (abs(col.a) > abs(tsCoC)) ? col.a : sign(col.a + 0.0001) * tsCoC;
+					float tsCoC = tsMask * tsDepthFactor * tsStrength * 300.0;
+					col.a = _EnableDoF ? ((abs(col.a) > abs(tsCoC)) ? col.a : sign(col.a + 0.0001) * tsCoC) : tsCoC;
 				}
 				// VRCLens_Custom END";
 
