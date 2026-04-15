@@ -315,14 +315,14 @@ public static class VRCLensShaderPatcher
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV, 0.001, 0.999)).rgb * 0.375;
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurHalf, 0.001, 0.999)).rgb * 0.25;
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.0625;
-							// Chromatic smear: offset R/B channels along trail direction
+							// Chromatic smear: R/B sample slightly further/closer than ghost tap
 							if(_GhostFXChroma > 0.001) {
-								float chromaSpread = _GhostFXChroma * _GhostFXChroma * 0.06;
-								half2 chromaOff = ghostDir * chromaSpread;
-								half rShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + chromaOff, 0.001, 0.999)).r;
-								half bShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - chromaOff, 0.001, 0.999)).b;
-								gSample.r = lerp(gSample.r, rShift, _GhostFXChroma);
-								gSample.b = lerp(gSample.b, bShift, _GhostFXChroma);
+								half2 chromaVec = gUV - sbsUV0;
+								float chromaScale = _GhostFXChroma * _GhostFXChroma * 0.4;
+								half rShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + chromaVec * chromaScale, 0.001, 0.999)).r;
+								half bShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - chromaVec * chromaScale, 0.001, 0.999)).b;
+								gSample.r = rShift;
+								gSample.b = bShift;
 							}
 							gSample = max(0.00001, gSample / finalExp.x);
 							gSample *= colorTemp(-_WhiteBalance);
