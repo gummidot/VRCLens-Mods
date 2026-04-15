@@ -399,7 +399,7 @@ public static class VRCLensShaderPatcher
 					float2 caCenter = sbsUV0 - 0.5;
 					float caRadius = length(caCenter);
 					float2 caDir = caCenter / max(0.001, caRadius);
-					float caOffset = _TransverseCA * caRadius * caRadius * 0.08;
+					float caOffset = _TransverseCA * caRadius * caRadius * 0.15;
 					// 5-tap radial blur: sample at offset and ±25%/±50% spread for soft fringing
 					float2 caUVr0 = sbsUV0 + caDir * caOffset;
 					float2 caUVr1 = sbsUV0 + caDir * caOffset * 0.75;
@@ -444,7 +444,7 @@ public static class VRCLensShaderPatcher
 					float axDepth = 1.0 / (axDepthRaw * axZ + axW);
 					// Ramp: no CA at camera, full CA at 50m+ (atmospheric depth haze distance)
 					float axDepthFade = saturate(axDepth / 50.0);
-					float axPx = _AxialCA * 28.0 * axDepthFade;
+					float axPx = _AxialCA * 40.0 * axDepthFade;
 					float2 axTs = axPx / _ScreenParams.xy;
 					// 8 directions at 45° intervals
 					float2 axD0 = float2(1.0, 0.0) * axTs;
