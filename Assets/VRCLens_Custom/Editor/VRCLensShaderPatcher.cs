@@ -317,8 +317,8 @@ public static class VRCLensShaderPatcher
 							gSample += tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + blurStep, 0.001, 0.999)).rgb * 0.0625;
 							// Chromatic smear: offset R/B channels along trail direction
 							if(_GhostFXChroma > 0.001) {
-								float chromaSpread = _GhostFXChroma * _GhostFXChroma * t * 0.04;
-								half2 chromaOff = curOffset * chromaSpread;
+								float chromaSpread = _GhostFXChroma * _GhostFXChroma * 0.06;
+								half2 chromaOff = ghostDir * chromaSpread;
 								half rShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV + chromaOff, 0.001, 0.999)).r;
 								half bShift = tex2D(_HirabikiVRCLensPassTexture, clamp(gUV - chromaOff, 0.001, 0.999)).b;
 								gSample.r = lerp(gSample.r, rShift, _GhostFXChroma);
