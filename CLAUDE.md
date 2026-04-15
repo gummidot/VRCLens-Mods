@@ -338,6 +338,8 @@ Use exclusive tags to make a set of toggles act as a radio group — only one ac
 
 Prefer querying live data via `SkinnedMeshRenderer.sharedMesh` and `transform.Find()` rather than parsing the cache format.
 
+---
+
 ## Poiyomi Toon Shader
 
 Discover Poiyomi shaders from the material's `shader.name`, or search via `AssetDatabase.FindAssets("t:Shader").Select(g => AssetDatabase.GUIDToAssetPath(g))` filtering for names containing "poiyomi".
@@ -434,6 +436,8 @@ Authoring-time parameter names work even when VRCFury renames them with `VF###_`
 - `[FAIL]` = toggle changed nothing (broken animation path, wrong parameter, WD issue)
 - `[WARN]` = parameter not found in expression menu or Gesture Manager
 
+---
+
 ## VRCLens Custom Shader Mods
 
 This project adds optional shader mods to VRCLens without modifying the original VRCLens assets. Mods are patched into the shader at avatar build time.
@@ -496,5 +500,7 @@ All VRCFury toggles and radials in custom prefabs **must use unsynced parameters
 | Pass 2 | Final composition: tone mapping, exposure, overlays | GrabPass `_HirabikiVRCLensPassTexture` |
 
 **Critical rule:** CoC serves dual purposes (blur amount + focus zone threshold). Modifications must preserve the original CoC in Pass 0's alpha for focus peaking, then apply changes only in Pass 1 (blur sampling) or Pass 2 (post-processing).
+
+**Pass 0 CoC leak:** `getBlurSize()` runs unconditionally in Pass 0 regardless of `_EnableDoF`, so `col.a` always contains a focus-dependent CoC. Custom mods that write to `col.a` (e.g., tilt-shift) must check `_EnableDoF` — when DoF is off, assign the custom CoC directly (`col.a = tsCoC`) instead of `max(col.a, tsCoC)`, otherwise the focus pointer position affects the result even with DoF disabled.
 
 **`_DepthTex` is always available:** The scene depth texture is populated by the VRCLens camera regardless of whether DoF is enabled. Mods can safely sample `_DepthTex` in Pass 2 for depth-dependent effects (e.g., axial CA depth fade) without requiring DoF to be active.
