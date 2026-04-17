@@ -200,6 +200,9 @@ public static class VRCLensShaderPatcher
 					float ghostAngleRad = _GhostFXAngle * 6.28318530718;
 					// Handheld shake: organic multi-layer wobble
 					float ghostDistShake = 0.0;
+					float ghostZoneShift = 0.0;
+					float ghostOpacityShake = 1.0;
+					float ghostDistGradient = 0.0;
 					if(_GhostFXShake > 0.001) {
 						float shakeSpd = lerp(0.1, 5.0, _GhostFXShakeSpeed);
 						float t = _Time.y * shakeSpd;
@@ -211,6 +214,12 @@ public static class VRCLensShaderPatcher
 						float tremor = sin(t * 2.71) * 0.5 + sin(t * 3.93) * 0.3;
 						float jerk = sin(sin(t * 7.1) * 2.0) * 0.15;
 						ghostAngleRad += (drift + tremor + jerk) * ghostShakeAmt * envelope;
+						// Zone boundary shift: filter moves off-center with hand
+						ghostZoneShift = (sin(t * 0.43) + sin(t * 1.19) * 0.5) * _GhostFXShake * 0.06 * envelope;
+						// Opacity flutter: filter tilt changes refraction strength
+						ghostOpacityShake = 1.0 - _GhostFXShake * 0.25 * (1.0 - envelope);
+						// Per-pixel distance gradient: filter tilt = stronger refraction at edge
+						ghostDistGradient = (sin(t * 0.37) + sin(t * 0.89) * 0.6) * _GhostFXShake * 0.3 * envelope;
 						// Distance wobble
 						if(_GhostFXShakeDist > 0.001) {
 							float driftD = sin(t * 0.61) + sin(t * 1.07) * 0.5;
@@ -219,10 +228,12 @@ public static class VRCLensShaderPatcher
 						}
 					}
 					half2 ghostDir = half2(cos(ghostAngleRad), sin(ghostAngleRad));
-					float ghostProj = dot(ghostCenter, ghostDir);
+					float ghostProj = dot(ghostCenter, ghostDir) + ghostZoneShift;
 
 					float ghostZoneMask;
-					half2 ghostBaseOffset = ghostDir * (_GhostFXDistance + ghostDistShake);
+					// Per-pixel distance: base + wobble + gradient (stronger deeper into ghost zone)
+					float ghostPixelDist = _GhostFXDistance + ghostDistShake + abs(ghostProj) * ghostDistGradient;
+					half2 ghostBaseOffset = ghostDir * ghostPixelDist;
 					int ghostDirCount = 1;
 					if(_GhostFXFullScreen > 0.5) {
 						ghostZoneMask = 1.0;
@@ -368,7 +379,7 @@ public static class VRCLensShaderPatcher
 						// Darken: dark ghosts dominate
 						ghostBlended = min(col.rgb, ghostAccumFinal);
 					}
-					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity);
+					col.rgb = lerp(col.rgb, ghostBlended, ghostZoneMask * _GhostFXOpacity * ghostOpacityShake);
 				}
 				// VRCLens_Custom END";
 
