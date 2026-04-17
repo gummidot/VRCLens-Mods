@@ -198,23 +198,30 @@ public static class VRCLensShaderPatcher
 				if(_GhostFXEnable > 0.5) {
 					half2 ghostCenter = sbsUV0 - 0.5;
 					float ghostAngleRad = _GhostFXAngle * 6.28318530718;
-					// Handheld shake: multi-frequency sine wobble on angle + distance
+					// Handheld shake: organic multi-layer wobble
+					float ghostDistShake = 0.0;
 					if(_GhostFXShake > 0.001) {
 						float shakeSpd = lerp(0.1, 5.0, _GhostFXShakeSpeed);
+						float t = _Time.y * shakeSpd;
 						float ghostShakeAmt = _GhostFXShake * 0.5;
-						ghostAngleRad += sin(_Time.y * 0.7 * shakeSpd) * ghostShakeAmt
-						               + sin(_Time.y * 1.3 * shakeSpd) * ghostShakeAmt * 0.6
-						               + sin(_Time.y * 2.9 * shakeSpd) * ghostShakeAmt * 0.3;
+						// Amplitude envelope: tremor comes in bursts
+						float envelope = 0.6 + 0.4 * sin(t * 0.31) * sin(t * 0.17);
+						// Low drift (slow wander) + medium tremor + fast micro-jerk
+						float drift = sin(t * 0.53) + sin(t * 0.79) * 0.7;
+						float tremor = sin(t * 2.71) * 0.5 + sin(t * 3.93) * 0.3;
+						float jerk = sin(sin(t * 7.1) * 2.0) * 0.15;
+						ghostAngleRad += (drift + tremor + jerk) * ghostShakeAmt * envelope;
+						// Distance wobble
+						if(_GhostFXShakeDist > 0.001) {
+							float driftD = sin(t * 0.61) + sin(t * 1.07) * 0.5;
+							float tremorD = sin(t * 3.17) * 0.3;
+							ghostDistShake = (driftD + tremorD) * envelope * _GhostFXShakeDist * _GhostFXShake * 0.04;
+						}
 					}
 					half2 ghostDir = half2(cos(ghostAngleRad), sin(ghostAngleRad));
 					float ghostProj = dot(ghostCenter, ghostDir);
 
 					float ghostZoneMask;
-					float ghostDistShake = 0.0;
-					if(_GhostFXShakeDist > 0.001 && _GhostFXShake > 0.001) {
-						float shakeSpd = lerp(0.1, 5.0, _GhostFXShakeSpeed);
-						ghostDistShake = sin(_Time.y * 0.9 * shakeSpd) * _GhostFXShakeDist * _GhostFXShake * 0.06;
-					}
 					half2 ghostBaseOffset = ghostDir * (_GhostFXDistance + ghostDistShake);
 					int ghostDirCount = 1;
 					if(_GhostFXFullScreen > 0.5) {
