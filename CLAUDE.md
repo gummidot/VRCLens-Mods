@@ -61,6 +61,7 @@ Follow this template (see existing files in `.github/prompts/` for real examples
 - Reference concrete file paths, symbol names, and line numbers where relevant.
 - Update `**Status:**` as work progresses (`Not started` → `In progress` → `Implemented`).
 - **Always** update the plan file when the plan changes — the file is the source of truth, not the chat history.
+- **Before running pre-commit reviews**, update the plan file to reflect the current implementation. Stale plan files cause reviewers to flag intentional changes as deviations.
 
 ---
 
