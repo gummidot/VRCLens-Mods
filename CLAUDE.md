@@ -468,9 +468,21 @@ When working on a new shader mod or understanding existing ones:
 
 ### Shader Patching Patterns
 
-- **Text replacement** — Direct string substitution (e.g., changing a threshold value). Used for simple mods like LowerMinFocus.
-- **Anchor-based insertion** — Find a stable line in the shader, inject code after it. Used for feature additions like ManualFocusAssist. All injections wrapped in `// VRCLens_Custom BEGIN/END` markers for idempotency.
-- **Anchor sites** are numbered (Site 1a, 1b, 2, 3, 4a, 4b, 5a, 5b, etc.) — see patcher source for the full list. Multiple mods can share anchor sites (injections stack).
+- **Text replacement** -- Direct string substitution (e.g., changing a threshold value). Used for simple mods like LowerMinFocus.
+- **Anchor-based insertion** -- Find a stable line in the shader, inject code after it. Used for feature additions like ManualFocusAssist. All injections wrapped in `// VRCLens_Custom BEGIN/END` markers for idempotency.
+- **Anchor sites** are numbered (Site 1a, 1b, 2, 3, 4a, 4b, 5a, 5b, etc.) -- see patcher source for the full list. Multiple mods can share anchor sites (injections stack).
+
+### Preventing Mod Conflicts (Shared Anchor Insertion Order)
+
+All mods are independently addable -- every anchor exists in the original unpatched shader. No mod may depend on an anchor introduced by another mod.
+
+**Shared anchor reversal:** When multiple mods insert after the same anchor line, `List.Insert()` causes code blocks to appear in **reverse apply order** in the output. For shared anchors like `ANCHOR_PROPERTIES` (used by 7 mods) and `ANCHOR_PASS6_UNIFORMS` (used by 6 mods), this reversal is cosmetic only -- properties/uniforms still work regardless of order.
+
+**Functional ordering matters for Pass 2 code blocks.** Shader operations that read or write `col.rgb` execute in insertion order, so the reversal changes the processing pipeline. Rules:
+
+1. **Never share an anchor for two Pass 2 code blocks that must execute in a specific order.** If mod A's output must be masked/modified by mod B's code, they need different anchors so insertion order is deterministic.
+2. **Pick the latest possible anchor for "final" operations** (e.g., masking, clamping). The dithering line (`ANCHOR_DITHERING`) runs after tone mapping, film grain, and filter post-processing, making it safe for operations that must come last.
+3. **When adding a new mod that injects into Pass 2**, check which other mods share the same anchor. If the new code depends on running before or after existing injections, use a different anchor.
 
 ### VRCFury Menu Convention
 
