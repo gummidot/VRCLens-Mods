@@ -215,6 +215,8 @@ Present findings grouped by category. Flag potential issues: high PhysBone count
 
 Types: Bool=1bit, Int=8bits (0-255), Float=8bits (-1.0 to 1.0). **Synced budget: 256 bits.**
 
+**Serialized `valueType` enum:** Int=0, Float=1, Bool=2. Note the non-obvious ordering: Float is 1, not 2. When reading `.asset` YAML files, `valueType: 1` means Float, not Int.
+
 Create via `ScriptableObject.CreateInstance<VRCExpressionParameters>()`. The `.parameters` field is an array of `Parameter` with fields: `name` (string), `valueType` (Bool/Int/Float), `defaultValue`, `saved`, `networkSynced`.
 
 ### Expression Menus
@@ -306,6 +308,10 @@ Prefer specific actions (ObjectToggleAction, BlendShapeAction, MaterialAction, e
 ### Toggle Transition Pitfall
 
 When using `hasTransition = true`, **the ON state (`state.actions`) must not be empty** — VRCFury uses it for resting state registration, WD ON defaults, and `expandIntoTransition`. Read `Editor/VF/Feature/ToggleBuilder.cs` for the full state machine structure.
+
+### Animation Binding Paths in VRCFury Prefabs
+
+Animation clips in VRCFury prefabs use paths **relative to the prefab root**, not the avatar root. VRCFury automatically rewrites these paths during build based on where the prefab is placed in the avatar hierarchy. Do not use the full avatar hierarchy path in authoring-time clips.
 
 ### Exclusive Tags (Radio Groups)
 
@@ -496,7 +502,7 @@ All VRCFury toggles and radials in custom prefabs **must use unsynced parameters
 
 1. **Global parameter names:** Each toggle uses `useGlobalParam = true` with a namespaced name: `VRCL_Custom/<Feature><Control>` (e.g., `VRCL_Custom/GhostFXSplit`, `VRCL_Custom/ManualFocusAssistStrength`). This is separate from the menu path (`VRCLens/Custom/<Feature>/...`).
 
-2. **LocalParams asset:** Create `LocalParams_<Feature>.asset` (VRCExpressionParameters ScriptableObject) in the feature folder. Every parameter has `networkSynced: 0` and `saved: 1`. Set `defaultValue` to match the toggle/slider defaults.
+2. **LocalParams asset:** Create `LocalParams_<Feature>.asset` (VRCExpressionParameters ScriptableObject) in the feature folder. Every parameter has `networkSynced: 0` and `saved: 1`. **`defaultValue` MUST be 0** for VRCFury Toggle slider parameters. The parameter represents the slider position (blend weight 0-1), not the shader property value. At slider=0, Write Defaults ON causes the shader property to revert to its own default from the `Properties` block. At slider=1, the animation clip value is applied. Setting defaultValue=0 means the slider starts at minimum (effect off / backward-compatible state) on first avatar load.
 
 3. **FullController:** Add one VRCFury FullController component to the prefab with:
    - `prms` array referencing the LocalParams asset
