@@ -24,6 +24,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public bool enableFilmGrain;
     public bool enableDepthFog;
     public bool enableTiltShift;
+    public bool enableFisheye;
 
     public void Modify(string tempDir)
     {

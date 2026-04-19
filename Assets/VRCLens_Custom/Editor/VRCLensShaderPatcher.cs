@@ -646,6 +646,60 @@ public static class VRCLensShaderPatcher
 				}
 				// VRCLens_Custom END";
 
+    // ── Fisheye Lens code blocks ────────────────────────────────────────
+
+    // Anchor for Pass 2: right before rawColor sampling — UV distortion goes here
+    private const string ANCHOR_FISHEYE_UV = "half2 sbsUV1 = isPreview ? sbsUV0Mask : half2(frac(i.uv.x * (1 + isSBSTrue)), i.uv.y);";
+
+    // Anchor for Pass 2: after dithering — fisheye mask goes here (after all post-processing)
+    private const string ANCHOR_DITHERING = "col = dither(uv, col)";
+
+    private static readonly string BLOCK_FISHEYE_PROPERTIES = @"
+		// VRCLens_Custom BEGIN - Fisheye Lens Properties
+		[Header(Fisheye Lens)]
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 5.0)) = 0.0
+		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 1.0
+		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.3)) = 0.05
+		// VRCLens_Custom END";
+
+    private static readonly string BLOCK_FISHEYE_UNIFORMS = @"
+			// VRCLens_Custom BEGIN - Fisheye Lens Uniforms
+			uniform float _FisheyeStrength;
+			uniform float _FisheyeShape;
+			uniform float _FisheyeEdgeSoftness;
+			// VRCLens_Custom END";
+
+    private static readonly string BLOCK_FISHEYE_PASS2 = @"
+				// VRCLens_Custom BEGIN - Fisheye Lens
+				float fisheyeMask = 1.0;
+				if(_FisheyeStrength > 0.001) {
+					float2 fishCenter = sbsUV0 - 0.5;
+					float fishAspect = _ScreenParams.x / _ScreenParams.y;
+					// Shape mask in SCREEN space (original UV, before distortion)
+					// shapeAspect: 1.0 = oval (16:9 contour), fishAspect = circle
+					float shapeAspect = lerp(1.0, fishAspect, _FisheyeShape);
+					float2 maskCenter = fishCenter;
+					maskCenter.x *= shapeAspect;
+					float maskR = length(maskCenter);
+					// maskRadius: 0.75 at Shape=0 (large oval past screen edges), 0.5 at Shape=1 (circle)
+					float maskRadius = lerp(0.75, 0.5, _FisheyeShape);
+					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
+					fisheyeMask = 1.0 - smoothstep(maskRadius - maskSoft, maskRadius, maskR);
+					// Inward-pull barrel distortion: sample from closer to center (guaranteed in [0,1])
+					fishCenter.x *= fishAspect;
+					float fishR = length(fishCenter);
+					float fishScale = 1.0 + _FisheyeStrength * fishR * fishR;
+					fishCenter /= fishScale;
+					fishCenter.x /= fishAspect;
+					sbsUV0 = 0.5 + fishCenter;
+				}
+				// VRCLens_Custom END";
+
+    private static readonly string BLOCK_FISHEYE_PASS2_MASK = @"
+				// VRCLens_Custom BEGIN - Fisheye Lens Mask
+				col.rgb *= fisheyeMask;
+				// VRCLens_Custom END";
+
     // ── Code blocks to inject ───────────────────────────────────────────
 
     private static readonly string BLOCK_PROPERTIES = @"
@@ -828,7 +882,7 @@ public static class VRCLensShaderPatcher
     /// Reads from ORIGINAL_SHADER_PATH, writes to OUTPUT_SHADER_PATH.
     /// Returns the compiled Shader, or null on failure.
     /// </summary>
-    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false)
+    public static Shader PatchShader(bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false, bool enableFisheye = false)
     {
         if (!File.Exists(ORIGINAL_SHADER_PATH))
         {
@@ -985,6 +1039,26 @@ public static class VRCLensShaderPatcher
             }
         }
 
+        // Validate Fisheye anchors if that feature is enabled
+        if (enableFisheye)
+        {
+            var fisheyeAnchors = GetFisheyeAnchors();
+            List<string> missingFisheye = new List<string>();
+            foreach (var anchor in fisheyeAnchors)
+            {
+                if (!content.Contains(anchor.SearchString))
+                    missingFisheye.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+            }
+            if (missingFisheye.Count > 0)
+            {
+                string errorMsg = $"Cannot patch shader -- expected Fisheye anchor lines not found.\n" +
+                    $"VRCLens may have been updated with incompatible changes.\n\n" +
+                    $"Missing anchors:\n{string.Join("\n", missingFisheye)}";
+                Debug.LogError($"{LOG_PREFIX} {errorMsg}");
+                return null;
+            }
+        }
+
         // Step 1: Apply ManualFocusAssist insertions FIRST (adds code blocks with 0.5001)
         if (enableManualFocusAssist)
         {
@@ -1021,6 +1095,12 @@ public static class VRCLensShaderPatcher
             content = ApplyTiltShiftInsertions(content);
         }
 
+        // Step 1g: Apply Fisheye insertions
+        if (enableFisheye)
+        {
+            content = ApplyFisheyeInsertions(content);
+        }
+
         // Step 2: Apply LowerMinFocus replacements SECOND
         // This replaces 0.5001 → 0.0001 in BOTH the original shader lines
         // AND any ManualFocusAssist code blocks that were just inserted.
@@ -1030,7 +1110,7 @@ public static class VRCLensShaderPatcher
         }
 
         // Step 3: Rename shader
-        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain, enableDepthFog, enableTiltShift);
+        content = RenameShader(content, enableLowerMinFocus, enableManualFocusAssist, enableGhostFX, enableChromaticAberration, enableFilmGrain, enableDepthFog, enableTiltShift, enableFisheye);
 
         // Step 4: Add header comment
         List<string> enabledMods = new List<string>();
@@ -1041,6 +1121,7 @@ public static class VRCLensShaderPatcher
         if (enableFilmGrain) enabledMods.Add("FilmGrain");
         if (enableDepthFog) enabledMods.Add("DepthFog");
         if (enableTiltShift) enabledMods.Add("TiltShift");
+        if (enableFisheye) enabledMods.Add("Fisheye");
         string modsStr = string.Join(" + ", enabledMods);
 
         string header = $"// VRCLens Patched Shader ({modsStr}) - Auto-generated by VRCLens Custom\n" +
@@ -1202,6 +1283,7 @@ public static class VRCLensShaderPatcher
         content = ApplyFilmGrainInsertions(content);
         content = ApplyDepthFogInsertions(content);
         content = ApplyTiltShiftInsertions(content);
+        content = ApplyFisheyeInsertions(content);
         content = ApplyLowerMinFocusReplacements(content);
         File.WriteAllText(PATCHED_REF_PATH, content);
 
@@ -1354,6 +1436,24 @@ public static class VRCLensShaderPatcher
         }
         messages.Add($"All {tsAnchorsV.Count} TiltShift anchors found.");
 
+        // Validate Fisheye anchors
+        var fisheyeAnchorsV = GetFisheyeAnchors();
+        List<string> missingFisheyeV = new List<string>();
+        foreach (var anchor in fisheyeAnchorsV)
+        {
+            if (!originalContent.Contains(anchor.SearchString))
+                missingFisheyeV.Add($"  - {anchor.Description}: \"{anchor.SearchString}\"");
+        }
+        if (missingFisheyeV.Count > 0)
+        {
+            string msg = $"Fisheye validation FAILED -- missing anchors:\n{string.Join("\n", missingFisheyeV)}\n\n" +
+                "VRCLens may have been updated. See maintenance steps in the patcher source code.";
+            Debug.LogError($"{LOG_PREFIX} {msg}");
+            EditorUtility.DisplayDialog("Verify Patcher -- FAILED", msg, "OK");
+            return;
+        }
+        messages.Add($"All {fisheyeAnchorsV.Count} Fisheye anchors found.");
+
         // Patch the original (all mods) and compare to reference
         string patched = ApplyManualFocusAssistInsertions(originalContent);
         patched = ApplyGhostFXInsertions(patched);
@@ -1361,6 +1461,7 @@ public static class VRCLensShaderPatcher
         patched = ApplyFilmGrainInsertions(patched);
         patched = ApplyDepthFogInsertions(patched);
         patched = ApplyTiltShiftInsertions(patched);
+        patched = ApplyFisheyeInsertions(patched);
         patched = ApplyLowerMinFocusReplacements(patched);
         string expected = File.ReadAllText(PATCHED_REF_PATH);
 
@@ -1407,7 +1508,7 @@ public static class VRCLensShaderPatcher
     [MenuItem("Tools/VRCLens Custom/Debug/Test Generate Patched Shader (all mods)")]
     public static void GenerateFromMenu()
     {
-        Shader shader = PatchShader(true, true, true, true, true, true, true);
+        Shader shader = PatchShader(true, true, true, true, true, true, true, true);
         if (shader != null)
         {
             EditorUtility.DisplayDialog("VRCLens Shader Patcher",
@@ -1766,6 +1867,45 @@ public static class VRCLensShaderPatcher
         return content;
     }
 
+    // ═══════════════════════════════════════════════════════════════════
+    // Fisheye Lens insertion logic
+    // ═══════════════════════════════════════════════════════════════════
+
+    private static List<AnchorInfo> GetFisheyeAnchors()
+    {
+        return new List<AnchorInfo>
+        {
+            new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
+            new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 2: _FocusDistance uniform"),
+            new AnchorInfo(ANCHOR_FISHEYE_UV, "Pass 2: sbsUV1 line (before rawColor sampling)"),
+            new AnchorInfo(ANCHOR_DITHERING, "Pass 2: dithering (for fisheye mask)"),
+        };
+    }
+
+    private static string ApplyFisheyeInsertions(string content)
+    {
+        var lines = new List<string>(content.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None));
+        int insertions = 0;
+
+        // Process from bottom to top so line indices don't shift
+
+        // Fisheye mask application — after dithering, blacks out out-of-bounds pixels
+        insertions += InsertAfterLine(lines, ANCHOR_DITHERING, BLOCK_FISHEYE_PASS2_MASK, "Fisheye mask application");
+
+        // Fisheye UV distortion — after sbsUV1 line, before rawColor sampling
+        insertions += InsertAfterLine(lines, ANCHOR_FISHEYE_UV, BLOCK_FISHEYE_PASS2, "Fisheye pass 2 UV distortion");
+
+        // Fisheye uniforms in Pass 2 — after second _FocusDistance uniform (occurrence 2)
+        insertions += InsertAfterLine(lines, ANCHOR_PASS6_UNIFORMS, BLOCK_FISHEYE_UNIFORMS, "Fisheye uniforms", false, 2);
+
+        // Fisheye properties — after _DoFStrength line
+        insertions += InsertAfterLine(lines, ANCHOR_PROPERTIES, BLOCK_FISHEYE_PROPERTIES, "Fisheye properties");
+
+        Debug.Log($"{LOG_PREFIX} Applied {insertions} Fisheye insertion sites");
+
+        return string.Join("\n", lines);
+    }
+
     /// <summary>
     /// Find a line containing searchString and insert blockText after it.
     /// If findEndOfStatement is true, finds the end of the statement (line ending with ";") first.
@@ -1906,7 +2046,7 @@ public static class VRCLensShaderPatcher
     /// <summary>
     /// Renames the shader by appending a suffix based on enabled mods.
     /// </summary>
-    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false)
+    private static string RenameShader(string content, bool enableLowerMinFocus, bool enableManualFocusAssist, bool enableGhostFX = false, bool enableChromaticAberration = false, bool enableFilmGrain = false, bool enableDepthFog = false, bool enableTiltShift = false, bool enableFisheye = false)
     {
         // Build suffix from enabled mods
         var parts = new List<string>();
@@ -1917,6 +2057,7 @@ public static class VRCLensShaderPatcher
         if (enableFilmGrain) parts.Add("FilmGrain");
         if (enableDepthFog) parts.Add("DepthFog");
         if (enableTiltShift) parts.Add("TiltShift");
+        if (enableFisheye) parts.Add("Fisheye");
         if (parts.Count == 0) return content;
 
         string suffix = " " + string.Join(" ", parts);

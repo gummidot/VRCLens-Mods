@@ -25,6 +25,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty enableFilmGrainProp;
     private SerializedProperty enableDepthFogProp;
     private SerializedProperty enableTiltShiftProp;
+    private SerializedProperty enableFisheyeProp;
 
     private void OnEnable()
     {
@@ -46,6 +47,7 @@ public class VRCLensModifierEditor : Editor
         enableFilmGrainProp = serializedObject.FindProperty(nameof(modifier.enableFilmGrain));
         enableDepthFogProp = serializedObject.FindProperty(nameof(modifier.enableDepthFog));
         enableTiltShiftProp = serializedObject.FindProperty(nameof(modifier.enableTiltShift));
+        enableFisheyeProp = serializedObject.FindProperty(nameof(modifier.enableFisheye));
     }
 
     public override void OnInspectorGUI()
@@ -118,6 +120,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for Tilt-Shift
         EditorGUILayout.BeginHorizontal();
         enableTiltShiftProp.boolValue = EditorGUILayout.ToggleLeft("Tilt-Shift", enableTiltShiftProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for Fisheye
+        EditorGUILayout.BeginHorizontal();
+        enableFisheyeProp.boolValue = EditorGUILayout.ToggleLeft("Fisheye Lens", enableFisheyeProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
