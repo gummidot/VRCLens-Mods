@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "unity": {
-      "type": "http",
-      "url": "http://127.0.0.1:14523/mcp/"
+      "type": "stdio",
+      "command": "Library/mcp-proxy.exe"
     }
   }
 }
