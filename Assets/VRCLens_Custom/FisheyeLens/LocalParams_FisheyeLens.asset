@@ -19,13 +19,18 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
-  - name: VRCL_Custom/FisheyeShape
+  - name: VRCL_Custom/FisheyeZoom
     valueType: 1
     saved: 1
     defaultValue: 0
     networkSynced: 0
   - name: VRCL_Custom/FisheyeEdgeSoftness
     valueType: 1
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/FisheyeShowCorners
+    valueType: 0
     saved: 1
     defaultValue: 0
     networkSynced: 0

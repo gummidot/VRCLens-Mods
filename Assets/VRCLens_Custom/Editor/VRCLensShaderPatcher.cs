@@ -658,50 +658,48 @@ public static class VRCLensShaderPatcher
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
 		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 5.0)) = 0.0
-		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
-		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.3)) = 0.05
+		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
+		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.2)) = 0.05
+		_FisheyeShowCorners (""Fisheye Show Corners"", Range(0.0, 1.0)) = 0.0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Fisheye Lens Uniforms
 			uniform float _FisheyeStrength;
-			uniform float _FisheyeShape;
+			uniform float _FisheyeZoom;
 			uniform float _FisheyeEdgeSoftness;
+			uniform float _FisheyeShowCorners;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_PASS2 = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens
 				float fisheyeMask = 1.0;
 				if(_FisheyeStrength > 0.001) {
-					float2 fishCenter = sbsUV0 - 0.5;
+					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
-					// Aspect-corrected offset: a unit circle in ac-space is a circle on screen
-					float2 ac = fishCenter;
+					// Pre-distortion zoom (scales UV toward center)
+					float zoomScale = 1.0 + _FisheyeZoom * 0.5;
+					float2 center = (origUV - 0.5) / zoomScale;
+					// Oval mask (raw UV space, no aspect correction -> oval on 16:9)
+					float maskR = length(center);
+					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
+					fisheyeMask = 1.0 - smoothstep(0.65 - maskSoft, 0.65, maskR);
+					// Barrel distortion (full aspect correction for uniform radial warp)
+					float2 ac = center;
 					ac.x *= fishAspect;
 					float r = length(ac);
-					// r_safe: largest ac-radius whose outward-pushed source UV stays inside [0,1]
-					// Solve r + k*r^3 = 0.5 via 2 Newton iterations from closed-form initial guess
-					float k = _FisheyeStrength;
-					float r_s = 0.5 / (1.0 + k * 0.25);
-					r_s -= (r_s + k*r_s*r_s*r_s - 0.5) / (1.0 + 3.0*k*r_s*r_s);
-					r_s -= (r_s + k*r_s*r_s*r_s - 0.5) / (1.0 + 3.0*k*r_s*r_s);
-					float r_safe = max(0.01, r_s);
-					// Shape=0: largest safe circle (default). Shape=1: tight inner circle with more black framing.
-					float maskRadius = lerp(r_safe, r_safe * 0.3, _FisheyeShape);
-					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
-					fisheyeMask = 1.0 - smoothstep(maskRadius - maskSoft, maskRadius, r);
-					// Outward-push barrel distortion. Pixels outside r_safe get junk UV,
-					// but fisheyeMask = 0 there so col.rgb *= fisheyeMask blacks them out downstream.
-					float scale = 1.0 + k * r * r;
+					float scale = 1.0 + _FisheyeStrength * r * r;
 					ac *= scale;
 					ac.x /= fishAspect;
-					sbsUV0 = 0.5 + ac;
+					float2 distortedUV = clamp(0.5 + ac, 0.001, 0.999);
+					// UV blend: distortion fades smoothly at mask boundary
+					sbsUV0 = lerp(0.5 + center, distortedUV, fisheyeMask);
 				}
 				// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_PASS2_MASK = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens Mask
-				col.rgb *= fisheyeMask;
+				col.rgb *= lerp(fisheyeMask, 1.0, _FisheyeShowCorners);
 				// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────

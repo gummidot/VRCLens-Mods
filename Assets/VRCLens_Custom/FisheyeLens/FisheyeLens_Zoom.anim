@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FisheyeLens_Shape
+  m_Name: FisheyeLens_Zoom
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -33,7 +33,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._FisheyeShape
+    attribute: material._FisheyeZoom
     path: CamScreen/ScreenOverride
     classID: 23
     script: {fileID: 0}
@@ -93,7 +93,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: material._FisheyeShape
+    attribute: material._FisheyeZoom
     path: CamScreen/ScreenOverride
     classID: 23
     script: {fileID: 0}
