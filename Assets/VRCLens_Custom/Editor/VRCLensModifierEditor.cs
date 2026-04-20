@@ -26,6 +26,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty enableDepthFogProp;
     private SerializedProperty enableTiltShiftProp;
     private SerializedProperty enableFisheyeProp;
+    private SerializedProperty enableColorGradingProp;
 
     private void OnEnable()
     {
@@ -48,6 +49,7 @@ public class VRCLensModifierEditor : Editor
         enableDepthFogProp = serializedObject.FindProperty(nameof(modifier.enableDepthFog));
         enableTiltShiftProp = serializedObject.FindProperty(nameof(modifier.enableTiltShift));
         enableFisheyeProp = serializedObject.FindProperty(nameof(modifier.enableFisheye));
+        enableColorGradingProp = serializedObject.FindProperty(nameof(modifier.enableColorGrading));
     }
 
     public override void OnInspectorGUI()
@@ -125,6 +127,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for Fisheye
         EditorGUILayout.BeginHorizontal();
         enableFisheyeProp.boolValue = EditorGUILayout.ToggleLeft("Fisheye Lens", enableFisheyeProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for Color Grading
+        EditorGUILayout.BeginHorizontal();
+        enableColorGradingProp.boolValue = EditorGUILayout.ToggleLeft("Color Grading", enableColorGradingProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();
