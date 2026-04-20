@@ -658,7 +658,7 @@ public static class VRCLensShaderPatcher
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
 		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 5.0)) = 0.0
-		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 1.0
+		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.3)) = 0.05
 		// VRCLens_Custom END";
 
@@ -675,23 +675,27 @@ public static class VRCLensShaderPatcher
 				if(_FisheyeStrength > 0.001) {
 					float2 fishCenter = sbsUV0 - 0.5;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
-					// Shape mask in SCREEN space (original UV, before distortion)
-					// shapeAspect: 1.0 = oval (16:9 contour), fishAspect = circle
-					float shapeAspect = lerp(1.0, fishAspect, _FisheyeShape);
-					float2 maskCenter = fishCenter;
-					maskCenter.x *= shapeAspect;
-					float maskR = length(maskCenter);
-					// maskRadius: 0.75 at Shape=0 (large oval past screen edges), 0.5 at Shape=1 (circle)
-					float maskRadius = lerp(0.75, 0.5, _FisheyeShape);
+					// Aspect-corrected offset: a unit circle in ac-space is a circle on screen
+					float2 ac = fishCenter;
+					ac.x *= fishAspect;
+					float r = length(ac);
+					// r_safe: largest ac-radius whose outward-pushed source UV stays inside [0,1]
+					// Solve r + k*r^3 = 0.5 via 2 Newton iterations from closed-form initial guess
+					float k = _FisheyeStrength;
+					float r_s = 0.5 / (1.0 + k * 0.25);
+					r_s -= (r_s + k*r_s*r_s*r_s - 0.5) / (1.0 + 3.0*k*r_s*r_s);
+					r_s -= (r_s + k*r_s*r_s*r_s - 0.5) / (1.0 + 3.0*k*r_s*r_s);
+					float r_safe = max(0.01, r_s);
+					// Shape=0: largest safe circle (default). Shape=1: tight inner circle with more black framing.
+					float maskRadius = lerp(r_safe, r_safe * 0.3, _FisheyeShape);
 					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
-					fisheyeMask = 1.0 - smoothstep(maskRadius - maskSoft, maskRadius, maskR);
-					// Inward-pull barrel distortion: sample from closer to center (guaranteed in [0,1])
-					fishCenter.x *= fishAspect;
-					float fishR = length(fishCenter);
-					float fishScale = 1.0 + _FisheyeStrength * fishR * fishR;
-					fishCenter /= fishScale;
-					fishCenter.x /= fishAspect;
-					sbsUV0 = 0.5 + fishCenter;
+					fisheyeMask = 1.0 - smoothstep(maskRadius - maskSoft, maskRadius, r);
+					// Outward-push barrel distortion. Pixels outside r_safe get junk UV,
+					// but fisheyeMask = 0 there so col.rgb *= fisheyeMask blacks them out downstream.
+					float scale = 1.0 + k * r * r;
+					ac *= scale;
+					ac.x /= fishAspect;
+					sbsUV0 = 0.5 + ac;
 				}
 				// VRCLens_Custom END";
 
