@@ -74,5 +74,8 @@ crashlytics-build.properties
 # VRCLens
 /Assets/Hirabiki*
 
+# VRCLens internals doc
+/Doc/vrclens-internals.md
+
 # Other temp files
 /Assets/VRCLens_Custom/Temp*

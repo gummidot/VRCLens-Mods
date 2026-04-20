@@ -449,6 +449,10 @@ Authoring-time parameter names work even when VRCFury renames them with `VF###_`
 
 This project adds optional shader mods to VRCLens without modifying the original VRCLens assets. Mods are patched into the shader at avatar build time.
 
+### Mod Catalog
+
+See `README.md` for the full list of available mods with descriptions and usage.
+
 ### Discovery Workflow
 
 When working on a new shader mod or understanding existing ones:
