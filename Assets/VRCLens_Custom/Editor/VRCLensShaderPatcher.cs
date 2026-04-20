@@ -1979,11 +1979,12 @@ public static class VRCLensShaderPatcher
 		_CGHighlightR (""Highlight Red"", Range(0.0, 1.0)) = 0.5
 		_CGHighlightG (""Highlight Green"", Range(0.0, 1.0)) = 0.5
 		_CGHighlightB (""Highlight Blue"", Range(0.0, 1.0)) = 0.5
+		_CGContrast (""Contrast"", Range(0.0, 1.0)) = 0.5
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_CG_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Color Grading Uniforms
-			uniform float _CGEnable, _CGSaturation, _CGVibrance;
+			uniform float _CGEnable, _CGSaturation, _CGVibrance, _CGContrast;
 			uniform float _CGShadowTemp, _CGShadowR, _CGShadowG, _CGShadowB;
 			uniform float _CGMidtoneTemp, _CGMidtoneR, _CGMidtoneG, _CGMidtoneB;
 			uniform float _CGHighlightTemp, _CGHighlightR, _CGHighlightG, _CGHighlightB;
@@ -2008,6 +2009,9 @@ public static class VRCLensShaderPatcher
 					col.rgb += (float3(_CGShadowR, _CGShadowG, _CGShadowB) - 0.5) * cgShadowW;
 					col.rgb += (float3(_CGMidtoneR, _CGMidtoneG, _CGMidtoneB) - 0.5) * cgMidtoneW;
 					col.rgb += (float3(_CGHighlightR, _CGHighlightG, _CGHighlightB) - 0.5) * cgHighlightW;
+
+					// Global contrast (0-1 property -> 0.75x-1.25x around mid-grey 0.5)
+					col.rgb = lerp(float3(0.5, 0.5, 0.5), col.rgb, _CGContrast * 0.5 + 0.75);
 
 					// Global vibrance (saturation-adaptive boost, Photoshop-like)
 					float cgVibLuma = dot(col.rgb, float3(0.299, 0.587, 0.114));

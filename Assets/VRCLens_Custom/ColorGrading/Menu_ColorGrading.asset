@@ -36,6 +36,17 @@ MonoBehaviour:
     subParameters:
     - name: VRCL_Custom/CGVibrance
     labels: []
+  - name: Contrast
+    icon: {fileID: 0}
+    type: 203
+    parameter:
+      name: 
+    value: 1
+    style: 0
+    subMenu: {fileID: 0}
+    subParameters:
+    - name: VRCL_Custom/CGContrast
+    labels: []
   - name: Shadows
     icon: {fileID: 0}
     type: 103

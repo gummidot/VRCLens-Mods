@@ -89,6 +89,11 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0.5
     networkSynced: 0
+  - name: VRCL_Custom/CGContrast
+    valueType: 1
+    saved: 1
+    defaultValue: 0.5
+    networkSynced: 0
   - name: VRCL_Custom/CGReset
     valueType: 2
     saved: 0
