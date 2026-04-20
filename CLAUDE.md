@@ -123,18 +123,15 @@ All custom features use `VRCLens/Custom/<Feature>` as the menu path. For feature
 
 ### VRCFury Parameter Convention — Unsynced (Local-Only)
 
-All VRCFury toggles and radials in custom prefabs **must use unsynced parameters**. Camera settings are local-only — no need to sync to other players, and we avoid consuming the 256-bit synced parameter budget.
+All VRCFury toggles and radials in custom prefabs **must use unsynced parameters**. Camera settings are local-only -- no need to sync to other players, and we avoid consuming the 256-bit synced parameter budget.
 
-**Pattern (see ManualFocusAssist for reference):**
+See `vrcfury.md` in the agentic-tools package for the generic FullController + LocalParams pattern, defaultValue rules, and parameter type matching. This section covers project-specific conventions only.
 
-1. **Global parameter names:** Each toggle uses `useGlobalParam = true` with a namespaced name: `VRCL_Custom/<Feature><Control>` (e.g., `VRCL_Custom/GhostFXSplit`, `VRCL_Custom/ManualFocusAssistStrength`). This is separate from the menu path (`VRCLens/Custom/<Feature>/...`).
+**Project naming conventions:**
 
-2. **LocalParams asset:** Create `LocalParams_<Feature>.asset` (VRCExpressionParameters ScriptableObject) in the feature folder. Every parameter has `networkSynced: 0` and `saved: 1`. **`defaultValue` MUST be 0** for VRCFury Toggle slider parameters. The parameter represents the slider position (blend weight 0-1), not the shader property value. At slider=0, Write Defaults ON causes the shader property to revert to its own default from the `Properties` block. At slider=1, the animation clip value is applied. Setting defaultValue=0 means the slider starts at minimum (effect off / backward-compatible state) on first avatar load.
+1. **Global parameter names:** `VRCL_Custom/<Feature><Control>` (e.g., `VRCL_Custom/GhostFXSplit`, `VRCL_Custom/ManualFocusAssistStrength`). This is separate from the menu path (`VRCLens/Custom/<Feature>/...`).
 
-3. **FullController:** Add one VRCFury FullController component to the prefab with:
-   - `prms` array referencing the LocalParams asset
-   - `globalParams: ['*']` — makes all params in the asset global and unsynced
-   - No controllers or menus needed — only params
+2. **LocalParams asset:** Named `LocalParams_<Feature>.asset` in the feature folder. Reference existing ones (e.g., `ManualFocusAssist/`) for the pattern.
 
 ### Pass Structure Reference
 
