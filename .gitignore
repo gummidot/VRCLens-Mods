@@ -79,3 +79,7 @@ crashlytics-build.properties
 
 # Other temp files
 /Assets/VRCLens_Custom/Temp*
+
+# Local Claude settings and runtime files (machine-specific)
+/.claude/settings.local.json
+/.claude/scheduled_tasks.lock
