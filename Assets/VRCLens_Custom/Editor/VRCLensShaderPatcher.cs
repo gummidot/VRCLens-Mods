@@ -657,7 +657,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
-		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 5.0)) = 0.0
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 1.5)) = 0.0
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.2)) = 0.05
 		_FisheyeShowCorners (""Fisheye Show Corners"", Range(0.0, 1.0)) = 0.0
@@ -677,21 +677,39 @@ public static class VRCLensShaderPatcher
 				if(_FisheyeStrength > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
-					// Pre-distortion zoom (scales UV toward center)
-					float zoomScale = 1.0 + _FisheyeZoom * 0.5;
+					// Auto-zoom: scale source UVs inward so the worst-case distorted radius
+					// (L/R direction, where aspect correction amplifies r) lands at 0.499 in
+					// raw UV space. Solve u + K*u^3 = 0.499 via Newton iteration where
+					// K = strength * aspect^2. autoZoomScale = 0.5 / safeRadius keeps the
+					// barrel-warped sample inside the source texture without clamping streaks,
+					// so the visible oval stays a fixed size while strength changes the warp.
+					float K = _FisheyeStrength * fishAspect * fishAspect;
+					float u = min(0.499, pow(0.499 / max(K, 0.001), 0.3333));
+					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
+					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
+					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
+					float safeRadius = max(0.05, u);
+					float autoZoomScale = 0.5 / safeRadius;
+					// User zoom adds on top of auto-zoom for further framing
+					float zoomScale = autoZoomScale + _FisheyeZoom * 0.5;
 					float2 center = (origUV - 0.5) / zoomScale;
-					// Oval mask (raw UV space, no aspect correction -> oval on 16:9)
 					float maskR = length(center);
 					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
+					// Fixed oval boundary at 0.65: extends past top/bottom edges and clips
+					// small corner crescents. Stays constant across all strength values.
 					fisheyeMask = 1.0 - smoothstep(0.65 - maskSoft, 0.65, maskR);
 					// Barrel distortion (full aspect correction for uniform radial warp)
 					float2 ac = center;
 					ac.x *= fishAspect;
 					float r = length(ac);
 					float scale = 1.0 + _FisheyeStrength * r * r;
+					// Per-pixel clamp: safety net for the mask fade zone past 0.5.
+					// After aspect cancellation, distortedUV = 0.5 + center * scale.
+					float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
+					scale = min(scale, maxScale);
 					ac *= scale;
 					ac.x /= fishAspect;
-					float2 distortedUV = clamp(0.5 + ac, 0.001, 0.999);
+					float2 distortedUV = 0.5 + ac;
 					// UV blend: distortion fades smoothly at mask boundary
 					sbsUV0 = lerp(0.5 + center, distortedUV, fisheyeMask);
 				}
