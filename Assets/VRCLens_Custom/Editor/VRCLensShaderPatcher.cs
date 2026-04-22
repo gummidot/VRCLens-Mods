@@ -657,10 +657,10 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
-		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 1.5)) = 0.0
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 3.0)) = 0.0
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
-		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 0.2)) = 0.05
-		_FisheyeShowCorners (""Fisheye Show Corners"", Range(0.0, 1.0)) = 0.0
+		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
+		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_UNIFORMS = @"
@@ -668,7 +668,7 @@ public static class VRCLensShaderPatcher
 			uniform float _FisheyeStrength;
 			uniform float _FisheyeZoom;
 			uniform float _FisheyeEdgeSoftness;
-			uniform float _FisheyeShowCorners;
+			uniform float _FisheyeDebug;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_PASS2 = @"
@@ -694,10 +694,17 @@ public static class VRCLensShaderPatcher
 					float zoomScale = autoZoomScale + _FisheyeZoom * 0.5;
 					float2 center = (origUV - 0.5) / zoomScale;
 					float maskR = length(center);
-					float maskSoft = max(0.001, _FisheyeEdgeSoftness);
-					// Fixed oval boundary at 0.65: extends past top/bottom edges and clips
-					// small corner crescents. Stays constant across all strength values.
-					fisheyeMask = 1.0 - smoothstep(0.65 - maskSoft, 0.65, maskR);
+					// Mask boundary tracks auto-zoom: divide the design boundary 0.65 by
+					// autoZoomScale so the corner crescents stay roughly the same size
+					// in screen-space across all strength values. Without this coupling
+					// the mask would push past the screen corners as strength rises and
+					// the soft falloff zone would smear visibly along the screen edge.
+					float maskBoundary = 0.65 / autoZoomScale;
+					// Edge softness scales with the mask boundary so the falloff width
+					// stays proportional to the visible oval. At softness=0.5 the falloff
+					// covers half the oval radius regardless of strength.
+					float maskSoft = max(0.001, _FisheyeEdgeSoftness * maskBoundary);
+					fisheyeMask = 1.0 - smoothstep(maskBoundary - maskSoft, maskBoundary, maskR);
 					// Barrel distortion (full aspect correction for uniform radial warp)
 					float2 ac = center;
 					ac.x *= fishAspect;
@@ -717,7 +724,16 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_FISHEYE_PASS2_MASK = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens Mask
-				col.rgb *= lerp(fisheyeMask, 1.0, _FisheyeShowCorners);
+				col.rgb *= fisheyeMask;
+				// Debug viz: show mask as red, falloff zone as yellow, distortion area as green.
+				// Useful to confirm the mask is centered and to see the boundary clearly.
+				if(_FisheyeDebug > 0.5 && _FisheyeStrength > 0.001) {
+					float3 dbgInside = float3(0.0, 1.0, 0.0);
+					float3 dbgFalloff = float3(1.0, 1.0, 0.0);
+					float3 dbgOutside = float3(1.0, 0.0, 0.0);
+					float3 dbgCol = fisheyeMask > 0.99 ? dbgInside : (fisheyeMask > 0.01 ? dbgFalloff : dbgOutside);
+					col.rgb = lerp(col.rgb, dbgCol, 0.5);
+				}
 				// VRCLens_Custom END";
 
     // ── Code blocks to inject ───────────────────────────────────────────
