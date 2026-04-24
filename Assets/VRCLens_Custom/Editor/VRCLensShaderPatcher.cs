@@ -677,13 +677,15 @@ public static class VRCLensShaderPatcher
 				if(_FisheyeStrength > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
-					// Auto-zoom: scale source UVs inward so the worst-case distorted radius
-					// (L/R direction, where aspect correction amplifies r) lands at 0.499 in
-					// raw UV space. Solve u + K*u^3 = 0.499 via Newton iteration where
-					// K = strength * aspect^2. autoZoomScale = 0.5 / safeRadius keeps the
-					// barrel-warped sample inside the source texture without clamping streaks,
-					// so the visible oval stays a fixed size while strength changes the warp.
-					float K = _FisheyeStrength * fishAspect * fishAspect;
+					// Auto-zoom: scale source UVs inward so the worst-case distorted sample
+					// lands at 0.499 in raw UV space. The binding constraint is the screen
+					// corner where r^2 = (aspect^2 + 1) * u^2, so solve u + K*u^3 = 0.499
+					// via Newton iteration with K = strength * (aspect^2 + 1). This is
+					// stricter than the L/R midline alone (K = strength * aspect^2) and
+					// guarantees the per-pixel clamp never fires anywhere on screen,
+					// eliminating the smear streaks that appear when adjacent pixels all
+					// snap to the same clamped UV.
+					float K = _FisheyeStrength * (fishAspect * fishAspect + 1.0);
 					float u = min(0.499, pow(0.499 / max(K, 0.001), 0.3333));
 					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
 					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
