@@ -693,31 +693,30 @@ public static class VRCLensShaderPatcher
 					// User zoom adds on top of auto-zoom for further framing
 					float zoomScale = autoZoomScale + _FisheyeZoom * 0.5;
 					float2 center = (origUV - 0.5) / zoomScale;
+					// Smooth oval mask. Boundary tracks auto-zoom so the oval stays a
+					// fixed visual size across strength values. fwidth(maskR) gives
+					// 1-pixel screen-space AA at softness=0 (prevents jagged stairsteps
+					// along the curved boundary).
 					float maskR = length(center);
-					// Mask boundary tracks auto-zoom: divide the design boundary 0.65 by
-					// autoZoomScale so the corner crescents stay roughly the same size
-					// in screen-space across all strength values. Without this coupling
-					// the mask would push past the screen corners as strength rises and
-					// the soft falloff zone would smear visibly along the screen edge.
 					float maskBoundary = 0.65 / autoZoomScale;
-					// Edge softness scales with the mask boundary so the falloff width
-					// stays proportional to the visible oval. At softness=0.5 the falloff
-					// covers half the oval radius regardless of strength.
-					float maskSoft = max(0.001, _FisheyeEdgeSoftness * maskBoundary);
+					float maskAA = fwidth(maskR);
+					float maskSoft = maskAA + _FisheyeEdgeSoftness * maskBoundary;
 					fisheyeMask = 1.0 - smoothstep(maskBoundary - maskSoft, maskBoundary, maskR);
-					// Barrel distortion (full aspect correction for uniform radial warp)
+					// Barrel distortion in aspect-corrected space.
 					float2 ac = center;
 					ac.x *= fishAspect;
 					float r = length(ac);
 					float scale = 1.0 + _FisheyeStrength * r * r;
-					// Per-pixel clamp: safety net for the mask fade zone past 0.5.
-					// After aspect cancellation, distortedUV = 0.5 + center * scale.
+					// Per-pixel clamp keeps the distorted sample within source bounds.
 					float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
 					scale = min(scale, maxScale);
 					ac *= scale;
 					ac.x /= fishAspect;
 					float2 distortedUV = 0.5 + ac;
-					// UV blend: distortion fades smoothly at mask boundary
+					// UV-blend: at mask=0 sample the original UV (no distortion, no
+					// clamp possible); at mask=1 sample the distorted UV. The radial
+					// mask is the SOLE source of the visible boundary, so the oval
+					// has no kinks -- one curve, smooth all the way around.
 					sbsUV0 = lerp(0.5 + center, distortedUV, fisheyeMask);
 				}
 				// VRCLens_Custom END";
@@ -725,8 +724,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PASS2_MASK = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens Mask
 				col.rgb *= fisheyeMask;
-				// Debug viz: show mask as red, falloff zone as yellow, distortion area as green.
-				// Useful to confirm the mask is centered and to see the boundary clearly.
+				// Debug viz: green = inside oval, yellow = falloff zone, red = outside.
 				if(_FisheyeDebug > 0.5 && _FisheyeStrength > 0.001) {
 					float3 dbgInside = float3(0.0, 1.0, 0.0);
 					float3 dbgFalloff = float3(1.0, 1.0, 0.0);
