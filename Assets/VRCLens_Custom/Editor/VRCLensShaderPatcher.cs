@@ -657,7 +657,7 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
-		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 3.0)) = 0.0
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 0.0
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
 		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
