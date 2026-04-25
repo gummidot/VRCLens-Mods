@@ -29,3 +29,8 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
+  - name: VRCL_Custom/FisheyeShape
+    valueType: 1
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0

@@ -660,6 +660,7 @@ public static class VRCLensShaderPatcher
 		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 0.0
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
+		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
 		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
 		// VRCLens_Custom END";
 
@@ -668,6 +669,7 @@ public static class VRCLensShaderPatcher
 			uniform float _FisheyeStrength;
 			uniform float _FisheyeZoom;
 			uniform float _FisheyeEdgeSoftness;
+			uniform float _FisheyeShape;
 			uniform float _FisheyeDebug;
 			// VRCLens_Custom END";
 
@@ -695,12 +697,19 @@ public static class VRCLensShaderPatcher
 					// User zoom adds on top of auto-zoom for further framing
 					float zoomScale = autoZoomScale + _FisheyeZoom * 0.5;
 					float2 center = (origUV - 0.5) / zoomScale;
-					// Smooth oval mask. Boundary tracks auto-zoom so the oval stays a
-					// fixed visual size across strength values. fwidth(maskR) gives
-					// 1-pixel screen-space AA at softness=0 (prevents jagged stairsteps
-					// along the curved boundary).
-					float maskR = length(center);
-					float maskBoundary = 0.65 / autoZoomScale;
+					// Mask shape morphs from oval (shape=0) to true on-screen circle
+					// (shape=1). center coords are in raw UV units, so length(center)
+					// is a UV-space circle that appears stretched horizontally on a
+					// 16:9 screen. Weighting cx by aspect makes the radius measure in
+					// equal screen pixels, producing a true circle. boundaryScale
+					// shrinks from 0.65 (oval extends past screen, only corners cut)
+					// to 0.5 (circle inscribed in screen height -- touches top/bottom,
+					// black bars on L/R) so the slider=1 circle fits the screen.
+					// fwidth(maskR) provides 1-pixel screen-space AA at softness=0.
+					float xStretch = lerp(1.0, fishAspect, _FisheyeShape);
+					float maskR = length(float2(center.x * xStretch, center.y));
+					float boundaryScale = lerp(0.65, 0.5, _FisheyeShape);
+					float maskBoundary = boundaryScale / autoZoomScale;
 					float maskAA = fwidth(maskR);
 					float maskSoft = maskAA + _FisheyeEdgeSoftness * maskBoundary;
 					fisheyeMask = 1.0 - smoothstep(maskBoundary - maskSoft, maskBoundary, maskR);
