@@ -661,6 +661,8 @@ public static class VRCLensShaderPatcher
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
 		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
+		_FisheyePincushion (""Fisheye Pincushion"", Range(0.0, 1.0)) = 0.0
+		_FisheyeMaskRadius (""Fisheye Mask Radius"", Range(0.4, 1.0)) = 0.65
 		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
 		// VRCLens_Custom END";
 
@@ -670,13 +672,16 @@ public static class VRCLensShaderPatcher
 			uniform float _FisheyeZoom;
 			uniform float _FisheyeEdgeSoftness;
 			uniform float _FisheyeShape;
+			uniform float _FisheyePincushion;
+			uniform float _FisheyeMaskRadius;
 			uniform float _FisheyeDebug;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_FISHEYE_PASS2 = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens
 				float fisheyeMask = 1.0;
-				if(_FisheyeStrength > 0.001) {
+				float effectiveStrength = _FisheyeStrength - _FisheyePincushion;
+				if(abs(effectiveStrength) > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
 					// Auto-zoom: scale source UVs inward so the worst-case distorted sample
@@ -686,8 +691,9 @@ public static class VRCLensShaderPatcher
 					// stricter than the L/R midline alone (K = strength * aspect^2) and
 					// guarantees the per-pixel clamp never fires anywhere on screen,
 					// eliminating the smear streaks that appear when adjacent pixels all
-					// snap to the same clamped UV.
-					float K = _FisheyeStrength * (fishAspect * fishAspect + 1.0);
+					// snap to the same clamped UV. Pincushion (negative effectiveStrength)
+					// pulls UVs inward and never needs auto-zoom, so K floors at 0.
+					float K = max(0.0, effectiveStrength) * (fishAspect * fishAspect + 1.0);
 					float u = min(0.499, pow(0.499 / max(K, 0.001), 0.3333));
 					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
 					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
@@ -708,7 +714,12 @@ public static class VRCLensShaderPatcher
 					// fwidth(maskR) provides 1-pixel screen-space AA at softness=0.
 					float xStretch = lerp(1.0, fishAspect, _FisheyeShape);
 					float maskR = length(float2(center.x * xStretch, center.y));
-					float boundaryScale = lerp(0.65, 0.5, _FisheyeShape);
+					// _FisheyeMaskRadius scales the entire boundary uniformly. Default
+					// 0.65 reproduces the original behavior; lower tightens the visible
+					// region; higher pushes the mask past the screen so corners are not
+					// clipped. Shape lerp factor is 1 -> 0.5/0.65 to keep slider=1 a
+					// circle inscribed in screen height at default radius.
+					float boundaryScale = _FisheyeMaskRadius * lerp(1.0, 0.5 / 0.65, _FisheyeShape);
 					float maskBoundary = boundaryScale / autoZoomScale;
 					float maskAA = fwidth(maskR);
 					float maskSoft = maskAA + _FisheyeEdgeSoftness * maskBoundary;
@@ -717,10 +728,13 @@ public static class VRCLensShaderPatcher
 					float2 ac = center;
 					ac.x *= fishAspect;
 					float r = length(ac);
-					float scale = 1.0 + _FisheyeStrength * r * r;
+					float scale = 1.0 + effectiveStrength * r * r;
 					// Per-pixel clamp keeps the distorted sample within source bounds.
 					float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
 					scale = min(scale, maxScale);
+					// Floor prevents UV inversion at extreme pincushion (negative scale
+					// would mirror the image around the center).
+					scale = max(scale, 0.05);
 					ac *= scale;
 					ac.x /= fishAspect;
 					float2 distortedUV = 0.5 + ac;

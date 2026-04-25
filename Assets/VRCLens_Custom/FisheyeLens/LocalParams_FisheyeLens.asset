@@ -34,3 +34,13 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0
     networkSynced: 0
+  - name: VRCL_Custom/FisheyePincushion
+    valueType: 1
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/FisheyeMaskRadius
+    valueType: 1
+    saved: 1
+    defaultValue: 0.65
+    networkSynced: 0
