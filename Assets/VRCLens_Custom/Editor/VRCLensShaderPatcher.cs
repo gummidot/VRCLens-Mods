@@ -731,12 +731,31 @@ public static class VRCLensShaderPatcher
 					float2 ac = center;
 					ac.x *= fishAspect;
 					float r = length(ac);
-					float scale = 1.0 + effectiveStrength * r * r;
-					// Per-pixel clamp keeps the distorted sample within source bounds.
-					float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
-					scale = min(scale, maxScale);
-					// Floor prevents UV inversion at extreme pincushion (negative scale
-					// would mirror the image around the center).
+					float scale;
+					if(effectiveStrength >= 0.0) {
+						// Barrel: cubic warp r_src = r_out * (1 + k*r²). Auto-zoom keeps
+						// it monotonic on the visible mask; per-pixel maxScale is a safety
+						// net for the fade zone.
+						scale = 1.0 + effectiveStrength * r * r;
+						float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
+						scale = min(scale, maxScale);
+					} else {
+						// Pincushion: Lorentzian r_src = r_out / (1 + |k|*r²) avoids the
+						// cubic fold-back that produced visible image doubling at high
+						// pincushion. r_src peaks at r = 1/sqrt(|k|) with value
+						// 1/(2*sqrt(|k|)); past that point r_src drifts back down and
+						// would re-cover earlier source content. Holding r_src at its
+						// peak past the turning point keeps the warp non-decreasing.
+						float pk = -effectiveStrength;
+						scale = 1.0 / (1.0 + pk * r * r);
+						float rPeak = 1.0 / sqrt(pk);
+						if(r > rPeak) {
+							float maxRsrc = 1.0 / (2.0 * sqrt(pk));
+							scale = maxRsrc / max(r, 0.001);
+						}
+					}
+					// Defensive floor: redundant for the new pincushion branch but kept
+					// to guarantee scale stays positive across all paths.
 					scale = max(scale, 0.05);
 					ac *= scale;
 					ac.x /= fishAspect;
