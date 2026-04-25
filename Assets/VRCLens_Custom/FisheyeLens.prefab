@@ -603,7 +603,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/Fisheye Lens/Mask Radius
+        name: VRCLens/Custom/Fisheye Lens/Lens Size
         state:
           actions:
           - rid: 455501852350087263
@@ -646,7 +646,7 @@ MonoBehaviour:
         simpleOutTransition: 1
         defaultSliderValue: 0.65
         useGlobalParam: 1
-        globalParam: VRCL_Custom/FisheyeMaskRadius
+        globalParam: VRCL_Custom/FisheyeLensSize
         holdButton: 0
         invertRestLogic: 0
         expandIntoTransition: 1
@@ -662,5 +662,5 @@ MonoBehaviour:
           version: 1
           fileID: 0
           guid: 
-          id: 881fe0d8527d7da42be7d0ffdecf38b8|Assets/VRCLens_Custom/FisheyeLens/FisheyeLens_MaskRadius.anim
+          id: 881fe0d8527d7da42be7d0ffdecf38b8|Assets/VRCLens_Custom/FisheyeLens/FisheyeLens_LensSize.anim
           objRef: {fileID: 7400000, guid: 881fe0d8527d7da42be7d0ffdecf38b8, type: 2}

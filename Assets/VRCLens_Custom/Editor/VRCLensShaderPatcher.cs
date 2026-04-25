@@ -651,6 +651,9 @@ public static class VRCLensShaderPatcher
     // Anchor for Pass 2: right before rawColor sampling — UV distortion goes here
     private const string ANCHOR_FISHEYE_UV = "half2 sbsUV1 = isPreview ? sbsUV0Mask : half2(frac(i.uv.x * (1 + isSBSTrue)), i.uv.y);";
 
+    // Anchor for the rawColor sampling line — supersample injection goes immediately after
+    private const string ANCHOR_RAWCOLOR = "half4 rawColor = tex2D(_HirabikiVRCLensPassTexture, sbsUV0);";
+
     // Anchor for Pass 2: after dithering — fisheye mask goes here (after all post-processing)
     private const string ANCHOR_DITHERING = "col = dither(uv, col)";
 
@@ -662,7 +665,7 @@ public static class VRCLensShaderPatcher
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
 		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
 		_FisheyePincushion (""Fisheye Pincushion"", Range(0.0, 1.0)) = 0.0
-		_FisheyeMaskRadius (""Fisheye Mask Radius"", Range(0.4, 1.0)) = 0.65
+		_FisheyeLensSize (""Fisheye Lens Size"", Range(0.4, 1.0)) = 0.65
 		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
 		// VRCLens_Custom END";
 
@@ -673,7 +676,7 @@ public static class VRCLensShaderPatcher
 			uniform float _FisheyeEdgeSoftness;
 			uniform float _FisheyeShape;
 			uniform float _FisheyePincushion;
-			uniform float _FisheyeMaskRadius;
+			uniform float _FisheyeLensSize;
 			uniform float _FisheyeDebug;
 			// VRCLens_Custom END";
 
@@ -714,12 +717,12 @@ public static class VRCLensShaderPatcher
 					// fwidth(maskR) provides 1-pixel screen-space AA at softness=0.
 					float xStretch = lerp(1.0, fishAspect, _FisheyeShape);
 					float maskR = length(float2(center.x * xStretch, center.y));
-					// _FisheyeMaskRadius scales the entire boundary uniformly. Default
+					// _FisheyeLensSize scales the entire boundary uniformly. Default
 					// 0.65 reproduces the original behavior; lower tightens the visible
 					// region; higher pushes the mask past the screen so corners are not
 					// clipped. Shape lerp factor is 1 -> 0.5/0.65 to keep slider=1 a
 					// circle inscribed in screen height at default radius.
-					float boundaryScale = _FisheyeMaskRadius * lerp(1.0, 0.5 / 0.65, _FisheyeShape);
+					float boundaryScale = _FisheyeLensSize * lerp(1.0, 0.5 / 0.65, _FisheyeShape);
 					float maskBoundary = boundaryScale / autoZoomScale;
 					float maskAA = fwidth(maskR);
 					float maskSoft = maskAA + _FisheyeEdgeSoftness * maskBoundary;
@@ -743,6 +746,19 @@ public static class VRCLensShaderPatcher
 					// mask is the SOLE source of the visible boundary, so the oval
 					// has no kinks -- one curve, smooth all the way around.
 					sbsUV0 = lerp(0.5 + center, distortedUV, fisheyeMask);
+				}
+				// VRCLens_Custom END";
+
+    private static readonly string BLOCK_FISHEYE_SUPERSAMPLE = @"
+				// VRCLens_Custom BEGIN - Fisheye Anti-Streak Supersample
+				if(abs(effectiveStrength) > 0.001 && fisheyeMask > 0.001) {
+					float2 ssDx = ddx(sbsUV0);
+					float2 ssDy = ddy(sbsUV0);
+					half4 ssC1 = tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + 0.5 * ssDx);
+					half4 ssC2 = tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - 0.5 * ssDx);
+					half4 ssC3 = tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + 0.5 * ssDy);
+					half4 ssC4 = tex2D(_HirabikiVRCLensPassTexture, sbsUV0 - 0.5 * ssDy);
+					rawColor = (rawColor + ssC1 + ssC2 + ssC3 + ssC4) * 0.2;
 				}
 				// VRCLens_Custom END";
 
@@ -1984,6 +2000,7 @@ public static class VRCLensShaderPatcher
             new AnchorInfo(ANCHOR_PROPERTIES, "Properties: _DoFStrength line"),
             new AnchorInfo(ANCHOR_PASS6_UNIFORMS, "Pass 2: _FocusDistance uniform"),
             new AnchorInfo(ANCHOR_FISHEYE_UV, "Pass 2: sbsUV1 line (before rawColor sampling)"),
+            new AnchorInfo(ANCHOR_RAWCOLOR, "Pass 2: rawColor sampling line"),
             new AnchorInfo(ANCHOR_DITHERING, "Pass 2: dithering (for fisheye mask)"),
         };
     }
@@ -1997,6 +2014,10 @@ public static class VRCLensShaderPatcher
 
         // Fisheye mask application — after dithering, blacks out out-of-bounds pixels
         insertions += InsertAfterLine(lines, ANCHOR_DITHERING, BLOCK_FISHEYE_PASS2_MASK, "Fisheye mask application");
+
+        // Fisheye anti-streak supersample — after rawColor sampling, averages 5 taps over the
+        // local sample footprint to remove radial streaks at high distortion.
+        insertions += InsertAfterLine(lines, ANCHOR_RAWCOLOR, BLOCK_FISHEYE_SUPERSAMPLE, "Fisheye anti-streak supersample");
 
         // Fisheye UV distortion — after sbsUV1 line, before rawColor sampling
         insertions += InsertAfterLine(lines, ANCHOR_FISHEYE_UV, BLOCK_FISHEYE_PASS2, "Fisheye pass 2 UV distortion");
