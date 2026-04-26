@@ -181,7 +181,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/Fisheye Lens/Zoom
+        name: VRCLens/Custom/Fisheye Lens/Screen Zoom
         state:
           actions:
           - rid: 455501689769951235
