@@ -10,13 +10,15 @@ GameObject:
   m_Component:
   - component: {fileID: 400314662435807018}
   - component: {fileID: 4882366290803147314}
+  - component: {fileID: 3635464479957043246}
   - component: {fileID: 4634593321671427997}
+  - component: {fileID: 3607524645408829786}
+  - component: {fileID: 7826520484395182305}
   - component: {fileID: 78474511842682536}
   - component: {fileID: 5891999143642218699}
-  - component: {fileID: 3635464479957043246}
-  - component: {fileID: 3607524645408829786}
   - component: {fileID: 9148606736102014752}
-  - component: {fileID: 7826520484395182305}
+  - component: {fileID: 8478406951457282812}
+  - component: {fileID: 3110965628189132375}
   m_Layer: 0
   m_Name: FisheyeLens
   m_TagString: Untagged
@@ -664,3 +666,179 @@ MonoBehaviour:
           guid: 
           id: 881fe0d8527d7da42be7d0ffdecf38b8|Assets/VRCLens_Custom/FisheyeLens/FisheyeLens_LensSize.anim
           objRef: {fileID: 7400000, guid: 881fe0d8527d7da42be7d0ffdecf38b8, type: 2}
+--- !u!114 &8478406951457282812
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3426424327913821649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501876831191040
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501876831191040
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Fisheye Lens/Center/X
+        state:
+          actions:
+          - rid: 455501876831191041
+        saved: 1
+        slider: 1
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 0
+        exclusiveTag: 
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.5
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/FisheyeCenterX
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501876831191041
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: e3e125190ce40024096ef101d85deec5|Assets/VRCLens_Custom/FisheyeLens/FisheyeLens_CenterX.anim
+          objRef: {fileID: 7400000, guid: e3e125190ce40024096ef101d85deec5, type: 2}
+--- !u!114 &3110965628189132375
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3426424327913821649}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501876831191042
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501876831191042
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Fisheye Lens/Center/Y
+        state:
+          actions:
+          - rid: 455501876831191043
+        saved: 1
+        slider: 1
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 0
+        exclusiveTag: 
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.5
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/FisheyeCenterY
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501876831191043
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 9f2ba62ec5917fe4d8034d040af1c449|Assets/VRCLens_Custom/FisheyeLens/FisheyeLens_CenterY.anim
+          objRef: {fileID: 7400000, guid: 9f2ba62ec5917fe4d8034d040af1c449, type: 2}

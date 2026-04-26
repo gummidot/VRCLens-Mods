@@ -44,3 +44,13 @@ MonoBehaviour:
     saved: 1
     defaultValue: 0.65
     networkSynced: 0
+  - name: VRCL_Custom/FisheyeCenterX
+    valueType: 1
+    saved: 1
+    defaultValue: 0.5
+    networkSynced: 0
+  - name: VRCL_Custom/FisheyeCenterY
+    valueType: 1
+    saved: 1
+    defaultValue: 0.5
+    networkSynced: 0

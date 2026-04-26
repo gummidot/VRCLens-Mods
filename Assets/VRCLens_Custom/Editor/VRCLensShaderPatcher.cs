@@ -666,6 +666,8 @@ public static class VRCLensShaderPatcher
 		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
 		_FisheyePincushion (""Fisheye Pincushion"", Range(0.0, 1.0)) = 0.0
 		_FisheyeLensSize (""Fisheye Lens Size"", Range(0.4, 1.0)) = 0.65
+		_FisheyeCenterX (""Fisheye Center X"", Range(-0.5, 0.5)) = 0.0
+		_FisheyeCenterY (""Fisheye Center Y"", Range(-0.5, 0.5)) = 0.0
 		[Toggle] _FisheyeDebug (""Fisheye Debug Mask"", Float) = 0.0
 		// VRCLens_Custom END";
 
@@ -677,6 +679,8 @@ public static class VRCLensShaderPatcher
 			uniform float _FisheyeShape;
 			uniform float _FisheyePincushion;
 			uniform float _FisheyeLensSize;
+			uniform float _FisheyeCenterX;
+			uniform float _FisheyeCenterY;
 			uniform float _FisheyeDebug;
 			// VRCLens_Custom END";
 
@@ -687,15 +691,16 @@ public static class VRCLensShaderPatcher
 				if(abs(effectiveStrength) > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
-					// Auto-zoom: scale source UVs inward so the worst-case distorted sample
-					// lands at 0.499 in raw UV space. The binding constraint is the screen
-					// corner where r^2 = (aspect^2 + 1) * u^2, so solve u + K*u^3 = 0.499
-					// via Newton iteration with K = strength * (aspect^2 + 1). This is
-					// stricter than the L/R midline alone (K = strength * aspect^2) and
-					// guarantees the per-pixel clamp never fires anywhere on screen,
-					// eliminating the smear streaks that appear when adjacent pixels all
-					// snap to the same clamped UV. Pincushion (negative effectiveStrength)
-					// pulls UVs inward and never needs auto-zoom, so K floors at 0.
+					// Center offset: shifts ONLY the focal point of distortion. The
+					// visible mask circle and the auto-zoom level stay exactly where
+					// iter-13 puts them — so adjusting Center X/Y does not change the
+					// framing or zoom. The per-pixel maxScale below handles any OOB
+					// risk at the worst pixels (those farthest from focalUV).
+					float2 centerOffset = float2(_FisheyeCenterX, _FisheyeCenterY);
+					float2 focalUV = 0.5 + centerOffset;
+					// Auto-zoom Newton: iter-13 form, NOT offset-aware. autoZoomScale
+					// stays the same at all Center X/Y values, so the framing doesn't
+					// shrink as the focal point moves.
 					float K = max(0.0, effectiveStrength) * (fishAspect * fishAspect + 1.0);
 					float u = min(0.499, pow(0.499 / max(K, 0.001), 0.3333));
 					u -= (u + K*u*u*u - 0.499) / (1.0 + 3.0*K*u*u);
@@ -705,9 +710,10 @@ public static class VRCLensShaderPatcher
 					float autoZoomScale = 0.5 / safeRadius;
 					// User zoom adds on top of auto-zoom for further framing
 					float zoomScale = autoZoomScale + _FisheyeZoom * 0.5;
-					float2 center = (origUV - 0.5) / zoomScale;
+					// Mask: anchored at SCREEN center (no centerOffset). Iter 13 byte-identical.
+					float2 maskCenter = (origUV - 0.5) / zoomScale;
 					// Mask shape morphs from oval (shape=0) to true on-screen circle
-					// (shape=1). center coords are in raw UV units, so length(center)
+					// (shape=1). center coords are in raw UV units, so length(maskCenter)
 					// is a UV-space circle that appears stretched horizontally on a
 					// 16:9 screen. Weighting cx by aspect makes the radius measure in
 					// equal screen pixels, producing a true circle. boundaryScale
@@ -716,7 +722,7 @@ public static class VRCLensShaderPatcher
 					// black bars on L/R) so the slider=1 circle fits the screen.
 					// fwidth(maskR) provides 1-pixel screen-space AA at softness=0.
 					float xStretch = lerp(1.0, fishAspect, _FisheyeShape);
-					float maskR = length(float2(center.x * xStretch, center.y));
+					float maskR = length(float2(maskCenter.x * xStretch, maskCenter.y));
 					// _FisheyeLensSize scales the entire boundary uniformly. Default
 					// 0.65 reproduces the original behavior; lower tightens the visible
 					// region; higher pushes the mask past the screen so corners are not
@@ -726,18 +732,42 @@ public static class VRCLensShaderPatcher
 					float maskBoundary = boundaryScale / autoZoomScale;
 					float maskAA = fwidth(maskR);
 					float maskSoft = maskAA + _FisheyeEdgeSoftness * maskBoundary;
-					fisheyeMask = 1.0 - smoothstep(maskBoundary - maskSoft, maskBoundary, maskR);
-					// Barrel distortion in aspect-corrected space.
-					float2 ac = center;
+					// boundaryMask: outer-edge fade. Used both for col attenuation and
+					// for the UV blend below (geometric continuity at the mask edge).
+					float boundaryMask = 1.0 - smoothstep(maskBoundary - maskSoft, maskBoundary, maskR);
+					fisheyeMask = boundaryMask;
+					// Distortion: pivots at focalUV in source UV. Compute the auto-zoomed
+					// source position first (iter 13's `0.5 + maskCenter`), then build the
+					// warp displacement relative to focalUV.
+					float2 srcPos = 0.5 + maskCenter;
+					float2 rel = srcPos - focalUV;
+					float2 ac = rel;
 					ac.x *= fishAspect;
 					float r = length(ac);
 					float scale;
 					if(effectiveStrength >= 0.0) {
 						// Barrel: cubic warp r_src = r_out * (1 + k*r²). Auto-zoom keeps
 						// it monotonic on the visible mask; per-pixel maxScale is a safety
-						// net for the fade zone.
+						// net. Headroom from focalUV to the source-UV edge is sign-aware:
+						// the focal-toward side has `0.499 - |centerOffset|`, the focal-
+						// away side has `0.499 + |centerOffset|`.
 						scale = 1.0 + effectiveStrength * r * r;
-						float maxScale = 0.499 / max(max(abs(center.x), abs(center.y)), 0.001);
+						float boundX = 0.499 - sign(rel.x) * centerOffset.x;
+						float boundY = 0.499 - sign(rel.y) * centerOffset.y;
+						float maxScaleX = boundX / max(abs(rel.x), 0.001);
+						float maxScaleY = boundY / max(abs(rel.y), 0.001);
+						float maxScale = min(maxScaleX, maxScaleY);
+						// Safety mask: kills the per-pixel clamp band on the side opposite
+						// focal. CRITICAL: applied to col attenuation only, NOT to the UV
+						// blend below. Mixing it into the UV-blend mask caused two very
+						// different UVs (srcPos = auto-zoomed undistorted, distortedUV =
+						// clamped-on-source-edge) to lerp together in the partial-fade
+						// band, producing a ghosted double-image at high Center X/Y.
+						// Splitting the masks keeps the UV blend driven by boundary
+						// geometry only, while still smoothly fading streak pixels to
+						// black via col.rgb *= fisheyeMask.
+						float clampRatio = scale / max(maxScale, 0.001);
+						fisheyeMask *= 1.0 - smoothstep(1.0, 1.3, clampRatio);
 						scale = min(scale, maxScale);
 					} else {
 						// Pincushion: Lorentzian r_src = r_out / (1 + |k|*r²) avoids the
@@ -759,12 +789,12 @@ public static class VRCLensShaderPatcher
 					scale = max(scale, 0.05);
 					ac *= scale;
 					ac.x /= fishAspect;
-					float2 distortedUV = 0.5 + ac;
-					// UV-blend: at mask=0 sample the original UV (no distortion, no
-					// clamp possible); at mask=1 sample the distorted UV. The radial
-					// mask is the SOLE source of the visible boundary, so the oval
-					// has no kinks -- one curve, smooth all the way around.
-					sbsUV0 = lerp(0.5 + center, distortedUV, fisheyeMask);
+					float2 distortedUV = focalUV + ac;
+					// UV-blend uses boundaryMask (NOT fisheyeMask), so the safety-fade
+					// band on the focal-opposite side does not interpolate UVs. At the
+					// mask boundary, scale -> 1 so distortedUV -> focalUV + rel = srcPos:
+					// endpoints meet smoothly even with offset focal point.
+					sbsUV0 = lerp(srcPos, distortedUV, boundaryMask);
 				}
 				// VRCLens_Custom END";
 
