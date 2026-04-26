@@ -746,29 +746,33 @@ public static class VRCLensShaderPatcher
 					float r = length(ac);
 					float scale;
 					if(effectiveStrength >= 0.0) {
-						// Barrel: cubic warp r_src = r_out * (1 + k*r²). Auto-zoom keeps
-						// it monotonic on the visible mask; per-pixel maxScale is a safety
-						// net. Headroom from focalUV to the source-UV edge is sign-aware:
-						// the focal-toward side has `0.499 - |centerOffset|`, the focal-
-						// away side has `0.499 + |centerOffset|`.
+						// Barrel: cubic warp r_src = r_out * (1 + k*r²). Per-axis source
+						// headroom is sign-aware (focal-toward side: 0.499 - |centerOffset|;
+						// focal-away side: 0.499 + |centerOffset|).
 						scale = 1.0 + effectiveStrength * r * r;
 						float boundX = 0.499 - sign(rel.x) * centerOffset.x;
 						float boundY = 0.499 - sign(rel.y) * centerOffset.y;
 						float maxScaleX = boundX / max(abs(rel.x), 0.001);
 						float maxScaleY = boundY / max(abs(rel.y), 0.001);
 						float maxScale = min(maxScaleX, maxScaleY);
-						// Safety mask: kills the per-pixel clamp band on the side opposite
-						// focal. CRITICAL: applied to col attenuation only, NOT to the UV
-						// blend below. Mixing it into the UV-blend mask caused two very
-						// different UVs (srcPos = auto-zoomed undistorted, distortedUV =
-						// clamped-on-source-edge) to lerp together in the partial-fade
-						// band, producing a ghosted double-image at high Center X/Y.
-						// Splitting the masks keeps the UV blend driven by boundary
-						// geometry only, while still smoothly fading streak pixels to
-						// black via col.rgb *= fisheyeMask.
-						float clampRatio = scale / max(maxScale, 0.001);
-						fisheyeMask *= 1.0 - smoothstep(1.0, 1.3, clampRatio);
-						scale = min(scale, maxScale);
+						// Smooth exponential saturation toward maxScale instead of hard
+						// `min(scale, maxScale)`. The hard clamp pinned many adjacent
+						// pixels at the mask edge to the SAME scale value, all sampling
+						// the same source row -> the streak band visible at moderate
+						// Center X/Y. The exp curve f(s) = 1 + h*(1 - exp(-(s-1)/h))
+						// where h = maxScale - 1 keeps each pixel's scale unique:
+						//   identity at scale=1, asymptotes to maxScale as s -> infinity.
+						// Adjacent pixels with slightly different unbounded scales now
+						// get slightly different saturated values, breaking up the band.
+						// Safety mask kept as a secondary fade for extreme overshoot.
+						float headroom = max(maxScale - 1.0, 0.001);
+						scale = 1.0 + headroom * (1.0 - exp(-max(scale - 1.0, 0.0) / headroom));
+						// Optional further attenuation in the heavily-saturated zone.
+						// At centerOffset = 0 the iter-13 Newton keeps unbounded scale at
+						// most ~maxScale inside the mask, so the smoothstep is near 0 here
+						// and this term is essentially identity. Fires only at high offset.
+						float satRatio = (scale - 1.0) / max(maxScale - 1.0, 0.001);
+						fisheyeMask *= 1.0 - 0.7 * smoothstep(0.85, 0.99, satRatio);
 					} else {
 						// Pincushion: Lorentzian r_src = r_out / (1 + |k|*r²) avoids the
 						// cubic fold-back that produced visible image doubling at high
