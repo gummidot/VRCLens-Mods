@@ -504,19 +504,20 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_GRAIN_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Film Grain Properties
 		[Header(Film Grain)]
-		_FilmGrain (""Film Grain"", Range(0.0, 1.0)) = 0.0
+		[Toggle] _FilmGrainEnable (""Enable Film Grain"", Float) = 0
+		_FilmGrain (""Film Grain"", Range(0.0, 1.0)) = 0.25
 		_FilmGrainSize (""Grain Size"", Range(0.0, 1.0)) = 0.0
 		_FilmGrainBrightness (""Grain Brightness"", Range(0.0, 1.0)) = 0.5
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_GRAIN_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Film Grain Uniforms
-			uniform float _FilmGrain, _FilmGrainSize, _FilmGrainBrightness;
+			uniform float _FilmGrainEnable, _FilmGrain, _FilmGrainSize, _FilmGrainBrightness;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_GRAIN_PASS2 = @"
 				// VRCLens_Custom BEGIN - Film Grain
-				if(_FilmGrain > 0.001) {
+				if(_FilmGrainEnable > 0.5) {
 					float grainClump = lerp(1.5, 4.0, _FilmGrainSize);
 					float3 gt = _Time.y * float3(20.0, 26.0, 33.0);
 					float2 gs = float2(12.9898, 78.233);
@@ -606,7 +607,8 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_TILTSHIFT_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Tilt-Shift Properties
 		[Header(Tilt Shift)]
-		_TiltShift (""Tilt-Shift Blur"", Range(0.0, 1.0)) = 0.0
+		[Toggle] _TiltShiftEnable (""Enable Tilt-Shift"", Float) = 0
+		_TiltShift (""Tilt-Shift Blur"", Range(0.0, 1.0)) = 0.25
 		_TiltShiftPos (""Focus Band Position"", Range(0.0, 1.0)) = 0.0
 		_TiltShiftWidth (""Focus Band Width"", Range(0.0, 0.5)) = 0.0
 		_TiltAngle (""Focus Band Angle"", Range(0.0, 1.0)) = 0.5
@@ -615,18 +617,18 @@ public static class VRCLensShaderPatcher
     // Tilt-shift uniforms go in Pass 0 (occurrence 1 of _FocusDistance uniform)
     private static readonly string BLOCK_TILTSHIFT_PASS0_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Tilt-Shift Uniforms
-			uniform float _TiltShift, _TiltShiftPos, _TiltShiftWidth, _TiltAngle;
+			uniform float _TiltShiftEnable, _TiltShift, _TiltShiftPos, _TiltShiftWidth, _TiltAngle;
 			// VRCLens_Custom END";
 
     // Tilt-shift Pass 1 text replacements: enable blur even when DoF is off
     private const string TILTSHIFT_PASS1_DOF_OLD = "if(_EnableDoF) {";
-    private const string TILTSHIFT_PASS1_DOF_NEW = "if(_EnableDoF || _TiltShift > 0.001) { // VRCLens_Custom: TiltShift";
+    private const string TILTSHIFT_PASS1_DOF_NEW = "if(_EnableDoF || _TiltShiftEnable > 0.5) { // VRCLens_Custom: TiltShift";
     private const string TILTSHIFT_PASS1_UNIFORM_ANCHOR = "uniform bool _EnableDoF;\n\t\t\tuniform float _SensorScale";
-    private const string TILTSHIFT_PASS1_UNIFORM_NEW = "uniform bool _EnableDoF;\n\t\t\tuniform float _TiltShift; // VRCLens_Custom: TiltShift\n\t\t\tuniform float _SensorScale";
+    private const string TILTSHIFT_PASS1_UNIFORM_NEW = "uniform bool _EnableDoF;\n\t\t\tuniform float _TiltShiftEnable; // VRCLens_Custom: TiltShift\n\t\t\tuniform float _SensorScale";
 
     private static readonly string BLOCK_TILTSHIFT_PASS0 = @"
 				// VRCLens_Custom BEGIN - Tilt-Shift
-				if(_TiltShift > 0.001) {
+				if(_TiltShiftEnable > 0.5) {
 					float tsDepthRaw = SAMPLE_DEPTH_TEXTURE(_DepthTex, uv);
 					float tsDepthZ = 1.0 / ((32000.0/0.04 - 1.0)/32000.0 * tsDepthRaw + 1.0/32000.0);
 					float tsAngleDeg = (_TiltAngle * 180.0) - 90.0;
@@ -660,7 +662,8 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PROPERTIES = @"
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
-		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 0.0
+		[Toggle] _FisheyeEnable (""Enable Fisheye"", Float) = 0
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 2.5
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
 		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0
@@ -673,6 +676,7 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_FISHEYE_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Fisheye Lens Uniforms
+			uniform float _FisheyeEnable;
 			uniform float _FisheyeStrength;
 			uniform float _FisheyeZoom;
 			uniform float _FisheyeEdgeSoftness;
@@ -688,7 +692,7 @@ public static class VRCLensShaderPatcher
 				// VRCLens_Custom BEGIN - Fisheye Lens
 				float fisheyeMask = 1.0;
 				float effectiveStrength = _FisheyeStrength - _FisheyePincushion;
-				if(abs(effectiveStrength) > 0.001) {
+				if(_FisheyeEnable > 0.5 && abs(effectiveStrength) > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
 					// Center offset: shifts ONLY the focal point of distortion. The
@@ -804,7 +808,7 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_FISHEYE_SUPERSAMPLE = @"
 				// VRCLens_Custom BEGIN - Fisheye Anti-Streak Supersample
-				if(abs(effectiveStrength) > 0.001 && fisheyeMask > 0.001) {
+				if(_FisheyeEnable > 0.5 && abs(effectiveStrength) > 0.001 && fisheyeMask > 0.001) {
 					float2 ssDx = ddx(sbsUV0);
 					float2 ssDy = ddy(sbsUV0);
 					half4 ssC1 = tex2D(_HirabikiVRCLensPassTexture, sbsUV0 + 0.5 * ssDx);
@@ -819,7 +823,7 @@ public static class VRCLensShaderPatcher
 				// VRCLens_Custom BEGIN - Fisheye Lens Mask
 				col.rgb *= fisheyeMask;
 				// Debug viz: green = inside oval, yellow = falloff zone, red = outside.
-				if(_FisheyeDebug > 0.5 && _FisheyeStrength > 0.001) {
+				if(_FisheyeDebug > 0.5 && _FisheyeEnable > 0.5) {
 					float3 dbgInside = float3(0.0, 1.0, 0.0);
 					float3 dbgFalloff = float3(1.0, 1.0, 0.0);
 					float3 dbgOutside = float3(1.0, 0.0, 0.0);

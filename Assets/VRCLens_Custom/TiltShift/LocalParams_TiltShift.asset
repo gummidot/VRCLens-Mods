@@ -14,10 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isEmpty: 0
   parameters:
+  - name: VRCL_Custom/TiltShiftEnable
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
   - name: VRCL_Custom/TiltShift
     valueType: 1
     saved: 1
-    defaultValue: 0
+    defaultValue: 0.25
     networkSynced: 0
   - name: VRCL_Custom/TiltShiftPos
     valueType: 1

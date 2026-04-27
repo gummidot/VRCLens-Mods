@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7467111513766405854}
+  - component: {fileID: 7138476211169305856}
   - component: {fileID: 5088179049478856115}
   - component: {fileID: 9085016136716476224}
   - component: {fileID: 1670454588990786250}
@@ -37,6 +38,94 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7138476211169305856
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1501342151488067779}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501876831191772
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501876831191772
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Tilt-Shift/Enable
+        state:
+          actions:
+          - rid: 455501876831191773
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 0
+        exclusiveTag: 
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/TiltShiftEnable
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501876831191773
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 81c207110aafc5d4db0a5a3d4bfe395a|Assets/VRCLens_Custom/TiltShift/TiltShift_Enable.anim
+          objRef: {fileID: 7400000, guid: 81c207110aafc5d4db0a5a3d4bfe395a, type: 2}
 --- !u!114 &5088179049478856115
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,7 +194,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0
+        defaultSliderValue: 0.25
         useGlobalParam: 1
         globalParam: VRCL_Custom/TiltShift
         holdButton: 0
@@ -396,6 +485,8 @@ MonoBehaviour:
   enableFilmGrain: 0
   enableDepthFog: 0
   enableTiltShift: 1
+  enableFisheye: 0
+  enableColorGrading: 0
 --- !u!114 &-6995280889745947196
 MonoBehaviour:
   m_ObjectHideFlags: 0
