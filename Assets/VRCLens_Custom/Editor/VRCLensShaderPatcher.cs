@@ -691,7 +691,13 @@ public static class VRCLensShaderPatcher
     private static readonly string BLOCK_FISHEYE_PASS2 = @"
 				// VRCLens_Custom BEGIN - Fisheye Lens
 				float fisheyeMask = 1.0;
-				float effectiveStrength = _FisheyeStrength - _FisheyePincushion;
+				// Pincushion auto-overrides barrel: when pincushion > 0, fade out
+				// the Strength slider's contribution so pincushion is the sole warp.
+				// Lets users keep Strength parked at a sensible default (e.g. 25%)
+				// without polluting pincushion mode. Smooth fade prevents a jump as
+				// pincushion crosses 0.
+				float pincushionGate = 1.0 - smoothstep(0.0, 0.05, _FisheyePincushion);
+				float effectiveStrength = _FisheyeStrength * pincushionGate - _FisheyePincushion;
 				if(_FisheyeEnable > 0.5 && abs(effectiveStrength) > 0.001) {
 					float2 origUV = sbsUV0;
 					float fishAspect = _ScreenParams.x / _ScreenParams.y;
