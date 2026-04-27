@@ -759,24 +759,27 @@ public static class VRCLensShaderPatcher
 						float maxScaleX = boundX / max(abs(rel.x), 0.001);
 						float maxScaleY = boundY / max(abs(rel.y), 0.001);
 						float maxScale = min(maxScaleX, maxScaleY);
-						// Smooth exponential saturation toward maxScale instead of hard
-						// `min(scale, maxScale)`. The hard clamp pinned many adjacent
-						// pixels at the mask edge to the SAME scale value, all sampling
-						// the same source row -> the streak band visible at moderate
-						// Center X/Y. The exp curve f(s) = 1 + h*(1 - exp(-(s-1)/h))
-						// where h = maxScale - 1 keeps each pixel's scale unique:
-						//   identity at scale=1, asymptotes to maxScale as s -> infinity.
-						// Adjacent pixels with slightly different unbounded scales now
-						// get slightly different saturated values, breaking up the band.
-						// Safety mask kept as a secondary fade for extreme overshoot.
+						// Conditional saturation. At centerOffset = 0 the iter-13 Newton
+						// guarantees scale == maxScale at the worst pixel and the visible
+						// look depends on the warp filling the mask edge to that bound.
+						// A soft saturation here uniformly reduces edge warp by ~37%,
+						// shrinking the apparent extent of the fisheye and making the
+						// auto-zoom crop look more zoomed in. So at offset = 0, fall
+						// back to iter-13 hard clamp (byte-identical look). At any
+						// non-zero offset, switch to the smooth exponential saturation
+						// + softer safety fade -- those eliminate the per-pixel-clamp
+						// streak band that hard clamping causes when the per-axis bound
+						// is asymmetric. Smoothly blend between the two regimes via
+						// `offsetT` so there's no visible step as the slider crosses 0.
+						float maxOffset = max(abs(centerOffset.x), abs(centerOffset.y));
+						float offsetT = smoothstep(0.0, 0.05, maxOffset);
 						float headroom = max(maxScale - 1.0, 0.001);
-						scale = 1.0 + headroom * (1.0 - exp(-max(scale - 1.0, 0.0) / headroom));
-						// Optional further attenuation in the heavily-saturated zone.
-						// At centerOffset = 0 the iter-13 Newton keeps unbounded scale at
-						// most ~maxScale inside the mask, so the smoothstep is near 0 here
-						// and this term is essentially identity. Fires only at high offset.
+						float scaleSat = 1.0 + headroom * (1.0 - exp(-max(scale - 1.0, 0.0) / headroom));
+						float scaleHard = min(scale, maxScale);
+						scale = lerp(scaleHard, scaleSat, offsetT);
+						// Safety fade only in offset regime (offsetT > 0).
 						float satRatio = (scale - 1.0) / max(maxScale - 1.0, 0.001);
-						fisheyeMask *= 1.0 - 0.7 * smoothstep(0.85, 0.99, satRatio);
+						fisheyeMask *= 1.0 - 0.7 * offsetT * smoothstep(0.85, 0.99, satRatio);
 					} else {
 						// Pincushion: Lorentzian r_src = r_out / (1 + |k|*r²) avoids the
 						// cubic fold-back that produced visible image doubling at high
