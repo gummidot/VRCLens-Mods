@@ -32,7 +32,7 @@ MonoBehaviour:
   - name: VRCL_Custom/TiltShiftWidth
     valueType: 1
     saved: 1
-    defaultValue: 0.3
+    defaultValue: 0.5
     networkSynced: 0
   - name: VRCL_Custom/TiltAngle
     valueType: 1

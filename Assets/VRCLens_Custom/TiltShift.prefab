@@ -370,7 +370,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0
+        defaultSliderValue: 0.5
         useGlobalParam: 1
         globalParam: VRCL_Custom/TiltShiftWidth
         holdButton: 0
