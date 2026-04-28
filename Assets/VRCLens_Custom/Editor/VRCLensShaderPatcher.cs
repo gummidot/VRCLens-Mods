@@ -481,7 +481,8 @@ public static class VRCLensShaderPatcher
 					float2 axD2 = float2(0.0, 1.0) * axTs;
 					float2 axD3 = float2(-0.707, 0.707) * axTs;
 					// R channel: 2-ring weighted disc blur (center=3, inner@0.5r=2, outer@1.0r=1)
-					float rAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r * 3.0;
+					float axSrcR = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r;
+					float rAcc = axSrcR * 3.0;
 					// Inner ring at 0.5× radius
 					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).r) * 2.0;
 					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).r) * 2.0;
@@ -492,14 +493,16 @@ public static class VRCLensShaderPatcher
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3, 0.001, 0.999)).r;
-					col.r = rAcc / 27.0; // 3 + 8*2 + 8*1
-					// B channel: keep sharp (single-tap). Combined with R's full disc blur
-					// this maximizes per-channel separation -- bright objects bleed RED
-					// outward (purple/red fringing on highlights), dark areas show CYAN
-					// halos. Reads as obviously chromatic aberration rather than the
-					// soft defocus the symmetric R+B blur produced. Asymmetric by
-					// design; if it looks too one-sided, restore a small B disc.
-					col.b = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b;
+					// Additive composition: add the axial halo delta on top of whatever
+					// transverse already wrote into col.r. delta = blurredR - sourceR is
+					// what axial 'contributes' (the halation around bright pixels minus
+					// what was at this pixel originally). Lets transverse's chromatic
+					// shift survive when both effects are enabled.
+					col.r += (rAcc - 27.0 * axSrcR) / 27.0;
+					// B channel: kept sharp by axial's design (Option A asymmetric
+					// fringing). Axial does NOT touch col.b -- transverse's chromatic
+					// shift on B passes through unmodified. With axial alone, col.b
+					// stays at the un-shifted source (since transverse is gated off).
 				}
 				// VRCLens_Custom END";
 
