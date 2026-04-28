@@ -455,7 +455,15 @@ public static class VRCLensShaderPatcher
 					col.r = lerp(col.r, rShifted, caEdgeR);
 					col.b = lerp(col.b, bShifted, caEdgeB);
 				}
-				// Axial CA: depth-scaled per-channel disc blur (soft colored halos on distant objects)
+				// Axial CA: focus-relative LoCA with foreground/background fringe inversion.
+				// Physical model: blue bends more than red in a simple convex lens.
+				//   - In front of focus (foreground) -> RED halo / cyan rim.
+				//   - Behind focus (background)      -> BLUE halo / yellow rim.
+				//   - At focus -> sharp.
+				// When DoF is off, the AF slot in _AuxExpTex isn't updated, so we
+				// can't trust the focal plane. In that mode we fall back to absolute-
+				// depth red-bleed (iter 3 behavior) so axial still does something
+				// stylistically without producing a global blue wash.
 				if(_AxialCA > 0.001) {
 					// Linearize depth (same formula as getLinearEyeDepth in MFA, inlined
 					// because that helper is only injected when ManualFocusAssist is enabled)
@@ -465,44 +473,60 @@ public static class VRCLensShaderPatcher
 					float axZ = (axFar / axNear - 1.0) / axFar;
 					float axW = 1.0 / axFar;
 					float axDepth = 1.0 / (axDepthRaw * axZ + axW);
-					// Ramp: no CA at camera, full CA at 20m+ so the effect shows on a
-					// wider variety of shots (was 50m, only visible at long distances).
-					float axDepthFade = saturate(axDepth / 20.0);
-					// Multiplier softened 100 -> 50: with the B-sharp Option A path
-					// below, slider=1 at 100 flooded bright scenes red. 50 keeps the
-					// asymmetric chromatic character (R bleed, B sharp) but caps the
-					// peak so cranking the slider stays photographic rather than
-					// wholesale red-tint. Slider=0.25 matches the prior 12-px sweet spot.
-					float axPx = _AxialCA * 50.0 * axDepthFade;
+					// Focus distance: only meaningful when DoF is on. _FocusDistance < 0.5
+					// is the AF sentinel; in that case sample _AuxExpTex slot used by
+					// External Focus mode 1 (also a reasonable fallback for other AF
+					// modes since the alternatives require sampling _FocusTex which
+					// adds significant complexity).
+					float axFocusDist = _FocusDistance;
+					if (_FocusDistance < 0.5001) {
+						axFocusDist = max(tex2Dlod(_AuxExpTex, half4(0.75, 0.25, 0.0, 0.0)).x, 0.5);
+					}
+					// Two CoC ramps:
+					//   - DoF on: signed distance from focal plane (foreground/background inversion)
+					//   - DoF off: absolute distance from camera (iter 3 baseline)
+					float axSignedDelta = axDepth - axFocusDist;
+					float axCoCFocused  = saturate(abs(axSignedDelta) / 10.0);
+					float axCoCAbsolute = saturate(axDepth / 20.0);
+					float axCoC = _EnableDoF ? axCoCFocused : axCoCAbsolute;
+					// Slider * 50px peak (kept from iter 2 step 2 for consistent feel).
+					float axPx = _AxialCA * 50.0 * axCoC;
 					float2 axTs = axPx / _ScreenParams.xy;
-					// 8 directions at 45° intervals
+					// 8 directions at 45 degree intervals
 					float2 axD0 = float2(1.0, 0.0) * axTs;
 					float2 axD1 = float2(0.707, 0.707) * axTs;
 					float2 axD2 = float2(0.0, 1.0) * axTs;
 					float2 axD3 = float2(-0.707, 0.707) * axTs;
-					// R channel: 2-ring weighted disc blur (center=3, inner@0.5r=2, outer@1.0r=1)
-					float axSrcR = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).r;
-					float rAcc = axSrcR * 3.0;
-					// Inner ring at 0.5× radius
-					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).r) * 2.0;
-					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).r) * 2.0;
-					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.5, 0.001, 0.999)).r) * 2.0;
-					rAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.5, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.5, 0.001, 0.999)).r) * 2.0;
+					// Sample the disc as .rb pairs (tex2D returns RGBA either way, so
+					// keeping both channels is free vs the iter 3 .r-only structure).
+					// 2-ring weighted disc: center=3, inner@0.5r=2, outer@1.0r=1, sum=27.
+					float2 axSrcRB = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).rb;
+					float2 acc = axSrcRB * 3.0;
+					// Inner ring at 0.5x radius
+					acc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).rb) * 2.0;
+					acc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).rb) * 2.0;
+					acc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.5, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.5, 0.001, 0.999)).rb) * 2.0;
+					acc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.5, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.5, 0.001, 0.999)).rb) * 2.0;
 					// Outer ring at full radius
-					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0, 0.001, 0.999)).r;
-					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1, 0.001, 0.999)).r;
-					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2, 0.001, 0.999)).r;
-					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3, 0.001, 0.999)).r;
-					// Additive composition: add the axial halo delta on top of whatever
-					// transverse already wrote into col.r. delta = blurredR - sourceR is
-					// what axial 'contributes' (the halation around bright pixels minus
-					// what was at this pixel originally). Lets transverse's chromatic
-					// shift survive when both effects are enabled.
-					col.r += (rAcc - 27.0 * axSrcR) / 27.0;
-					// B channel: kept sharp by axial's design (Option A asymmetric
-					// fringing). Axial does NOT touch col.b -- transverse's chromatic
-					// shift on B passes through unmodified. With axial alone, col.b
-					// stays at the un-shifted source (since transverse is gated off).
+					acc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0, 0.001, 0.999)).rb;
+					acc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1, 0.001, 0.999)).rb;
+					acc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2, 0.001, 0.999)).rb;
+					acc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3, 0.001, 0.999)).rb + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3, 0.001, 0.999)).rb;
+					// Per-channel chromatic delta (blur minus source). Additive on top
+					// of whatever transverse left in col, so both effects stack.
+					float2 axDelta = (acc - 27.0 * axSrcRB) / 27.0;
+					// Composition: with DoF, sign-gate around the focal plane (red
+					// foreground, blue background); without DoF, fall back to red-only
+					// bleed everywhere (iter 3 baseline) so the effect still does
+					// something stylistic without a global blue wash.
+					if (_EnableDoF) {
+						float axBehindWeight = saturate( axSignedDelta * 2.0);
+						float axFrontWeight  = saturate(-axSignedDelta * 2.0);
+						col.b += axDelta.y * axBehindWeight;  // background -> blue halo
+						col.r += axDelta.x * axFrontWeight;   // foreground -> red halo
+					} else {
+						col.r += axDelta.x;                   // iter 3 baseline
+					}
 				}
 				// VRCLens_Custom END";
 
