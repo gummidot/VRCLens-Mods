@@ -468,7 +468,12 @@ public static class VRCLensShaderPatcher
 					// Ramp: no CA at camera, full CA at 20m+ so the effect shows on a
 					// wider variety of shots (was 50m, only visible at long distances).
 					float axDepthFade = saturate(axDepth / 20.0);
-					float axPx = _AxialCA * 100.0 * axDepthFade;
+					// Multiplier softened 100 -> 50: with the B-sharp Option A path
+					// below, slider=1 at 100 flooded bright scenes red. 50 keeps the
+					// asymmetric chromatic character (R bleed, B sharp) but caps the
+					// peak so cranking the slider stays photographic rather than
+					// wholesale red-tint. Slider=0.25 matches the prior 12-px sweet spot.
+					float axPx = _AxialCA * 50.0 * axDepthFade;
 					float2 axTs = axPx / _ScreenParams.xy;
 					// 8 directions at 45° intervals
 					float2 axD0 = float2(1.0, 0.0) * axTs;
@@ -488,17 +493,13 @@ public static class VRCLensShaderPatcher
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2, 0.001, 0.999)).r;
 					rAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3, 0.001, 0.999)).r + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3, 0.001, 0.999)).r;
 					col.r = rAcc / 27.0; // 3 + 8*2 + 8*1
-					// B channel: same 2-ring pattern at half the pixel radius
-					float bAcc = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b * 3.0;
-					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.25, 0.001, 0.999)).b) * 2.0;
-					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.25, 0.001, 0.999)).b) * 2.0;
-					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.25, 0.001, 0.999)).b) * 2.0;
-					bAcc += (tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.25, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.25, 0.001, 0.999)).b) * 2.0;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD0*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD0*0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD1*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD1*0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD2*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD2*0.5, 0.001, 0.999)).b;
-					bAcc += tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 + axD3*0.5, 0.001, 0.999)).b + tex2D(_HirabikiVRCLensPassTexture, clamp(sbsUV0 - axD3*0.5, 0.001, 0.999)).b;
-					col.b = bAcc / 27.0;
+					// B channel: keep sharp (single-tap). Combined with R's full disc blur
+					// this maximizes per-channel separation -- bright objects bleed RED
+					// outward (purple/red fringing on highlights), dark areas show CYAN
+					// halos. Reads as obviously chromatic aberration rather than the
+					// soft defocus the symmetric R+B blur produced. Asymmetric by
+					// design; if it looks too one-sided, restore a small B disc.
+					col.b = tex2D(_HirabikiVRCLensPassTexture, sbsUV0).b;
 				}
 				// VRCLens_Custom END";
 

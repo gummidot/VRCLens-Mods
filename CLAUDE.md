@@ -105,6 +105,16 @@ When working on a new shader mod or understanding existing ones:
 - **Anchor-based insertion** -- Find a stable line in the shader, inject code after it. Used for feature additions like ManualFocusAssist. All injections wrapped in `// VRCLens_Custom BEGIN/END` markers for idempotency.
 - **Anchor sites** are numbered (Site 1a, 1b, 2, 3, 4a, 4b, 5a, 5b, etc.) -- see patcher source for the full list. Multiple mods can share anchor sites (injections stack).
 
+### Verbatim-string gotcha (BLOCK_*** constants)
+
+The shader code blocks in `VRCLensShaderPatcher.cs` are C# verbatim strings (`@"..."`). Inside these:
+
+- **Never use a bare ASCII double-quote (`"`).** A single `"` terminates the verbatim string; the next non-whitespace token becomes a parser error far from the actual cause. Symptom: `error CS1002: ; expected` on the line with the lone `"`. Use `""` to escape an inner double-quote (e.g. shader properties already do this: `_Foo (""Foo"", Range(...)) = ...`).
+- **Smart quotes (`"` `"`) are also dangerous.** Auto-formatters or pasted text can introduce them. They visually look like `"` but the C# parser does not see them as string delimiters; however the inner ASCII `"` of a smart-quote pair often does break things if mixed in. Easiest rule: keep all comments inside `BLOCK_*` blocks ASCII-quote-free (use `'...'`, parentheses, or just descriptive text without quote marks).
+- Em-dash (`—`), unicode arrows, etc. are safe inside the verbatim string -- they are not string delimiters.
+
+Compile after editing any `BLOCK_*` constant via MCP `AssetDatabase.Refresh()` + `RequestScriptCompilation()` and verify the patcher type loads (`AppDomain.GetAssemblies()...FirstOrDefault(t => t.FullName == "VRCLensShaderPatcher")`).
+
 ### Preventing Mod Conflicts (Shared Anchor Insertion Order)
 
 All mods are independently addable -- every anchor exists in the original unpatched shader. No mod may depend on an anchor introduced by another mod.
