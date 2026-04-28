@@ -412,43 +412,48 @@ public static class VRCLensShaderPatcher
 
     private static readonly string BLOCK_CA_PASS2 = @"
 				// VRCLens_Custom BEGIN - Chromatic Aberration
-				// Transverse CA: radial color fringing increasing toward screen edges
+				// Transverse CA: radial color fringing. 3-tap radial blur with a tight
+				// ±15% spread around the actual offset gives the smooth color smear of
+				// real lens dispersion without diluting the chromatic separation (the
+				// previous ±50% spread averaged over 3× the offset and washed out the
+				// effect). Offset has a flat base + radius² growth so the center isn't
+				// dead at moderate slider values.
 				if(_TransverseCA > 0.001) {
 					float2 caCenter = sbsUV0 - 0.5;
 					float caRadius = length(caCenter);
-					float2 caDir = caCenter / max(0.001, caRadius);
-					float caOffset = _TransverseCA * caRadius * caRadius * 0.15;
-					// 5-tap radial blur: sample at offset and ±25%/±50% spread for soft fringing
-					float2 caUVr0 = sbsUV0 + caDir * caOffset;
-					float2 caUVr1 = sbsUV0 + caDir * caOffset * 0.75;
-					float2 caUVr2 = sbsUV0 + caDir * caOffset * 1.25;
-					float2 caUVr3 = sbsUV0 + caDir * caOffset * 0.5;
-					float2 caUVr4 = sbsUV0 + caDir * caOffset * 1.5;
-					float2 caUVb0 = sbsUV0 - caDir * caOffset;
-					float2 caUVb1 = sbsUV0 - caDir * caOffset * 0.75;
-					float2 caUVb2 = sbsUV0 - caDir * caOffset * 1.25;
-					float2 caUVb3 = sbsUV0 - caDir * caOffset * 0.5;
-					float2 caUVb4 = sbsUV0 - caDir * caOffset * 1.5;
-					// OOB edge decay on outermost sample
-					float2 caOobR = max(float2(0,0), max(-caUVr4, caUVr4 - float2(1,1)));
+					// Multiply by caCenter (vector) directly instead of going through
+					// caDir = caCenter / caRadius. caDir is undefined at the optical
+					// center and the prior `max(0.001, caRadius)` snap meant a small
+					// disc near center got a fixed-direction offset that all sampled
+					// the same nearby pixel -> the convergent star artifact at center.
+					// caCenter goes smoothly to zero at the center, no singularity.
+					float caScale = _TransverseCA * (0.3 + 0.7 * caRadius * caRadius) * 0.4;
+					float2 caOffsetVec = caCenter * caScale;
+					// OOB edge decay (sample farthest from center for the bound)
+					float2 caUVrFar = sbsUV0 + caOffsetVec * 1.15;
+					float2 caUVbFar = sbsUV0 - caOffsetVec * 1.15;
+					float2 caOobR = max(float2(0,0), max(-caUVrFar, caUVrFar - float2(1,1)));
 					float caEdgeR = exp(-max(caOobR.x, caOobR.y) * 80.0);
-					float2 caOobB = max(float2(0,0), max(-caUVb4, caUVb4 - float2(1,1)));
+					float2 caOobB = max(float2(0,0), max(-caUVbFar, caUVbFar - float2(1,1)));
 					float caEdgeB = exp(-max(caOobB.x, caOobB.y) * 80.0);
-					// Gaussian-ish weights: center=6, ±25%=4, ±50%=1 (sum=16)
-					float rBlur = tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr0, 0.001, 0.999)).r * 6.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr1, 0.001, 0.999)).r * 4.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr2, 0.001, 0.999)).r * 4.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr3, 0.001, 0.999)).r * 1.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr4, 0.001, 0.999)).r * 1.0;
-					rBlur /= 16.0;
-					float bBlur = tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb0, 0.001, 0.999)).b * 6.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb1, 0.001, 0.999)).b * 4.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb2, 0.001, 0.999)).b * 4.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb3, 0.001, 0.999)).b * 1.0
-					            + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb4, 0.001, 0.999)).b * 1.0;
-					bBlur /= 16.0;
-					col.r = lerp(col.r, rBlur, caEdgeR);
-					col.b = lerp(col.b, bBlur, caEdgeB);
+					// 3-tap blur centered on the offset, weights 2/1/1 (sum=4). Mean
+					// offset = (2*1.0 + 1*0.85 + 1*1.15)/4 = 1.0 -> chromatic shift
+					// preserved; samples spread only ±15% around the peak for a soft
+					// fringe instead of the prior wash-out.
+					float2 caUVr0 = sbsUV0 + caOffsetVec;
+					float2 caUVr1 = sbsUV0 + caOffsetVec * 0.85;
+					float2 caUVr2 = caUVrFar;
+					float2 caUVb0 = sbsUV0 - caOffsetVec;
+					float2 caUVb1 = sbsUV0 - caOffsetVec * 0.85;
+					float2 caUVb2 = caUVbFar;
+					float rShifted = (tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr0, 0.001, 0.999)).r * 2.0
+					                + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr1, 0.001, 0.999)).r
+					                + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVr2, 0.001, 0.999)).r) * 0.25;
+					float bShifted = (tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb0, 0.001, 0.999)).b * 2.0
+					                + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb1, 0.001, 0.999)).b
+					                + tex2D(_HirabikiVRCLensPassTexture, clamp(caUVb2, 0.001, 0.999)).b) * 0.25;
+					col.r = lerp(col.r, rShifted, caEdgeR);
+					col.b = lerp(col.b, bShifted, caEdgeB);
 				}
 				// Axial CA: depth-scaled per-channel disc blur (soft colored halos on distant objects)
 				if(_AxialCA > 0.001) {
@@ -460,9 +465,10 @@ public static class VRCLensShaderPatcher
 					float axZ = (axFar / axNear - 1.0) / axFar;
 					float axW = 1.0 / axFar;
 					float axDepth = 1.0 / (axDepthRaw * axZ + axW);
-					// Ramp: no CA at camera, full CA at 50m+ (atmospheric depth haze distance)
-					float axDepthFade = saturate(axDepth / 50.0);
-					float axPx = _AxialCA * 40.0 * axDepthFade;
+					// Ramp: no CA at camera, full CA at 20m+ so the effect shows on a
+					// wider variety of shots (was 50m, only visible at long distances).
+					float axDepthFade = saturate(axDepth / 20.0);
+					float axPx = _AxialCA * 100.0 * axDepthFade;
 					float2 axTs = axPx / _ScreenParams.xy;
 					// 8 directions at 45° intervals
 					float2 axD0 = float2(1.0, 0.0) * axTs;
