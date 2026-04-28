@@ -663,7 +663,7 @@ public static class VRCLensShaderPatcher
 		// VRCLens_Custom BEGIN - Fisheye Lens Properties
 		[Header(Fisheye Lens)]
 		[Toggle] _FisheyeEnable (""Enable Fisheye"", Float) = 0
-		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 2.5
+		_FisheyeStrength (""Fisheye Strength"", Range(0.0, 10.0)) = 1.2
 		_FisheyeZoom (""Fisheye Zoom"", Range(0.0, 1.0)) = 0.0
 		_FisheyeEdgeSoftness (""Fisheye Edge Softness"", Range(0.0, 1.0)) = 0.25
 		_FisheyeShape (""Fisheye Shape"", Range(0.0, 1.0)) = 0.0

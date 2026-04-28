@@ -295,7 +295,7 @@ MonoBehaviour:
         localTransitionTimeIn: 0
         localTransitionTimeOut: 0
         simpleOutTransition: 1
-        defaultSliderValue: 0.25
+        defaultSliderValue: 0.12
         useGlobalParam: 1
         globalParam: VRCL_Custom/FisheyeStrength
         holdButton: 0

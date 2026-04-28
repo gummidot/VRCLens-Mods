@@ -22,7 +22,7 @@ MonoBehaviour:
   - name: VRCL_Custom/FisheyeStrength
     valueType: 1
     saved: 1
-    defaultValue: 0.25
+    defaultValue: 0.12
     networkSynced: 0
   - name: VRCL_Custom/FisheyeZoom
     valueType: 1
