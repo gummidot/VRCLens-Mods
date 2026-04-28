@@ -474,13 +474,31 @@ public static class VRCLensShaderPatcher
 					float axW = 1.0 / axFar;
 					float axDepth = 1.0 / (axDepthRaw * axZ + axW);
 					// Focus distance: only meaningful when DoF is on. _FocusDistance < 0.5
-					// is the AF sentinel; in that case sample _AuxExpTex slot used by
-					// External Focus mode 1 (also a reasonable fallback for other AF
-					// modes since the alternatives require sampling _FocusTex which
-					// adds significant complexity).
+					// is the AF sentinel; mirror Pass 0's per-mode logic so AF Normal
+					// mode (the default, _IsExternalFocus == 0) doesn't silently fall
+					// back to a stale _AuxExpTex slot that returns 0 -> clamps to 0.5
+					// -> tints the entire scene blue.
 					float axFocusDist = _FocusDistance;
 					if (_FocusDistance < 0.5001) {
-						axFocusDist = max(tex2Dlod(_AuxExpTex, half4(0.75, 0.25, 0.0, 0.0)).x, 0.5);
+						if (_IsExternalFocus == 1) {
+							// Selfie mode: focus distance stored directly in _AuxExpTex
+							axFocusDist = max(tex2Dlod(_AuxExpTex, half4(0.75, 0.25, 0.0, 0.0)).x, 0.5);
+						} else if (_IsExternalFocus == 2) {
+							// Avatar mode: encoded depth in _AuxExpTex.z
+							float afDepthRaw = tex2Dlod(_AuxExpTex, half4(0.25, 0.75, 0.0, 0.0)).z * 0.00390625;
+							axFocusDist = max(1.0 / (afDepthRaw * axZ + axW), 0.5);
+						} else {
+							// Normal mode (default): sample _DepthTex at user's focus point.
+							// Matches Pass 2's existing simplified focusPos pattern (the
+							// focus-peaking overlay later in this pass), which omits Pass 0's
+							// aspectCorrect and _IsSideBySide3D adjustments. For the standard
+							// 16:9 camera aspectCorrect == (1,1) so it's a no-op anyway.
+							float2 axFocusOffset = _PreviewOrientation == 0 ? float2(_FocusOffsetH, _FocusOffsetV) : float2(_FocusOffsetV, -_FocusOffsetH);
+							float2 axFocusPos = _IsDesktopMode ? axFocusOffset * 0.5 : tex2Dlod(_AuxFocusTex, half4(0.0, 0.0, 0.0, 0.0)).rg;
+							axFocusPos += 0.5;
+							float afDepthRaw = tex2Dlod(_DepthTex, half4(axFocusPos, 0.0, 0.0)).x;
+							axFocusDist = max(1.0 / (afDepthRaw * axZ + axW), 0.5);
+						}
 					}
 					// Two CoC ramps:
 					//   - DoF on: signed distance from focal plane (foreground/background inversion)
