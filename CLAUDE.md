@@ -1,4 +1,4 @@
-@Packages/xyz.sentfromspace.agentic-tools/Docs/INDEX.md
+**Always read `Packages/xyz.sentfromspace.agentic-tools/Docs/INDEX.md` at the start of a session.** It contains Unity asset workflow rules (MCP bridge usage, scene exploration patterns) that apply to all work in this project.
 
 # Project Instructions
 
