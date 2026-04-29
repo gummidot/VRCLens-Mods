@@ -1,0 +1,66 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1506855854, guid: 67cc4cb7839cd3741b63733d5adf0442, type: 3}
+  m_Name: LocalParams_Letterbox
+  m_EditorClassIdentifier: 
+  isEmpty: 0
+  parameters:
+  - name: VRCL_Custom/Letterbox239
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox235
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox200
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox185
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox169
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox32
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox43
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox11
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox45
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0
+  - name: VRCL_Custom/Letterbox916
+    valueType: 2
+    saved: 1
+    defaultValue: 0
+    networkSynced: 0

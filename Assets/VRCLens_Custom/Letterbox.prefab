@@ -1,0 +1,1023 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1000000000000000001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1000000000000000002}
+  - component: {fileID: 1000000000000001000}
+  - component: {fileID: 1000000000000001001}
+  - component: {fileID: 1000000000000001002}
+  - component: {fileID: 1000000000000001003}
+  - component: {fileID: 1000000000000001004}
+  - component: {fileID: 1000000000000001005}
+  - component: {fileID: 1000000000000001006}
+  - component: {fileID: 1000000000000001007}
+  - component: {fileID: 1000000000000001008}
+  - component: {fileID: 1000000000000001009}
+  - component: {fileID: 1000000000000002000}
+  - component: {fileID: 1000000000000003000}
+  m_Layer: 0
+  m_Name: Letterbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1000000000000000002
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1000000000000001000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000010000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000010000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/2.39:1 Cinemascope
+        state:
+          actions:
+          - rid: 1000000000000010001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox239
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000010001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 7e6cfa41b45b5984bbaf106ffb5f4920|Assets/VRCLens_Custom/Letterbox/Letterbox_2_39.anim
+          objRef: {fileID: 7400000, guid: 7e6cfa41b45b5984bbaf106ffb5f4920, type: 2}
+--- !u!114 &1000000000000001001
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000011000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000011000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/2.35:1 Anamorphic
+        state:
+          actions:
+          - rid: 1000000000000011001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox235
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000011001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 945ffb813c856f447b9d7aba92dfe818|Assets/VRCLens_Custom/Letterbox/Letterbox_2_35.anim
+          objRef: {fileID: 7400000, guid: 945ffb813c856f447b9d7aba92dfe818, type: 2}
+--- !u!114 &1000000000000001002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000012000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000012000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/2.00:1 Univisium
+        state:
+          actions:
+          - rid: 1000000000000012001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox200
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000012001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 577ba828f763c0241b88d5178f0038c0|Assets/VRCLens_Custom/Letterbox/Letterbox_2_00.anim
+          objRef: {fileID: 7400000, guid: 577ba828f763c0241b88d5178f0038c0, type: 2}
+--- !u!114 &1000000000000001003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000013000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000013000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/1.85:1 Theatrical
+        state:
+          actions:
+          - rid: 1000000000000013001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox185
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000013001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 3098f417333d798428158be49192dc8e|Assets/VRCLens_Custom/Letterbox/Letterbox_1_85.anim
+          objRef: {fileID: 7400000, guid: 3098f417333d798428158be49192dc8e, type: 2}
+--- !u!114 &1000000000000001004
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000014000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000014000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/16:9
+        state:
+          actions:
+          - rid: 1000000000000014001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox169
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000014001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 427db0d3f6ce65f4c9f0cbf74b4024c8|Assets/VRCLens_Custom/Letterbox/Letterbox_16_9.anim
+          objRef: {fileID: 7400000, guid: 427db0d3f6ce65f4c9f0cbf74b4024c8, type: 2}
+--- !u!114 &1000000000000001005
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000015000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000015000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/3:2 DSLR
+        state:
+          actions:
+          - rid: 1000000000000015001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox32
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000015001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: c073a42c09fee854cbe1e1d36575f888|Assets/VRCLens_Custom/Letterbox/Letterbox_3_2.anim
+          objRef: {fileID: 7400000, guid: c073a42c09fee854cbe1e1d36575f888, type: 2}
+--- !u!114 &1000000000000001006
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000016000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000016000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/4:3 Classic
+        state:
+          actions:
+          - rid: 1000000000000016001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox43
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000016001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 19f4b63b75037a54fa53025411b4e4c3|Assets/VRCLens_Custom/Letterbox/Letterbox_4_3.anim
+          objRef: {fileID: 7400000, guid: 19f4b63b75037a54fa53025411b4e4c3, type: 2}
+--- !u!114 &1000000000000001007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000017000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000017000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/1:1 Square
+        state:
+          actions:
+          - rid: 1000000000000017001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox11
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000017001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: c37bbafb2b93fb64aa665f40ca3e92b1|Assets/VRCLens_Custom/Letterbox/Letterbox_1_1.anim
+          objRef: {fileID: 7400000, guid: c37bbafb2b93fb64aa665f40ca3e92b1, type: 2}
+--- !u!114 &1000000000000001008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000018000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000018000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/4:5 Portrait
+        state:
+          actions:
+          - rid: 1000000000000018001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox45
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000018001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 568ed56b500bba248867f6067792fb4d|Assets/VRCLens_Custom/Letterbox/Letterbox_4_5.anim
+          objRef: {fileID: 7400000, guid: 568ed56b500bba248867f6067792fb4d, type: 2}
+--- !u!114 &1000000000000001009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000019000
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000019000
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Letterbox/9:16 Vertical
+        state:
+          actions:
+          - rid: 1000000000000019001
+        saved: 1
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 0
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 1
+        exclusiveTag: letterbox-preset
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam:
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0.25
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/Letterbox916
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 1000000000000019001
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid:
+          id: 6bb07930870c57846b72f08e7aa74ec5|Assets/VRCLens_Custom/Letterbox/Letterbox_9_16.anim
+          objRef: {fileID: 7400000, guid: 6bb07930870c57846b72f08e7aa74ec5, type: 2}
+--- !u!114 &1000000000000002000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ddbceacccf7f264478a545963717b230, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  addDroneV: 0
+  fixAvatarDrop: 0
+  useCustomResolution: 0
+  sensorRes: {x: 0, y: 0}
+  useFullSBS3d: 0
+  msaa: 0
+  enableLowerMinFocus: 0
+  enableManualFocusAssist: 0
+  enableGhostFX: 0
+  enableChromaticAberration: 0
+  enableFilmGrain: 0
+  enableDepthFog: 0
+  enableTiltShift: 0
+  enableFisheye: 0
+  enableColorGrading: 0
+  enableLetterbox: 1
+--- !u!114 &1000000000000003000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000000000000000001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 1000000000000003001
+  references:
+    version: 2
+    RefIds:
+    - rid: 1000000000000003001
+      type: {class: FullController, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 4
+        controllers: []
+        menus: []
+        prms:
+        - parameters:
+            version: 1
+            fileID: 0
+            guid:
+            id: 27e314102941eeb4da64172f5fad0b65|Assets/VRCLens_Custom/Letterbox/LocalParams_Letterbox.asset
+            objRef: {fileID: 11400000, guid: 27e314102941eeb4da64172f5fad0b65, type: 2}
+        smoothedPrms: []
+        globalParams:
+        - '*'
+        allNonsyncedAreGlobal: 0
+        ignoreSaved: 0
+        toggleParam:
+        rootObjOverride: {fileID: 0}
+        rootBindingsApplyToAvatar: 0
+        rewriteBindings: []
+        allowMissingAssets: 0
+        injectSpsDepthParam:
+        injectSpsVelocityParam:
+        controller:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        menu:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        parameters:
+          version: 1
+          fileID: 0
+          guid:
+          id:
+          objRef: {fileID: 0}
+        submenu:
+        removePrefixes: []
+        addPrefix:
+        useSecurityForToggle: 0

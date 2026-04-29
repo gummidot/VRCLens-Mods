@@ -27,6 +27,7 @@ public class VRCLensModifierEditor : Editor
     private SerializedProperty enableTiltShiftProp;
     private SerializedProperty enableFisheyeProp;
     private SerializedProperty enableColorGradingProp;
+    private SerializedProperty enableLetterboxProp;
 
     private void OnEnable()
     {
@@ -50,6 +51,7 @@ public class VRCLensModifierEditor : Editor
         enableTiltShiftProp = serializedObject.FindProperty(nameof(modifier.enableTiltShift));
         enableFisheyeProp = serializedObject.FindProperty(nameof(modifier.enableFisheye));
         enableColorGradingProp = serializedObject.FindProperty(nameof(modifier.enableColorGrading));
+        enableLetterboxProp = serializedObject.FindProperty(nameof(modifier.enableLetterbox));
     }
 
     public override void OnInspectorGUI()
@@ -132,6 +134,11 @@ public class VRCLensModifierEditor : Editor
         // Layout for Color Grading
         EditorGUILayout.BeginHorizontal();
         enableColorGradingProp.boolValue = EditorGUILayout.ToggleLeft("Color Grading", enableColorGradingProp.boolValue);
+        EditorGUILayout.EndHorizontal();
+
+        // Layout for Letterbox
+        EditorGUILayout.BeginHorizontal();
+        enableLetterboxProp.boolValue = EditorGUILayout.ToggleLeft("Letterbox", enableLetterboxProp.boolValue);
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.Space();

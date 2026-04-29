@@ -26,6 +26,7 @@ public class VRCLensModifier : MonoBehaviour, IEditorOnly
     public bool enableTiltShift;
     public bool enableFisheye;
     public bool enableColorGrading;
+    public bool enableLetterbox;
 
     public void Modify(string tempDir)
     {
