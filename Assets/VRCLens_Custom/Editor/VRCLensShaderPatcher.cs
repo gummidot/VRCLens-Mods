@@ -403,11 +403,12 @@ public static class VRCLensShaderPatcher
 		[Header(Chromatic Aberration)]
 		_TransverseCA (""Transverse CA"", Range(0.0, 1.0)) = 0.0
 		_AxialCA (""Axial CA"", Range(0.0, 1.0)) = 0.0
+		[Toggle] _AxialCAFocusAware (""Focus-aware Axial CA"", float) = 1
 		// VRCLens_Custom END";
 
     private static readonly string BLOCK_CA_UNIFORMS = @"
 			// VRCLens_Custom BEGIN - Chromatic Aberration Uniforms
-			uniform float _TransverseCA, _AxialCA;
+			uniform float _TransverseCA, _AxialCA, _AxialCAFocusAware;
 			// VRCLens_Custom END";
 
     private static readonly string BLOCK_CA_PASS2 = @"
@@ -460,10 +461,14 @@ public static class VRCLensShaderPatcher
 				//   - In front of focus (foreground) -> RED halo / cyan rim.
 				//   - Behind focus (background)      -> BLUE halo / yellow rim.
 				//   - At focus -> sharp.
-				// When DoF is off, the AF slot in _AuxExpTex isn't updated, so we
-				// can't trust the focal plane. In that mode we fall back to absolute-
-				// depth red-bleed (iter 3 behavior) so axial still does something
-				// stylistically without producing a global blue wash.
+				// Two paths controlled by _AxialCAFocusAware (and _EnableDoF):
+				//   - Focus-aware (default, requires DoF on): focus-relative CoC + sign-
+				//     inverted fringe color across the focal plane.
+				//   - Stylistic (toggle off, or DoF off): absolute-depth red bleed
+				//     everywhere past 20 m (iter 3 baseline). Used when DoF is off because
+				//     _AuxExpTex AF slot is stale -> focus-relative path would tint the
+				//     whole scene blue.
+				bool axUseFocusRelative = _EnableDoF && _AxialCAFocusAware > 0.5;
 				if(_AxialCA > 0.001) {
 					// Linearize depth (same formula as getLinearEyeDepth in MFA, inlined
 					// because that helper is only injected when ManualFocusAssist is enabled)
@@ -501,12 +506,12 @@ public static class VRCLensShaderPatcher
 						}
 					}
 					// Two CoC ramps:
-					//   - DoF on: signed distance from focal plane (foreground/background inversion)
-					//   - DoF off: absolute distance from camera (iter 3 baseline)
+					//   - Focus-aware: signed distance from focal plane (foreground/background inversion)
+					//   - Stylistic:   absolute distance from camera (iter 3 baseline)
 					float axSignedDelta = axDepth - axFocusDist;
 					float axCoCFocused  = saturate(abs(axSignedDelta) / 10.0);
 					float axCoCAbsolute = saturate(axDepth / 20.0);
-					float axCoC = _EnableDoF ? axCoCFocused : axCoCAbsolute;
+					float axCoC = axUseFocusRelative ? axCoCFocused : axCoCAbsolute;
 					// Slider * 50px peak (kept from iter 2 step 2 for consistent feel).
 					float axPx = _AxialCA * 50.0 * axCoC;
 					float2 axTs = axPx / _ScreenParams.xy;
@@ -533,11 +538,10 @@ public static class VRCLensShaderPatcher
 					// Per-channel chromatic delta (blur minus source). Additive on top
 					// of whatever transverse left in col, so both effects stack.
 					float2 axDelta = (acc - 27.0 * axSrcRB) / 27.0;
-					// Composition: with DoF, sign-gate around the focal plane (red
-					// foreground, blue background); without DoF, fall back to red-only
-					// bleed everywhere (iter 3 baseline) so the effect still does
-					// something stylistic without a global blue wash.
-					if (_EnableDoF) {
+					// Composition: focus-aware path sign-gates around the focal plane
+					// (red foreground, blue background); stylistic path falls back to
+					// red-only bleed everywhere (iter 3 baseline).
+					if (axUseFocusRelative) {
 						float axBehindWeight = saturate( axSignedDelta * 2.0);
 						float axFrontWeight  = saturate(-axSignedDelta * 2.0);
 						col.b += axDelta.y * axBehindWeight;  // background -> blue halo

@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1534270677819401441}
   - component: {fileID: 6739146508150698255}
   - component: {fileID: 7544547306005082646}
+  - component: {fileID: 5188345044134052873}
   - component: {fileID: 4245122815520342126}
   - component: {fileID: 2188345044134052871}
   m_Layer: 0
@@ -62,7 +63,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/Chromatic Aberration/Transverse
+        name: VRCLens/Custom/Chromatic Aberration/Transverse CA
         state:
           actions:
           - rid: 455501553797431297
@@ -150,7 +151,7 @@ MonoBehaviour:
       type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
       data:
         version: 3
-        name: VRCLens/Custom/Chromatic Aberration/Axial
+        name: VRCLens/Custom/Chromatic Aberration/Axial CA
         state:
           actions:
           - rid: 455501553797431299
@@ -211,6 +212,94 @@ MonoBehaviour:
           guid: 
           id: 5c4bae14becef6345a8614aeca819241|Assets/VRCLens_Custom/ChromaticAberration/CA_Axial.anim
           objRef: {fileID: 7400000, guid: 5c4bae14becef6345a8614aeca819241, type: 2}
+--- !u!114 &5188345044134052873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4513423230492740302}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d9e94e501a2d4c95bff3d5601013d923, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 3
+  unityVersion: 2022.3.22f1
+  vrcfuryVersion: 1.1152.0
+  somethingIsBroken: 0
+  config:
+    features: []
+  content:
+    rid: 455501553797431301
+  references:
+    version: 2
+    RefIds:
+    - rid: 455501553797431301
+      type: {class: Toggle, ns: VF.Model.Feature, asm: VRCFury}
+      data:
+        version: 3
+        name: VRCLens/Custom/Chromatic Aberration/Axial Focus-Aware
+        state:
+          actions:
+          - rid: 455501553797431302
+        saved: 0
+        slider: 0
+        sliderInactiveAtZero: 0
+        securityEnabled: 0
+        defaultOn: 1
+        includeInRest: 0
+        exclusiveOffState: 0
+        enableExclusiveTag: 0
+        exclusiveTag: 
+        resetPhysbones: []
+        hasExitTime: 0
+        enableIcon: 0
+        icon:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 
+          objRef: {fileID: 0}
+        enableDriveGlobalParam: 0
+        driveGlobalParam: 
+        separateLocal: 0
+        localState:
+          actions: []
+        hasTransition: 0
+        transitionStateIn:
+          actions: []
+        transitionStateOut:
+          actions: []
+        transitionTimeIn: 0
+        transitionTimeOut: 0
+        localTransitionStateIn:
+          actions: []
+        localTransitionStateOut:
+          actions: []
+        localTransitionTimeIn: 0
+        localTransitionTimeOut: 0
+        simpleOutTransition: 1
+        defaultSliderValue: 0
+        useGlobalParam: 1
+        globalParam: VRCL_Custom/AxialCAFocusAware
+        holdButton: 0
+        invertRestLogic: 0
+        expandIntoTransition: 1
+    - rid: 455501553797431302
+      type: {class: AnimationClipAction, ns: VF.Model.StateAction, asm: VRCFury}
+      data:
+        version: 0
+        desktopActive: 0
+        androidActive: 0
+        localOnly: 0
+        remoteOnly: 0
+        clip:
+          version: 1
+          fileID: 0
+          guid: 
+          id: 6665bdbac4d6ea043add154ccc0c47e6|Assets/VRCLens_Custom/ChromaticAberration/CA_FocusAware.anim
+          objRef: {fileID: 7400000, guid: 6665bdbac4d6ea043add154ccc0c47e6, type: 2}
 --- !u!114 &4245122815520342126
 MonoBehaviour:
   m_ObjectHideFlags: 0
