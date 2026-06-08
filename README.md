@@ -46,6 +46,8 @@ Each add-on is a VRCFury prefab that you drag-and-drop onto an existing VRCLens 
 | [Tilt-Shift](#tilt-shift) | Tilt-shift miniature depth-of-field |
 | [Pixelation](#pixelation) | Retro pixelation effect |
 | [Swirly Bokeh](#swirly-bokeh) | Swirly bokeh effect |
+| [Anamorphic Bokeh](#anamorphic-bokeh) | Oval-shaped anamorphic bokeh |
+| [Zoom Blur](#zoom-blur) | Zoom blur effect |
 <!-- | [Soft Glow](#soft-glow) | Diffusion glow filter | -->
 
 **Camera**
@@ -57,6 +59,7 @@ Each add-on is a VRCFury prefab that you drag-and-drop onto an existing VRCLens 
 | [Custom Resolution](#custom-resolution) | Overrides camera resolution and anti-aliasing |
 | [Far Clip Plane](#far-clip-plane) | Increases the camera's far clipping plane |
 | [Player Visibility](#player-visibility) | Hide remote players or yourself from VRCLens |
+| [Smooth DoF Edges](#smooth-dof-edges) | Smooths the sharp edges between subjects and blurred backgrounds |
 
 **Drone**
 
@@ -151,6 +154,21 @@ Effects submenu:
 | Shake | | | Handheld camera shake submenu. |
 | Shimmer | 0% - 100% | 0% | Randomized drift over time. |
 | Chroma | 0% - 100% | 0% | Chromatic color split on ghost reflections. Unlike [Chromatic Aberration](#chromatic-aberration), this only affects the ghost itself. |
+| Color | | | Primary ghost color submenu. |
+| Dual Color | | | Second ghost color submenu for Dual mode. |
+
+Color submenu:
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| R / G / B | 0% - 100% | 50% | Individual color adjustment. 50% = neutral. |
+
+Dual Color submenu:
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Enable | On / Off | Off | Use a separate color for the second ghost in Dual mode. |
+| R / G / B | 0% - 100% | 50% | Individual color adjustment. 50% = neutral. |
 
 Shake submenu:
 
@@ -212,7 +230,7 @@ The sliders will be in your menu under `VRCLens/Custom/Chromatic Aberration`.
 | Setting | Range | Default | Description |
 |---|---|---|---|
 | Enable | On / Off | Off | Enable or disable the effect. |
-| Transverse CA | 0% - 100% | 0% | Color fringing toward screen edges. |
+| Transverse CA | 0% - 100% | 10% | Color fringing toward screen edges. |
 | Axial CA | 0% - 100% | 0% | Color fringing on out-of-focus areas. |
 
 Axial Focus-Aware submenu:
@@ -376,6 +394,9 @@ The controls will be in your menu under `VRCLens/Custom/Tilt-Shift`.
 
 ### Pixelation
 
+> [!NOTE]
+> Early preview: currently included in the [Ghost Lens package](https://gummidot.booth.pm/items/8375173) only. May move to the free base package in a future update.
+
 **Retro pixelation effect**
 
 Pixelates the image into blocks for a low-resolution, retro look.
@@ -415,6 +436,22 @@ The controls will be in your menu under `VRCLens/Custom/Swirly Bokeh`.
 | Strength | 0% - 100% | 70% | How intense the swirl is. |
 | Radius | 0% - 100% | 80% | How much of the frame is affected. Higher = swirl starts closer to center. |
 
+### Anamorphic Bokeh
+
+**Oval-shaped anamorphic bokeh**
+
+Makes bokeh oval instead of circular, like anamorphic cinema lenses.
+
+#### Usage
+
+The slider will be in your menu under `VRCLens/Custom/Anamorphic Bokeh`.
+
+<video src="https://github.com/user-attachments/assets/ba96df33-568c-426e-b11f-e56a4fde1da5"></video>
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Anamorphic Bokeh | 0% - 100% | 0% | Squeeze amount. 0% = circular, max = strong oval. |
+
 <!--
 ### Soft Glow
 
@@ -429,9 +466,9 @@ The controls will be in your menu under `VRCLens/Custom/Soft Glow`.
 | Setting | Range | Default | Description |
 |---|---|---|---|
 | Enable | On / Off | Off | Enable or disable the effect. |
-| Strength | 0% - 100% | 35% | How much bright areas glow. |
-| Diffusion | 0% - 100% | 35% | How much fine detail is softened. |
-| Radius | 0% - 100% | 35% | How far the effect spreads. |
+| Strength | 0% - 100% | 60% | How much bright areas glow. |
+| Diffusion | 0% - 100% | 40% | How much fine detail is softened. |
+| Radius | 0% - 100% | 50% | How far the effect spreads. |
 
 Focus Zone submenu:
 
@@ -441,6 +478,33 @@ Focus Zone submenu:
 | Spread | 0% - 100% | 40% | How far from the focus point the effect extends. Low = tight zone, high = wider zone. |
 | Reverse | On / Off | Off | Reverse: glow on everything except the focused subject. |
 -->
+
+### Zoom Blur
+
+**Zoom blur effect**
+
+Blurs the image outward from the center, like a fast camera zoom during the exposure.
+
+#### Usage
+
+The controls will be in your menu under `VRCLens/Custom/Zoom Blur`.
+
+<video src="https://github.com/user-attachments/assets/46833cd3-58e0-4516-b009-1507b7ddb336"></video>
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Enable | On / Off | Off | Enable or disable the effect. |
+| Strength | 0% - 100% | 15% | How strong the radial blur is. |
+| Center X | 0% - 100% | 50% | Moves the blur center left/right. |
+| Center Y | 0% - 100% | 50% | Moves the blur center up/down. |
+
+Focus Zone submenu:
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Enable | On / Off | Off | Keep the focused subject sharp; only the background blurs. DoF does not need to be enabled; just set VRCLens manual focus. |
+| Spread | 0% - 100% | 15% | How far from the focus point stays sharp. Low = tight zone, high = wider zone. |
+| Focus Distance | 0% - 100% | 0% | Convenience duplicate of VRCLens's Manual Focus slider. Saves navigating back to the Focus menu. |
 
 ---
 
@@ -528,6 +592,23 @@ The toggles will be in your menu under `VRCLens/Custom/Player Visibility`.
 |---|---|---|
 | Hide Remote Players | Off | Hides other players from VRCLens. |
 | Hide Self | Off | Hides your own avatar from VRCLens. |
+
+### Smooth DoF Edges
+
+**Smooths the sharp edges between subjects and blurred backgrounds**
+
+VRCLens depth-of-field (DoF) can produce an unnaturally sharp edge between an in-focus subject and the blur behind it. This softens the transition so the background blur blends more naturally into the subject.
+
+#### Usage
+
+The controls will be in your menu under `VRCLens/Custom/Smooth DoF Edges`.
+
+<video src="https://github.com/user-attachments/assets/eca1ed6e-a354-4b0f-a1b7-98d6990ef39e"></video>
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Enable | On / Off | On | Enable edge smoothing. |
+| Softness | 0% - 100% | 50% | How far the background can blend into subject edges. |
 
 ---
 
@@ -672,7 +753,7 @@ At 0%, the slider has no effect so it uses whatever blur size you installed VRCL
 
 <video src="https://github.com/user-attachments/assets/630e7b76-6000-4505-958e-e99404c6cffc"></video>
 
-In the radial menu: `VRCLens > Custom > Preset Saver > Save > {1-6}` to save the current settings, then `Load > {1-6}` to restore. `Load Defaults` resets your current custom add-on settings to their default values.
+In the radial menu: `VRCLens > Custom > Preset Saver > Save > {1-6}` to save the current settings, then `Load > {1-6}` to restore. Each Save and Load submenu has all 6 slot buttons as siblings, so you can A/B-test slots with a single tap. `Load Defaults` resets your current custom add-on settings to their default values.
 
 | Menu | Action |
 |------|--------|

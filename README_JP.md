@@ -45,7 +45,9 @@ Hashtag / ハッシュタグ: #GhostLens #VRCLens
 | [Depth Fog](#depth-fog) | シーンの奥行きに基づく大気フォグ |
 | [Tilt-Shift](#tilt-shift) | チルトシフト・ミニチュア被写界深度 |
 | [Pixelation](#pixelation) | レトロピクセル化エフェクト |
-| [Swirly Bokeh](#swirly-bokeh) | 渦巻きボケエフェクト |
+| [Swirly Bokeh](#swirly-bokeh) | ボケ渦巻きエフェクト |
+| [Anamorphic Bokeh](#anamorphic-bokeh) | アナモルフィックレンズ風の楕円ボケ |
+| [Zoom Blur](#zoom-blur) | ズームブラーエフェクト |
 <!-- | [Soft Glow](#soft-glow) | ディフュージョングローフィルター | -->
 
 **カメラ**
@@ -57,6 +59,7 @@ Hashtag / ハッシュタグ: #GhostLens #VRCLens
 | [Custom Resolution](#custom-resolution) | カメラ解像度とアンチエイリアスを上書き |
 | [Far Clip Plane](#far-clip-plane) | カメラの遠クリッピング面を拡張 |
 | [Player Visibility](#player-visibility) | VRCLensから他プレイヤーや自分を非表示化 |
+| [Smooth DoF Edges](#smooth-dof-edges) | 被写体とぼけた背景の境界を滑らかに |
 
 **ドローン**
 
@@ -151,6 +154,21 @@ Effects サブメニュー:
 | Shake | | | 手持ちカメラの手ぶれサブメニュー。 |
 | Shimmer | 0% - 100% | 0% | 時間経過によるランダムなドリフト。 |
 | Chroma | 0% - 100% | 0% | ゴースト反射のクロマティックカラースプリット。[Chromatic Aberration](#chromatic-aberration) と違い、ゴースト自体にのみ影響。 |
+| Color | | | メインのゴーストカラーのサブメニュー。 |
+| Dual Color | | | Dual モードの2つ目のゴーストカラーのサブメニュー。 |
+
+Color サブメニュー:
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| R / G / B | 0% - 100% | 50% | 個別の色調整。50% = ニュートラル。 |
+
+Dual Color サブメニュー:
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| Enable | On / Off | Off | Dual モードの2つ目のゴーストに別の色を使用。 |
+| R / G / B | 0% - 100% | 50% | 個別の色調整。50% = ニュートラル。 |
 
 Shake サブメニュー:
 
@@ -212,7 +230,7 @@ Advanced サブメニュー:
 | 設定 | 範囲 | デフォルト | 説明 |
 |---|---|---|---|
 | Enable | On / Off | Off | エフェクトの有効/無効を切り替え。 |
-| Transverse CA | 0% - 100% | 0% | 画面端に向かうカラーフリンジング。 |
+| Transverse CA | 0% - 100% | 10% | 画面端に向かうカラーフリンジング。 |
 | Axial CA | 0% - 100% | 0% | ピントの合っていない領域のカラーフリンジング。 |
 
 Axial Focus-Aware サブメニュー:
@@ -376,6 +394,9 @@ Axial Focus-Aware サブメニュー:
 
 ### Pixelation
 
+> [!NOTE]
+> 先行プレビュー: 現在は[Ghost Lensパッケージ](https://gummidot.booth.pm/items/8375173)にのみ同梱されています。今後のアップデートで無料ベースパッケージに移行する場合があります。
+
 **レトロピクセル化エフェクト**
 
 画像をブロック状にピクセル化し、低解像度のレトロな見た目にします。
@@ -399,7 +420,7 @@ Axial Focus-Aware サブメニュー:
 > [!NOTE]
 > アーリープレビュー：現在は[Ghost Lensパッケージ](https://gummidot.booth.pm/items/8375173)にのみ同梱されています。今後のアップデートで無料ベースパッケージに移行する場合があります。
 
-**渦巻きボケエフェクト**
+**ボケ渦巻きエフェクト**
 
 一部のヴィンテージレンズに見られるボケの渦巻き効果を再現します。DoF有効時、背景のぼかしがフレームの端に向かって渦を巻くような形になります。
 
@@ -415,6 +436,22 @@ Axial Focus-Aware サブメニュー:
 | Strength | 0% - 100% | 70% | 渦巻きの強さ。 |
 | Radius | 0% - 100% | 80% | フレームのどの範囲まで影響するか。高いほど中央寄りから渦巻きが始まる。 |
 
+### Anamorphic Bokeh
+
+**アナモルフィックレンズ風の楕円ボケ**
+
+ボケを円形から楕円形にし、アナモルフィックシネマレンズのルックを再現します。
+
+#### 使い方
+
+スライダーはメニューの `VRCLens/Custom/Anamorphic Bokeh` にあります。
+
+<video src="https://github.com/user-attachments/assets/ba96df33-568c-426e-b11f-e56a4fde1da5"></video>
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| Anamorphic Bokeh | 0% - 100% | 0% | 潰し量。0% = 円形、最大 = 強い楕円。 |
+
 <!--
 ### Soft Glow
 
@@ -429,9 +466,9 @@ Axial Focus-Aware サブメニュー:
 | 設定 | 範囲 | デフォルト | 説明 |
 |---|---|---|---|
 | Enable | On / Off | Off | エフェクトの有効/無効を切り替え。 |
-| Strength | 0% - 100% | 35% | 明るい部分のグロウの強さ。 |
-| Diffusion | 0% - 100% | 35% | ディテールをどれだけ柔らかくするか。 |
-| Radius | 0% - 100% | 35% | エフェクトの広がり。 |
+| Strength | 0% - 100% | 60% | 明るい部分のグローの強さ。 |
+| Diffusion | 0% - 100% | 40% | ディテールをどれだけ柔らかくするか。 |
+| Radius | 0% - 100% | 50% | エフェクトの広がり。 |
 
 Focus Zone サブメニュー:
 
@@ -439,8 +476,35 @@ Focus Zone サブメニュー:
 |---|---|---|---|
 | Enable | On / Off | Off | フォーカスポイント付近のみにグローを適用（被写体にグロー）。DoF を有効にする必要はなく、VRCLens の Manual Focus を設定するだけで使用可能。 |
 | Spread | 0% - 100% | 40% | エフェクトがフォーカスポイントからどの程度広がるか。低い値 = 狭いゾーン、高い値 = 広いゾーン。 |
-| Reverse | On / Off | Off | 反転: フォーカスされた被写体以外にグローを適用。 |
+| Reverse | On / Off | Off | 反転: ピントが合った被写体以外にグローを適用。 |
 -->
+
+### Zoom Blur
+
+**ズームブラーエフェクト**
+
+露光中に素早くカメラをズームしたように、中心から外側へ放射状にブラーをかけます。
+
+#### 使い方
+
+操作メニューは `VRCLens/Custom/Zoom Blur` にあります。
+
+<video src="https://github.com/user-attachments/assets/46833cd3-58e0-4516-b009-1507b7ddb336"></video>
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| Enable | On / Off | Off | エフェクトの有効/無効を切り替え。 |
+| Strength | 0% - 100% | 15% | 放射状ブラーの強さ。 |
+| Center X | 0% - 100% | 50% | ブラー中心を左右に移動。 |
+| Center Y | 0% - 100% | 50% | ブラー中心を上下に移動。 |
+
+Focus Zone サブメニュー:
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| Enable | On / Off | Off | ピントが合った被写体をシャープに保ち、背景のみにブラーをかける。DoF を有効にする必要はなく、VRCLens の Manual Focus を設定するだけで使用可能。 |
+| Spread | 0% - 100% | 15% | フォーカスポイントからどの程度の範囲をシャープに保つか。低い値 = 狭いゾーン、高い値 = 広いゾーン。 |
+| Focus Distance | 0% - 100% | 0% | VRCLens の Manual Focus スライダーの便利な複製。Focus メニューに戻る手間を省きます。 |
 
 ---
 
@@ -528,6 +592,23 @@ VRCLens に映るものを制御する2つの独立したトグル:
 |---|---|---|
 | Hide Remote Players | Off | VRCLens から他プレイヤーを非表示にする。 |
 | Hide Self | Off | VRCLens から自分のアバターを非表示にする。 |
+
+### Smooth DoF Edges
+
+**被写体とぼけた背景の境界を滑らかに**
+
+VRCLensのDoFは、ピントの合った被写体と背景のぼかしの間に不自然に硬い境界を生成することがあります。このModはその境界を滑らかにし、背景のぼかしが被写体に自然に溶け込むようにします。
+
+#### 使い方
+
+コントロールはメニューの `VRCLens/Custom/Smooth DoF Edges` にあります。
+
+<video src="https://github.com/user-attachments/assets/eca1ed6e-a354-4b0f-a1b7-98d6990ef39e"></video>
+
+| 設定 | 範囲 | デフォルト | 説明 |
+|---|---|---|---|
+| Enable | On / Off | On | エッジスムージングを有効化。 |
+| Softness | 0% - 100% | 50% | 背景が被写体の輪郭にどれだけ溶け込むか。 |
 
 ---
 
@@ -672,7 +753,7 @@ DoF 使用時の最大ぼかしサイズを調整できるローカル専用ス�
 
 <video src="https://github.com/user-attachments/assets/630e7b76-6000-4505-958e-e99404c6cffc"></video>
 
-ラジアルメニューから `VRCLens > Custom > Preset Saver > Save > {1～6}` で現在の設定を保存し、`Load > {1～6}` で復元してください。`Load Defaults` を押すと、現在のカスタムアドオン設定を既定値に戻します。
+ラジアルメニューから `VRCLens > Custom > Preset Saver > Save > {1～6}` で現在の設定を保存し、`Load > {1～6}` で復元してください。Save と Load の各サブメニューには 6 つのスロットボタンが並んでいるので、1 タップでスロットを切り替えて A/B 比較できます。`Load Defaults` を押すと、現在のカスタムアドオン設定を既定値に戻します。
 
 | メニュー | 動作 |
 |------|------|

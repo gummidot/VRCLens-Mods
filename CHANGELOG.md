@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.2.0
+
+- Add Smooth DoF Edges
+- Add Anamorphic Bokeh
+- Add Zoom Blur
+- Add Color and Dual Color controls to Ghost Lens
+- Fix Avatar AF not working when Custom Resolution is enabled
+
 ## v2.1.1
 
 - Fix add-ons breaking VRCLens when installed via VRCLensForMA alongside other Modular Avatar prefabs (thanks to `@ritsu_tokoron`)
