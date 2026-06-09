@@ -597,7 +597,9 @@ The toggles will be in your menu under `VRCLens/Custom/Player Visibility`.
 
 **Smooths the sharp edges between subjects and blurred backgrounds**
 
-VRCLens depth-of-field (DoF) can produce an unnaturally sharp edge between an in-focus subject and the blur behind it. This softens the transition so the background blur blends more naturally into the subject.
+VRCLens depth-of-field (DoF) can produce an unnaturally sharp edge between an in-focus subject and the blur behind it, so this mod creates a more natural transition.
+
+Rather than simply blurring the subject's edges, it selectively lets the out-of-focus background blend into its sharp outline.
 
 #### Usage
 
