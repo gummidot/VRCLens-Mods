@@ -63,7 +63,7 @@ As a VRCFury prefab, VRCLens can be set up once, then drag-n-drop'd to different
 
    ![Path rewrite rules](images/07-vrcfury-path-rewrite.png)
 
-   b. Add **Global Parameters** and set it to `*` to make all VRCLens parameters global. This is optional in most cases though, and only necessary if you want to use VRCLens with OSC extensions or other mods.
+   b. Add **Global Parameters** and set it to `*` to make all VRCLens parameters global. Do this if you use any VRCLens Add-on from this project, or VRCLens with OSC extensions or other mods. Without it, VRCFury renames every VRCLens parameter to keep this Full Controller separate from other prefabs, and nothing outside it can reach them by name.
 
    ![Global Parameters](images/07-1-global-params.png)
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## v2.3.0
+
+- Add Camera Pins & Dolly
+- Add Menu Favorites
+- Menu Extra is now deprecated (use Menu Favorites instead)
+- Fix Manual Focus Assist Peaking being unintentionally synced (now local-only)
+- Fix Move Drone Vertical and Player Visibility inadvertently modifying your VRCLens files in some cases (reimport VRCLens if you see anything odd)
+
 ## v2.2.0
 
 - Add Smooth DoF Edges

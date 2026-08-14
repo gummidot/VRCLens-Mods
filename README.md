@@ -68,6 +68,7 @@ Each add-on is a VRCFury prefab that you drag-and-drop onto an existing VRCLens 
 | [Drone Speed](#drone-speed) | Drone Speed slider goes slower or faster than default |
 | [Move Drone Vertical](#move-drone-vertical) | Puppet menu to move the drone vertically |
 | [Avatar Offset](#avatar-offset) | Offsets the camera from your avatar while keeping hand control |
+| [Camera Pins & Dolly](#camera-pins--dolly) | Drop camera pins, then teleport or dolly between them |
 
 **Focus**
 
@@ -83,9 +84,9 @@ Each add-on is a VRCFury prefab that you drag-and-drop onto an existing VRCLens 
 | Prefab | Description |
 |--------|-------------|
 | [Preset Saver](#preset-saver) | Save up to 6 presets for your custom add-on settings |
-| [Fix Avatar Drop](#fix-avatar-drop) | Fixes Avatar Drop broken in VRCLens 1.9.1+ |
+| [Menu Favorites](#menu-favorites) | Build custom VRCLens menus with your favorite controls |
 | [VRCLens Optimizer](#vrclens-optimizer) | Removes optional VRCLens components |
-| [Menu Extra](#menu-extra) | Miscellaneous menu improvements |
+| [Fix Avatar Drop](#fix-avatar-drop) | Fixes Avatar Drop broken in VRCLens 1.9.1+ |
 
 ---
 
@@ -102,7 +103,7 @@ Recreates the ghosting/motion blur effect of the physical filter, producing semi
 
 #### Usage
 
-The controls will be in your menu under `VRCLens/Custom/Ghost Lens` with submenus for ghost mode, blend mode, focus zone, effects, and advanced settings.
+The controls will be in your menu under `VRCLens/Custom/Ghost Lens` with submenus for Ghost Mode, Blend Mode, Focus Zone, Effects, and Advanced.
 
 <video src="https://github.com/user-attachments/assets/0f83f620-a3e5-4e0f-a0ef-57fcc2505714"></video>
 
@@ -353,7 +354,7 @@ The controls will be in your menu under `VRCLens/Custom/Depth Fog`.
 | Enable | On / Off | Off | Enable or disable the effect. |
 | Density | 0% - 100% | 17% | Fog thickness. |
 | Start Distance | 0% - 100% | 0% | Distance where fog begins (maps to 0-500m). |
-| Color R / G / B | 0% - 100% | 70% each | Fog color. Default is neutral grey. |
+| Color R / G / B | 0% - 100% | 70% each | Fog color. Default is neutral gray. |
 
 ### Tilt-Shift
 
@@ -521,7 +522,9 @@ Works in both desktop and VR, and can smooth much more than OVR-SmoothTracking.
 The slider will be in your menu under `VRCLens/Custom/Smooth Rotate`.
 0% is the minimum (default) smoothing, and 100% is the maximum amount of smoothing.
 
-Make sure Stabilize mode is on (the white/yellow hand icon) for this to work.
+> [!NOTE]
+> **Stabilize must be on for this to do anything.** Smooth Rotate smooths the rotation Stabilize
+> produces, so you must enable it (the white or yellow hand icon).
 
 <video src="https://github.com/user-attachments/assets/05d5c2fd-28e6-4f38-8b98-11be5db84a1b"></video>
 
@@ -599,7 +602,7 @@ The toggles will be in your menu under `VRCLens/Custom/Player Visibility`.
 
 VRCLens depth-of-field (DoF) can produce an unnaturally sharp edge between an in-focus subject and the blur behind it, so this mod creates a more natural transition.
 
-Rather than simply blurring the subject's edges, it selectively lets the out-of-focus background blend into its sharp outline.
+Rather than just blurring the subject's edges, it selectively lets the out-of-focus background blend into its sharp outline.
 
 #### Usage
 
@@ -658,6 +661,98 @@ There will be 3 toggles in your menu under `VRCLens/Custom/Avatar Offset`:
 - **Drop (Reset to Hand)** resets the camera back to your hand. It is the same as the Drone Drop button, just here for convenience.
 
 <video src="https://github.com/user-attachments/assets/8cfbe8ca-1adb-4b94-802d-95cf99186c06"></video>
+
+### Camera Pins & Dolly
+
+**Drop camera pins, then teleport or dolly between them**
+
+<video src="https://github.com/user-attachments/assets/1a135c47-13c2-4a22-a497-6c3eaab2f5be"></video>
+
+[Watch the full demo on YouTube](https://www.youtube.com/watch?v=YCoZLXLsxNo)
+
+- **Camera Pins** teleports the camera to any pin. The camera is free to move afterwards, so you can fly the drone away from the pin.
+- **Dolly** animates the camera along a path through your pins. While moving, the camera can follow your hand rotation or position. VRCLens's Track Self and Track Pivot work as well.
+
+Add the **[Drone] CameraPinsDolly** prefab to your avatar and set the number of **Pins** in the Inspector. You can drop up to 13 pins (the default).
+
+The Inspector shows the performance cost of pins. 13 pins = 1 skinned mesh, 1 material, ~2k tris. You can optionally lower the pin count, exclude the dolly, or exclude the pin indicators to save on performance.
+
+#### Usage
+
+The controls will be in your menu under `VRCLens/Custom/Camera Pins & Dolly`:
+
+| Control | Description |
+|---|---|
+| Drop | Pin drop menu. |
+| Teleport | Pin teleport menu. |
+| Dolly | Dolly menu. |
+| Reset to Hand | Returns the camera to your hand (same as VRCLens Drop). |
+| Settings | Camera pins settings menu. |
+
+Settings menu:
+
+| Control | Description |
+|---|---|
+| Display > Show Pins | Shows a marker at each dropped pin. |
+| Display > Show Path | Shows the line the dolly will fly through your pins. |
+| Display > Show Numbers | Numbers each marker so you can tell your pins apart. |
+| Tracking > Track Self | Camera tracks your own avatar (same as VRCLens Track Self). |
+| Tracking > Track Pivot | Camera tracks the VRCLens pivot point (same as VRCLens Track Pivot). |
+| Tracking > Drop Pivot | Drop or reset the VRCLens pivot point (same as VRCLens Drop Pivot). |
+| Hand Rotate (Pins) | Enable hand rotation for camera pins. Unlike VRCLens's own Hand-Rotate, it stays on when you reset the camera to your hand. |
+| Stabilize | Same as VRCLens hand Stabilize. |
+| Hand Offset > Full | The camera position moves with your hand. |
+| Hand Offset > Vertical | Same as Hand Offset Full but the camera only tracks the vertical position of your hand. |
+
+Drop menu:
+
+| Control | Description |
+|---|---|
+| Drop Next | Drops the next free pin at the camera's current position. |
+| Pin 1-N | Drops the pin at the camera's current position. |
+| Clear All | Hold down briefly to clear all pins. |
+
+Teleport menu:
+
+| Control | Description |
+|---|---|
+| Teleport Next | Teleports the camera to the next dropped pin. |
+| Pin 1-N | Teleports the camera to that pin. |
+
+#### Dolly
+
+The dolly animates the camera along a path through your pins. It runs them in order starting at Pin 1 and stops at the first gap, so drop your pins without skipping a number.
+
+> [!NOTE]
+> For best results, space your pins out evenly. The dolly runs on a fixed duration split equally between path segments, so the further two pins are spaced out, the faster the camera moves through those pins.
+
+Dolly menu:
+
+| Control | Default | Description |
+|---|---|---|
+| Play | Off | Play or pause. |
+| Stop | - | Stop playback and reset to Pin 1. |
+| Speed | 100% | Playback speed. 50% doubles the duration, 0% stops the camera. Use it for durations beyond 5 minutes: around 8% turns the 5 min preset into an hour. |
+| Playback | 0% | Manually scrub the camera along the path. Play resumes from where you left it. |
+| Move | - | Move the camera manually using a puppet menu. Works whether the dolly is playing or paused. |
+| Go To Pin | | Move the camera to a dropped pin. |
+| Reset to Hand | - | Stop and return the camera to your hand. Same as VRCLens Drop. |
+| Settings | | Settings submenu. |
+
+Settings submenu:
+
+| Setting | Range | Default | Description |
+|---|---|---|---|
+| Duration | 2s - 5 min | 5s | How long the dolly takes to travel through all pins. |
+| Loop | Loop / Reverse | Off | Loop from the last pin to the first pin, or reverse the path when reaching the end. |
+| Delay | 3s / 5s / 10s | Off | Delay before playing. |
+| Path > Linear | | Off | Linear path between pins. |
+| Path > Smooth | | Off | Smooth path that passes through every pin. Needs at least 3 pins to work. |
+| Path > Fitted | | On | Wider, fitted path that passes near pins rather than through them. Less accurate but even smoother than Smooth. |
+| Tracking | | | Same as the Tracking controls on the Camera Pins Settings menu. |
+| Hand Rotate (Pins) | | | Enable hand rotation for camera pins. Use this one for the dolly, not VRCLens's own Hand-Rotate. |
+| Stabilize | | | Same as VRCLens hand Stabilize. |
+| Hand Offset | | | Same as the Hand Offset controls on the Camera Pins Settings menu. |
 
 ---
 
@@ -758,10 +853,54 @@ At 0%, the slider has no effect so it uses whatever blur size you installed VRCL
 In the radial menu: `VRCLens > Custom > Preset Saver > Save > {1-6}` to save the current settings, then `Load > {1-6}` to restore. Each Save and Load submenu has all 6 slot buttons as siblings, so you can A/B-test slots with a single tap. `Load Defaults` resets your current custom add-on settings to their default values.
 
 | Menu | Action |
-|------|--------|
+|---|---|
 | Save > 1 - 6 | Save the current custom add-on settings to the chosen slot |
 | Load > 1 - 6 | Load the settings from the chosen slot |
 | Load Defaults | Reset your current custom add-on settings to their default values |
+
+### Menu Favorites
+
+**Build custom VRCLens menus with your favorite controls**
+
+<video src="https://github.com/user-attachments/assets/bd94fcc4-c7f1-4381-9890-1a60c92a8cb4"></video>
+
+Create custom menus with any VRCLens built-in or custom add-on controls. Copy toggles into existing VRCLens menus. Group your favorite toggles into one menu for easy access.
+
+#### Usage
+
+Drag and drop the `MenuFavorites` prefab onto your avatar.
+
+- Set **Menu path** to where you want the menu to go
+- Press **Add control** to put a control on the menu
+- Set **Submenu** to group controls onto their own page
+- Set **Name** to change the control name
+- Press **Add menu** to add another menu
+- Use the arrows next to **Menu path** to reorder your menus
+
+![MenuFavorites](Doc/MenuFavorites2.jpg)
+
+### VRCLens Optimizer
+
+**Removes optional components from VRCLens (materials, poly count)**
+
+Remove up to 5 optional components on VRCLens for performance optimization:
+
+- **Camera model** (1 material, 466 tris)
+   - Can be removed since it's just cosmetic.
+- **Pivot indicator** (1 material, 194 tris)
+   - Can be removed if you don't use the pivot feature.
+- **Focus pointer (VR only)** (1 material, 12 tris)
+   - The blue pointer on your off-hand finger that lets you move focus in VR.
+- **Avatar auto-focus** (1 material, 12 tris)
+   - Can be removed if you don't use avatar AF.
+- **Hand preview / HUD (VR only)** (1 material, 4 tris)
+   - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
+
+#### Usage
+
+Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
+
+![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
 
 ### Fix Avatar Drop
 
@@ -773,42 +912,14 @@ Avatar Drop is bugged in VRCLens 1.9.1 and above (as of VRCLens 1.9.2). This pre
 
 Use the **Advanced > Extra > Avatar-Drop** toggle as usual. It should now work.
 
-### VRCLens Optimizer
-
-**Removes optional components from VRCLens (materials, poly count)**
-
-Remove up to 5 optional components on VRCLens for performance optimization:
-
-- **Default camera model** (1 material, 466 tris)
-   - Can be removed since it's just cosmetic.
-- **Pivot indicator** (1 material, 194 tris)
-   - Can be removed if you don't use the pivot feature.
-- **Focus pointer for VR only** (1 material, 12 tris)
-   - The blue pointer on your off-hand finger that lets you move focus in VR.
-- **Avatar auto-focus** (1 material, 12 tris)
-   - Can be removed if you don't use avatar AF.
-- **Hand preview / HUD for VR only** (1 material, 4 tris)
-   - Can be removed if you always use an external desktop overlay. You won't be able to see camera settings like zoom level anymore though.
-
-#### Usage
-
-Drag and drop the `VRCLensOptimizer` prefab onto the `VRCLens` object on your avatar. Check the components you want to remove. Components are removed on upload, so check your avatar stats in game for the actual material/poly count.
-
-![VRCLensOptimizer](Doc/VRCLens_Optimizer.png)
-
-### Menu Extra
-
-**Miscellaneous improvements to the VRCLens menu**
-
-- Adds **DoF Mode** toggle to the Focus menu
-
 ---
 
 ## Thanks to
 
 - [Hirabiki](https://hirabiki.gumroad.com/l/rpnel) for VRCLens
 - @Gerzybow for the original ideas and feedback for Ghost Lens and Chromatic Aberration
-- @EsonAdventures for help testing Ghost Lens and the idea for Player Visibility
+- @EsonAdventures for help testing Ghost Lens and Camera Pins & Dolly, and the idea for Player Visibility
+- @risorahh and @gab_jankums for help testing Camera Pins & Dolly
 
 ## Contact
 
