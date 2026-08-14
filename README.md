@@ -395,9 +395,6 @@ The controls will be in your menu under `VRCLens/Custom/Tilt-Shift`.
 
 ### Pixelation
 
-> [!NOTE]
-> Early preview: currently included in the [Ghost Lens package](https://gummidot.booth.pm/items/8375173) only. May move to the free base package in a future update.
-
 **Retro pixelation effect**
 
 Pixelates the image into blocks for a low-resolution, retro look.
